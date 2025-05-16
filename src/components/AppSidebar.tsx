@@ -42,13 +42,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    // className removed from here
-                  >
+                  <SidebarMenuButton asChild>
                     <Link
                       to={item.href}
-                      className={cn( // className moved here
+                      className={cn(
                         // Base styles like p-2, rounded-md, etc., are handled by SidebarMenuButton's variants.
                         // We add specific layout and conditional styles here.
                         "w-full justify-start", // Ensures full width and left alignment of content
@@ -70,13 +67,10 @@ export function AppSidebar() {
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              // className removed from here
-            >
+            <SidebarMenuButton asChild>
               <Link
                 to="/login"
-                className={cn( // className moved here
+                className={cn(
                   "w-full justify-start",
                   "hover:bg-accent hover:text-accent-foreground" // Consistent hover style
                 )}
@@ -91,4 +85,3 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
-
