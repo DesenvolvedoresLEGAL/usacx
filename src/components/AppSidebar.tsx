@@ -42,16 +42,14 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  {/* Don't use asChild when we need to apply classes through cn() */}
+                  <SidebarMenuButton>
                     <Link
                       to={item.href}
                       className={cn(
-                        // Base styles like p-2, rounded-md, etc., are handled by SidebarMenuButton's variants.
-                        // We add specific layout and conditional styles here.
-                        "w-full justify-start", // Ensures full width and left alignment of content
                         location.pathname.startsWith(item.href)
-                          ? "bg-primary text-primary-foreground hover:bg-primary/90" // Active styles
-                          : "hover:bg-accent hover:text-accent-foreground" // Inactive hover styles
+                          ? "font-medium text-primary" 
+                          : "text-foreground/80"
                       )}
                     >
                       <item.icon className="mr-2 h-5 w-5" />
@@ -67,13 +65,11 @@ export function AppSidebar() {
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            {/* Don't use asChild here either */}
+            <SidebarMenuButton>
               <Link
                 to="/login"
-                className={cn(
-                  "w-full justify-start",
-                  "hover:bg-accent hover:text-accent-foreground" // Consistent hover style
-                )}
+                className="text-foreground/80"
               >
                 <Icons.logout className="mr-2 h-5 w-5" />
                 <span>Sair</span>

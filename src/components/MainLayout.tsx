@@ -14,13 +14,15 @@ const MainLayout = () => {
         <main className="flex-1 flex flex-col overflow-hidden">
           <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0">
             <div className="flex items-center gap-2">
-              {/* Fixed SidebarTrigger by ensuring it has a single child element */}
-              <SidebarTrigger asChild>
-                <Button variant="outline" size="icon" className="lg:hidden">
-                  <MenuIcon className="h-6 w-6" />
-                  <span className="sr-only">Toggle sidebar</span>
-                </Button>
+              {/* The SidebarTrigger must only have exactly one child */}
+              <SidebarTrigger>
+                <span className="sr-only">Toggle sidebar</span>
               </SidebarTrigger>
+              {/* Separate Button component instead of being a child of SidebarTrigger */}
+              <Button variant="outline" size="icon" className="lg:hidden">
+                <MenuIcon className="h-6 w-6" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
               {/* Placeholder for breadcrumbs or page title */}
               <h1 className="text-lg font-semibold">Dashboard</h1>
             </div>
