@@ -44,14 +44,19 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    className={cn(
-                      location.pathname.startsWith(item.href)
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "hover:bg-accent hover:text-accent-foreground",
-                      "w-full justify-start"
-                    )}
+                    // className removed from here
                   >
-                    <Link to={item.href}>
+                    <Link
+                      to={item.href}
+                      className={cn( // className moved here
+                        // Base styles like p-2, rounded-md, etc., are handled by SidebarMenuButton's variants.
+                        // We add specific layout and conditional styles here.
+                        "w-full justify-start", // Ensures full width and left alignment of content
+                        location.pathname.startsWith(item.href)
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90" // Active styles
+                          : "hover:bg-accent hover:text-accent-foreground" // Inactive hover styles
+                      )}
+                    >
                       <item.icon className="mr-2 h-5 w-5" />
                       <span>{item.title}</span>
                     </Link>
@@ -65,8 +70,17 @@ export function AppSidebar() {
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="w-full justify-start">
-              <Link to="/login">
+            <SidebarMenuButton
+              asChild
+              // className removed from here
+            >
+              <Link
+                to="/login"
+                className={cn( // className moved here
+                  "w-full justify-start",
+                  "hover:bg-accent hover:text-accent-foreground" // Consistent hover style
+                )}
+              >
                 <Icons.logout className="mr-2 h-5 w-5" />
                 <span>Sair</span>
               </Link>
@@ -77,3 +91,4 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
