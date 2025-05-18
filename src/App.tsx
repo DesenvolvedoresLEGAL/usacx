@@ -17,6 +17,9 @@ const PlaceholderPage = ({ title }: { title: string }) => (
   <div className="p-4">
     <h1 className="text-2xl font-bold">{title}</h1>
     <p>Esta página está em construção.</p>
+    <p className="mt-4 text-sm text-muted-foreground">
+      Conteúdo para a página <span className="font-semibold">{title}</span> será adicionado em breve.
+    </p>
   </div>
 );
 
@@ -33,11 +36,49 @@ const App = () => (
           {/* Routes that use MainLayout */}
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/conversations" element={<PlaceholderPage title="Conversas" />} />
-            <Route path="/templates" element={<PlaceholderPage title="Templates" />} />
-            <Route path="/reports" element={<PlaceholderPage title="Relatórios" />} />
-            <Route path="/agents" element={<PlaceholderPage title="Agentes" />} />
-            <Route path="/settings" element={<PlaceholderPage title="Configurações" />} />
+            {/* Gestão */}
+            <Route path="/gestao/ao-vivo" element={<PlaceholderPage title="Gestão - Ao Vivo" />} />
+            <Route path="/gestao/atendimentos" element={<PlaceholderPage title="Gestão - Atendimentos" />} />
+            <Route path="/gestao/agentes" element={<PlaceholderPage title="Gestão - Agentes" />} />
+            <Route path="/gestao/canais" element={<PlaceholderPage title="Gestão - Canais" />} />
+            {/* Relatórios */}
+            <Route path="/relatorios/atendimentos" element={<PlaceholderPage title="Relatórios - Atendimentos" />} />
+            <Route path="/relatorios/auditoria" element={<PlaceholderPage title="Relatórios - Auditoria" />} />
+            <Route path="/relatorios/clientes" element={<PlaceholderPage title="Relatórios - Clientes" />} />
+            <Route path="/relatorios/avaliacoes" element={<PlaceholderPage title="Relatórios - Avaliações" />} />
+            <Route path="/relatorios/pausas" element={<PlaceholderPage title="Relatórios - Pausas" />} />
+            <Route path="/relatorios/performance" element={<PlaceholderPage title="Relatórios - Performance" />} />
+            <Route path="/relatorios/analitico" element={<PlaceholderPage title="Relatórios - Analítico" />} />
+            <Route path="/relatorios/exportar" element={<PlaceholderPage title="Relatórios - Exportar" />} />
+            {/* Acesso */}
+            <Route path="/acesso/agentes" element={<PlaceholderPage title="Acesso - Agentes" />} />
+            <Route path="/acesso/usuarios" element={<PlaceholderPage title="Acesso - Usuários" />} />
+            <Route path="/acesso/logs" element={<PlaceholderPage title="Acesso - Logs de Acesso" />} />
+            {/* Configurações */}
+            <Route path="/configuracoes/agentes" element={<PlaceholderPage title="Configurações - Agentes" />} />
+            <Route path="/configuracoes/bots" element={<PlaceholderPage title="Configurações - Bots" />} />
+            <Route path="/configuracoes/clientes" element={<PlaceholderPage title="Configurações - Clientes" />} />
+            <Route path="/configuracoes/etiquetas" element={<PlaceholderPage title="Configurações - Etiquetas" />} />
+            <Route path="/configuracoes/filas" element={<PlaceholderPage title="Configurações - Filas de Atendimento" />} />
+            <Route path="/configuracoes/pausas" element={<PlaceholderPage title="Configurações - Pausas" />} />
+            <Route path="/configuracoes/csat" element={<PlaceholderPage title="Configurações - CSAT" />} />
+            <Route path="/configuracoes/hashtags" element={<PlaceholderPage title="Configurações - Hashtags" />} />
+            <Route path="/configuracoes/mensagens-prontas" element={<PlaceholderPage title="Configurações - Mensagens Prontas" />} />
+            <Route path="/configuracoes/anexos" element={<PlaceholderPage title="Configurações - Anexos" />} />
+            <Route path="/configuracoes/slas" element={<PlaceholderPage title="Configurações - SLAs" />} />
+            <Route path="/configuracoes/prioridades" element={<PlaceholderPage title="Configurações - Prioridades" />} />
+            {/* Ajuda */}
+            <Route path="/ajuda/chat" element={<PlaceholderPage title="Ajuda - Chat" />} />
+            <Route path="/ajuda/status" element={<PlaceholderPage title="Ajuda - Status" />} />
+            <Route path="/ajuda/versao" element={<PlaceholderPage title="Ajuda - Versão" />} />
+            <Route path="/ajuda/cancelamento" element={<PlaceholderPage title="Ajuda - Cancelamento" />} />
+
+            {/* Old placeholder routes, can be removed if all are covered by new structure */}
+            <Route path="/conversations" element={<PlaceholderPage title="Conversas (Legado)" />} />
+            <Route path="/templates" element={<PlaceholderPage title="Templates (Legado)" />} />
+            <Route path="/reports" element={<PlaceholderPage title="Relatórios (Legado)" />} />
+            <Route path="/agents" element={<PlaceholderPage title="Agentes (Legado)" />} />
+            <Route path="/settings" element={<PlaceholderPage title="Configurações (Legado)" />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
@@ -49,3 +90,4 @@ const App = () => (
 );
 
 export default App;
+

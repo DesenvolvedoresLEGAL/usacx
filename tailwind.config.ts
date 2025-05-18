@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,7 +26,7 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
+					DEFAULT: 'hsl(var(--primary))', // Updated to #020cbc via CSS var
 					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
@@ -52,6 +53,10 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+        // Institutional Colors
+        'legal-primary': 'hsl(var(--legal-primary))', // #020cbc
+        'legal-secondary': 'hsl(var(--legal-secondary))', // #4d2bfb
+        'legal-accent': 'hsl(var(--legal-accent))', // #03f9ff
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -68,6 +73,12 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+      fontFamily: {
+        sans: ['"Neue Haas Unica Regular"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
+        'neue-haas-unica-black': ['"Neue Haas Unica Black"', 'sans-serif'],
+        'neue-haas-unica-bold': ['"Neue Haas Unica Bold"', 'sans-serif'],
+        'neue-haas-unica-regular': ['"Neue Haas Unica Regular"', 'sans-serif'],
+      },
 			keyframes: {
 				'accordion-down': {
 					from: {
@@ -94,3 +105,4 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+

@@ -14,8 +14,17 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Institutional Colors */
+    --legal-primary-hsl: 235 98% 37%; /* #020cbc */
+    --legal-secondary-hsl: 249 100% 59%; /* #4d2bfb */
+    --legal-accent-hsl: 180 100% 50%; /* #03f9ff */
+
+    --legal-primary: hsl(var(--legal-primary-hsl));
+    --legal-secondary: hsl(var(--legal-secondary-hsl));
+    --legal-accent: hsl(var(--legal-accent-hsl));
+    
+    --primary: var(--legal-primary-hsl);
+    --primary-foreground: 0 0% 100%; /* White */
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -23,7 +32,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 210 40% 96.1%; /* Default accent, can be overridden by components */
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -31,21 +40,23 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: var(--legal-primary-hsl); /* Ring color to primary */
 
     --radius: 0.5rem;
 
-    --sidebar-background: 240 5.9% 10%; /* Darker sidebar */
-    --sidebar-foreground: 0 0% 98%; /* Light text for sidebar */
-    --sidebar-primary: 224.3 76.3% 48%; /* Accent for active/hover items */
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar variables for white background and institutional colors */
+    --sidebar-background: 0 0% 100%; /* White */
+    --sidebar-foreground: var(--legal-primary-hsl); /* Text color: #020cbc */
+    --sidebar-primary: 240 4.8% 95.9%; /* Active/Hover background: Light gray */
+    --sidebar-primary-foreground: var(--legal-primary-hsl); /* Active/Hover text color: #020cbc */
+    --sidebar-accent: 240 4.8% 92.9%; /* General accent/hover background for items */
+    --sidebar-accent-foreground: var(--legal-primary-hsl); /* General accent/hover text color */
+    --sidebar-border: 214.3 31.8% 91.4%; /* Light gray border */
+    --sidebar-ring: var(--legal-primary-hsl);
   }
 
   .dark {
+    /* Keeping default dark mode for now, can be adjusted later if needed */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -74,6 +85,7 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
 
+    /* Dark mode sidebar (default for now, admin might always see light) */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -95,7 +107,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans; /* Apply new default font */
     font-feature-settings: "cv02", "cv03", "cv04", "cv11"; /* Consistent font rendering */
   }
 }
+
