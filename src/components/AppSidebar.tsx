@@ -1,21 +1,25 @@
-
+import React from "react"; // Added React for useState if needed, not needed for uncontrolled
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-// Button import is not used in this file after previous refactors.
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"; // Import Collapsible components
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
+  SidebarGroupContent, // Keep for non-collapsible groups
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarGroupLabel, // Added for grouping
-  // SidebarTrigger is not used here, it's in MainLayout
+  // SidebarGroupLabel, // We will render the trigger manually for collapsibles
 } from "@/components/ui/sidebar";
 import { Icons } from "@/components/icons";
+import { ChevronDown } from "lucide-react"; // Import ChevronDown
 
 // Define interface for menu items for clarity
 interface MenuItem {
@@ -96,48 +100,77 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar className="border-r bg-sidebar text-sidebar-foreground"> {/* Ensured sidebar specific colors are applied */}
+    <Sidebar className="border-r bg-sidebar text-sidebar-foreground">
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="flex items-center space-x-2">
-          <Icons.logo className="h-8 w-8 text-primary" /> {/* text-primary will use the new #020cbc */}
-          <span className="font-semibold text-lg text-primary">LEGAL Atende</span> {/* text-primary for logo text */}
+          <Icons.logo className="h-8 w-8 text-primary" />
+          <span className="font-semibold text-lg text-primary">ZAPIFY</span> {/* Updated logo text */}
         </Link>
       </SidebarHeader>
       <SidebarContent className="flex-grow">
         {menuGroups.map((group, groupIndex) => (
           <SidebarGroup key={group.groupTitle || `group-${groupIndex}`}>
-            {group.groupTitle && (
-              <SidebarGroupLabel>{group.groupTitle}</SidebarGroupLabel>
-            )}
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      isActive={location.pathname.startsWith(item.href)}
-                      asChild={false} // Let SidebarMenuButton handle its own rendering
-                      className="w-full" // Ensure button takes full width for proper click area
-                    >
-                      <Link
-                        to={item.href}
-                        className={cn(
-                          "flex items-center w-full h-full", // Ensure link fills the button
-                          // Active state styling is handled by SidebarMenuButton's data-active attribute
-                          // and CSS variables. Text color will be based on sidebar-foreground or sidebar-primary-foreground.
-                          // Forcing text color here might override the intended behavior.
-                          // If specific active text color different from button's active fg is needed,
-                          // it can be added here, but usually it's fine.
-                          location.pathname.startsWith(item.href) ? "font-medium" : "" // Keep font-medium for active
-                        )}
+            {group.groupTitle ? (
+              <Collapsible>
+                <CollapsibleTrigger className="group flex h-8 w-full items-center justify-between rounded-md px-2 text-left text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2">
+                  <span>{group.groupTitle}</span>
+                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  {/* Margin and padding adjustments for sub-menu items might be needed for visual hierarchy */}
+                  <SidebarGroupContent className="pt-1"> {/* Added pt-1 for spacing */}
+                    <SidebarMenu>
+                      {group.items.map((item) => (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                            isActive={location.pathname.startsWith(item.href)}
+                            asChild={false}
+                            className="w-full"
+                          >
+                            <Link
+                              to={item.href}
+                              className={cn(
+                                "flex items-center w-full h-full",
+                                location.pathname.startsWith(item.href) ? "font-medium" : ""
+                              )}
+                            >
+                              <item.icon className="mr-2 h-5 w-5 shrink-0" />
+                              <span className="truncate">{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </Collapsible>
+            ) : (
+              // For groups without a title (like the first Dashboard item)
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {group.items.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        isActive={location.pathname.startsWith(item.href)}
+                        asChild={false}
+                        className="w-full"
                       >
-                        <item.icon className="mr-2 h-5 w-5 shrink-0" />
-                        <span className="truncate">{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "flex items-center w-full h-full",
+                            location.pathname.startsWith(item.href) ? "font-medium" : ""
+                          )}
+                        >
+                          <item.icon className="mr-2 h-5 w-5 shrink-0" />
+                          <span className="truncate">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            )}
           </SidebarGroup>
         ))}
       </SidebarContent>
@@ -150,7 +183,7 @@ export function AppSidebar() {
             >
               <Link
                 to="/login"
-                className="flex items-center w-full h-full" // text-sidebar-foreground is default
+                className="flex items-center w-full h-full" 
               >
                 <Icons.logout className="mr-2 h-5 w-5 shrink-0" />
                 <span className="truncate">Sair</span>
@@ -162,4 +195,3 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
-

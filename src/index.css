@@ -26,14 +26,14 @@
     --primary: var(--legal-primary-hsl);
     --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: var(--legal-secondary-hsl); /* Updated to #4d2bfb */
+    --secondary-foreground: 0 0% 100%; /* White for contrast with new secondary */
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%; /* Default accent, can be overridden by components */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: var(--legal-accent-hsl); /* Updated to #03f9ff */
+    --accent-foreground: 222.2 84% 4.9%; /* Dark text for contrast with new accent */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -66,9 +66,13 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    /* Update dark mode primary, secondary, accent if they should also use institutional colors */
+    /* For now, primary is light, secondary and accent are dark grays */
+    --primary: 210 40% 98%; /* This is light, if dark mode needs dark bg with light primary text from institutional */
     --primary-foreground: 222.2 47.4% 11.2%;
 
+    /* If dark mode should use institutional colors, they'd need dark mode variants */
+    /* For instance, a darker shade of #020cbc or a different color scheme */
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
 
@@ -88,7 +92,7 @@
     /* Dark mode sidebar (default for now, admin might always see light) */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 224.3 76.3% 48%; /* Example: brighter blue for active in dark */
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 0 0% 98%;
@@ -111,4 +115,3 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11"; /* Consistent font rendering */
   }
 }
-
