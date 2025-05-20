@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import MainLayout from "./components/MainLayout"; // Import the MainLayout
+import AgentsPage from "./pages/AgentsPage"; // Adicionar import da nova página
 
 const queryClient = new QueryClient();
 
@@ -77,7 +77,7 @@ const App = () => (
             <Route path="/conversations" element={<PlaceholderPage title="Conversas (Legado)" />} />
             <Route path="/templates" element={<PlaceholderPage title="Templates (Legado)" />} />
             <Route path="/reports" element={<PlaceholderPage title="Relatórios (Legado)" />} />
-            <Route path="/agents" element={<PlaceholderPage title="Agentes (Legado)" />} />
+            <Route path="/agents" element={<AgentsPage />} /> {/* <<< Alterado aqui */}
             <Route path="/settings" element={<PlaceholderPage title="Configurações (Legado)" />} />
           </Route>
           
@@ -90,4 +90,3 @@ const App = () => (
 );
 
 export default App;
-
