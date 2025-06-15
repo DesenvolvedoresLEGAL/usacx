@@ -1,4 +1,3 @@
-
 import React from "react"; // Added React for useState if needed, not needed for uncontrolled
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -62,6 +61,13 @@ const menuGroups: MenuGroup[] = [
     ],
   },
   {
+    groupTitle: "Inteligência Artificial",
+    items: [
+      { title: "Chatbot", href: "/ia/chatbot", icon: Icons.messageSquare },
+      { title: "Machine Learning", href: "/ia/machine-learning", icon: Icons.barChart2 },
+    ],
+  },
+  {
     groupTitle: "Acesso",
     items: [
       { title: "Agentes", href: "/acesso/agentes", icon: Icons.users },
@@ -84,6 +90,7 @@ const menuGroups: MenuGroup[] = [
       { title: "Anexos", href: "/configuracoes/anexos", icon: Icons.paperclip },
       { title: "SLAs", href: "/configuracoes/slas", icon: Icons.timer },
       { title: "Prioridades", href: "/configuracoes/prioridades", icon: Icons.alertTriangle },
+      { title: "API", href: "/configuracoes/api", icon: Icons.settings, isBlue: true },
     ],
   },
   {
@@ -118,8 +125,7 @@ export function AppSidebar() {
                   <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  {/* Margin and padding adjustments for sub-menu items might be needed for visual hierarchy */}
-                  <SidebarGroupContent className="pt-1"> {/* Added pt-1 for spacing */}
+                  <SidebarGroupContent className="pt-1">
                     <SidebarMenu>
                       {group.items.map((item) => (
                         <SidebarMenuItem key={item.title}>
@@ -137,6 +143,11 @@ export function AppSidebar() {
                             >
                               <item.icon className="mr-2 h-5 w-5 shrink-0" />
                               <span className="truncate">{item.title}</span>
+                              {item.isBlue && (
+                                <span className="ml-2 px-2 py-0.5 bg-blue-600 text-white rounded text-xs font-bold animate-pulse">
+                                  BLUE
+                                </span>
+                              )}
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -146,7 +157,6 @@ export function AppSidebar() {
                 </CollapsibleContent>
               </Collapsible>
             ) : (
-              // For groups without a title (like the first Dashboard item)
               <SidebarGroupContent>
                 <SidebarMenu>
                   {group.items.map((item) => (
