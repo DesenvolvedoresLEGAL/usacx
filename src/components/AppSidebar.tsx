@@ -27,6 +27,7 @@ interface MenuItem {
   href: string;
   icon: React.ElementType;
   isBeta?: boolean; // Optional beta tag
+  isBlue?: boolean; // Optional blue badge (e.g., for API menu item)
 }
 
 interface MenuGroup {
