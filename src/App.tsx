@@ -14,6 +14,7 @@ import AgentsManagementPage from "./pages/AgentsManagementPage";
 import SettingsPage from "./pages/SettingsPage";
 import AgentsPage from "./pages/AgentsPage";
 import ChannelsManagementPage from "./pages/ChannelsManagementPage";
+import ReportAttendancesPage from "./pages/ReportAttendancesPage";
 
 const queryClient = new QueryClient();
 
@@ -48,7 +49,7 @@ const App = () => (
             <Route path="/gestao/agentes" element={<AgentsManagementPage />} />
             <Route path="/gestao/canais" element={<ChannelsManagementPage />} />
             {/* Relatórios */}
-            <Route path="/relatorios/atendimentos" element={<PlaceholderPage title="Relatórios - Atendimentos" />} />
+            <Route path="/relatorios/atendimentos" element={<ReportAttendancesPage />} />
             <Route path="/relatorios/auditoria" element={<PlaceholderPage title="Relatórios - Auditoria" />} />
             <Route path="/relatorios/clientes" element={<PlaceholderPage title="Relatórios - Clientes" />} />
             <Route path="/relatorios/avaliacoes" element={<PlaceholderPage title="Relatórios - Avaliações" />} />
