@@ -8,9 +8,10 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
-import MainLayout from "./components/MainLayout"; // Import the MainLayout
-import AgentsPage from "./pages/AgentsPage"; // Adicionar import da nova página
-import SettingsPage from "./pages/SettingsPage"; // Import da página de configurações
+import LiveManagementPage from "./pages/LiveManagementPage";
+import MainLayout from "./components/MainLayout";
+import AgentsPage from "./pages/AgentsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -39,7 +40,7 @@ const App = () => (
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             {/* Gestão */}
-            <Route path="/gestao/ao-vivo" element={<PlaceholderPage title="Gestão - Ao Vivo" />} />
+            <Route path="/gestao/ao-vivo" element={<LiveManagementPage />} />
             <Route path="/gestao/atendimentos" element={<PlaceholderPage title="Gestão - Atendimentos" />} />
             <Route path="/gestao/agentes" element={<PlaceholderPage title="Gestão - Agentes" />} />
             <Route path="/gestao/canais" element={<PlaceholderPage title="Gestão - Canais" />} />
@@ -80,7 +81,7 @@ const App = () => (
             <Route path="/templates" element={<PlaceholderPage title="Templates (Legado)" />} />
             <Route path="/reports" element={<PlaceholderPage title="Relatórios (Legado)" />} />
             <Route path="/agents" element={<AgentsPage />} />
-            <Route path="/settings" element={<SettingsPage />} /> {/* <<< Alterado aqui */}
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
