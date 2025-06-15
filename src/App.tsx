@@ -13,6 +13,7 @@ import MainLayout from "./components/MainLayout";
 import AgentsManagementPage from "./pages/AgentsManagementPage";
 import SettingsPage from "./pages/SettingsPage";
 import AgentsPage from "./pages/AgentsPage";
+import ChannelsManagementPage from "./pages/ChannelsManagementPage";
 
 const queryClient = new QueryClient();
 
@@ -45,7 +46,7 @@ const App = () => (
             <Route path="/gestao/atendimentos" element={<AttendanceManagementPage />} />
             {/* Novo: página completa de agentes */}
             <Route path="/gestao/agentes" element={<AgentsManagementPage />} />
-            <Route path="/gestao/canais" element={<PlaceholderPage title="Gestão - Canais" />} />
+            <Route path="/gestao/canais" element={<ChannelsManagementPage />} />
             {/* Relatórios */}
             <Route path="/relatorios/atendimentos" element={<PlaceholderPage title="Relatórios - Atendimentos" />} />
             <Route path="/relatorios/auditoria" element={<PlaceholderPage title="Relatórios - Auditoria" />} />
