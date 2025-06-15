@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Icons } from '@/components/icons'; // Assuming Icons.logo is Zapify's logo
+import { Icons } from '@/components/icons'; // Assuming Icons.logo is Ping's logo
 import {
   Search,
   PlusCircle,
@@ -49,7 +48,7 @@ const AgentsPage = () => {
       <header className="flex items-center justify-between p-3 border-b bg-card text-card-foreground sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <Icons.logo className="h-7 w-7 text-primary" />
-          <span className="font-semibold text-md text-primary">ZAPIFY</span>
+          <span className="font-semibold text-md text-primary">PING</span>
           <span className="text-xs text-muted-foreground">{version}</span>
           <span className="ml-2 font-medium">Painel do Agente</span>
         </div>
@@ -212,4 +211,3 @@ const AgentsPage = () => {
 };
 
 export default AgentsPage;
-

@@ -1,3 +1,4 @@
+
 import React from "react"; // Added React for useState if needed, not needed for uncontrolled
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -104,7 +105,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="flex items-center space-x-2">
           <Icons.logo className="h-8 w-8 text-primary" />
-          <span className="font-semibold text-lg text-primary">ZAPIFY</span> {/* Updated logo text */}
+          <span className="font-semibold text-lg text-primary">PING</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="flex-grow">

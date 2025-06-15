@@ -23,7 +23,7 @@ const SettingsPage = () => {
     },
     profile: {
       name: "Admin User",
-      email: "admin@zapify.com",
+      email: "admin@ping.com",
       phone: "+55 11 99999-9999",
     },
     system: {
