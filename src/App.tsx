@@ -12,6 +12,7 @@ import AttendanceManagementPage from "./pages/AttendanceManagementPage";
 import MainLayout from "./components/MainLayout";
 import AgentsManagementPage from "./pages/AgentsManagementPage";
 import SettingsPage from "./pages/SettingsPage";
+import AgentsPage from "./pages/AgentsPage";
 
 const queryClient = new QueryClient();
 
