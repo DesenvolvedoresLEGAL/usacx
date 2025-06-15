@@ -67,7 +67,7 @@ export const LiveControlPanel = () => {
           <div className="flex items-center justify-between p-2 bg-red-50 rounded border-l-4 border-red-500">
             <div>
               <p className="text-sm font-medium text-red-800">Fila com muita espera</p>
-              <p className="text-xs text-red-600">4 clientes aguardando >10min</p>
+              <p className="text-xs text-red-600">4 clientes aguardando mais de 10min</p>
             </div>
             <Badge variant="destructive">Crítico</Badge>
           </div>
