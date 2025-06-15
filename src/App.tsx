@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import MainLayout from "./components/MainLayout"; // Import the MainLayout
 import AgentsPage from "./pages/AgentsPage"; // Adicionar import da nova página
+import SettingsPage from "./pages/SettingsPage"; // Import da página de configurações
 
 const queryClient = new QueryClient();
 
@@ -77,8 +79,8 @@ const App = () => (
             <Route path="/conversations" element={<PlaceholderPage title="Conversas (Legado)" />} />
             <Route path="/templates" element={<PlaceholderPage title="Templates (Legado)" />} />
             <Route path="/reports" element={<PlaceholderPage title="Relatórios (Legado)" />} />
-            <Route path="/agents" element={<AgentsPage />} /> {/* <<< Alterado aqui */}
-            <Route path="/settings" element={<PlaceholderPage title="Configurações (Legado)" />} />
+            <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/settings" element={<SettingsPage />} /> {/* <<< Alterado aqui */}
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
