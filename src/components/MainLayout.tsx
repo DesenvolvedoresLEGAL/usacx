@@ -17,7 +17,7 @@ import {
 const MainLayout = () => {
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full bg-secondary/50">
+      <div className="flex h-screen w-full">
         <AppSidebar />
         <main className="flex-1 flex flex-col overflow-hidden">
           <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0">
@@ -112,3 +112,4 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
+
