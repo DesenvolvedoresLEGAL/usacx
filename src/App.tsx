@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,7 +10,7 @@ import DashboardPage from "./pages/DashboardPage";
 import LiveManagementPage from "./pages/LiveManagementPage";
 import AttendanceManagementPage from "./pages/AttendanceManagementPage";
 import MainLayout from "./components/MainLayout";
-import AgentsPage from "./pages/AgentsPage";
+import AgentsManagementPage from "./pages/AgentsManagementPage";
 import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
@@ -43,7 +42,8 @@ const App = () => (
             {/* Gestão */}
             <Route path="/gestao/ao-vivo" element={<LiveManagementPage />} />
             <Route path="/gestao/atendimentos" element={<AttendanceManagementPage />} />
-            <Route path="/gestao/agentes" element={<PlaceholderPage title="Gestão - Agentes" />} />
+            {/* Novo: página completa de agentes */}
+            <Route path="/gestao/agentes" element={<AgentsManagementPage />} />
             <Route path="/gestao/canais" element={<PlaceholderPage title="Gestão - Canais" />} />
             {/* Relatórios */}
             <Route path="/relatorios/atendimentos" element={<PlaceholderPage title="Relatórios - Atendimentos" />} />
