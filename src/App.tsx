@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -20,6 +19,7 @@ import ReportAttendancesPage from "./pages/ReportAttendancesPage";
 import ReportClientsPage from "./pages/ReportClientsPage";
 import MachineLearningPage from "./pages/MachineLearningPage";
 import ChatbotPage from "./pages/ChatbotPage";
+import ReportAnalyticsPage from "./pages/ReportAnalyticsPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -60,11 +60,11 @@ const App = () => (
               {/* Relatórios */}
               <Route path="/relatorios/atendimentos" element={<ReportAttendancesPage />} />
               <Route path="/relatorios/auditoria" element={<ReportAuditPage />} />
-              <Route path="/relatorios/clientes" element={<PlaceholderPage title="Relatórios - Clientes" />} />
+              <Route path="/relatorios/clientes" element={<ReportClientsPage />} />
               <Route path="/relatorios/avaliacoes" element={<PlaceholderPage title="Relatórios - Avaliações" />} />
               <Route path="/relatorios/pausas" element={<PlaceholderPage title="Relatórios - Pausas" />} />
               <Route path="/relatorios/performance" element={<PlaceholderPage title="Relatórios - Performance" />} />
-              <Route path="/relatorios/analitico" element={<PlaceholderPage title="Relatórios - Analítico" />} />
+              <Route path="/relatorios/analitico" element={<ReportAnalyticsPage />} />
               <Route path="/relatorios/exportar" element={<PlaceholderPage title="Relatórios - Exportar" />} />
               {/* Inteligência Artificial */}
               <Route path="/ia/chatbot" element={<ChatbotPage />} />
