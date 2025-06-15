@@ -1,123 +1,121 @@
 
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { Icons } from "@/components/icons"; // Assuming Icons.clock, Icons.star, Icons.network are available or added
-import { MessageSquare, Users, Clock, BarChart2, ListChecks, Award, PieChartIcon } from "lucide-react"; // Added ListChecks, Award, PieChartIcon
+import { MetricCard } from "@/components/dashboard/MetricCard";
+import { AlertCard } from "@/components/dashboard/AlertCard";
+import { AttendanceChart } from "@/components/dashboard/AttendanceChart";
+import { ChannelChart } from "@/components/dashboard/ChannelChart";
+import { LiveActivityTable } from "@/components/dashboard/LiveActivityTable";
+import { 
+  MessageSquare, 
+  Users, 
+  Clock, 
+  TrendingUp, 
+  UserCheck, 
+  PhoneCall,
+  Star,
+  BarChart3
+} from "lucide-react";
 
 const DashboardPage = () => {
-  const dashboardCards = [
-    { 
-      title: "Atendimentos ao Vivo", 
-      icon: MessageSquare, 
-      color: "text-blue-500",
-      content: (
-        <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-          <li>Cliente A - Iniciado há 2m</li>
-          <li>Cliente B - Iniciado há 5m</li>
-          <li>Cliente C - Iniciado há 10m</li>
-          <li className="font-semibold">Ver todos...</li>
-        </ul>
-      )
-    },
-    { 
-      title: "Aguardando Atendimento", 
-      icon: Clock, 
-      color: "text-orange-500",
-      content: (
-        <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-          <li>Cliente X - Esperando há 3m</li>
-          <li>Cliente Y - Esperando há 7m</li>
-          <li>Cliente Z - Esperando há 12m</li>
-          <li className="font-semibold">Ver todos...</li>
-        </ul>
-      )
-    },
-    { 
-      title: "Atendimentos por Canal", 
-      icon: PieChartIcon, // Using PieChartIcon from lucide-react directly
-      color: "text-green-500",
-      content: (
-        <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-          <li>WhatsApp: 150</li>
-          <li>Chat Web: 80</li>
-          <li>Facebook Messenger: 45</li>
-          <li className="font-semibold">Ver detalhes...</li>
-        </ul>
-      )
-    },
-    { 
-      title: "Agentes Online", 
-      icon: Users, 
-      color: "text-teal-500",
-      content: (
-        <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-          <li>Agente 1 (3 ativos)</li>
-          <li>Agente 2 (5 ativos)</li>
-          <li>Agente 3 (2 ativos)</li>
-          <li className="font-semibold">Ver todos...</li>
-        </ul>
-      ) 
-    },
-    { 
-      title: "Agentes em Destaque", 
-      icon: Award, // Using Award from lucide-react directly
-      color: "text-purple-500",
-      content: (
-        <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-          <li>Dia: Agente X (15 atend.)</li>
-          <li>Semana: Agente Y (70 atend.)</li>
-          <li>Mês: Agente Z (250 atend.)</li>
-          <li className="font-semibold">Ver ranking completo...</li>
-        </ul>
-      )
-    },
-    { 
-      title: "Satisfação (CSAT/NPS)", 
-      icon: Icons.smile, // Assuming Icons.smile exists
-      color: "text-yellow-500",
-      content: (
-        <div className="text-sm text-muted-foreground space-y-1">
-          <p>CSAT: 92%</p>
-          <p>NPS: 75</p>
-          {/* <p>CES: 2.1</p> */}
-          <p className="font-semibold pt-1">Ver relatório detalhado...</p>
-        </div>
-      )
-    },
-  ];
-
   return (
-    <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {dashboardCards.map((card) => (
-          <Card key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-semibold">{card.title}</CardTitle>
-              <card.icon className={`h-5 w-5 ${card.color}`} />
-            </CardHeader>
-            <CardContent>
-              {card.content}
-            </CardContent>
-          </Card>
-        ))}
+    <div className="space-y-6 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard PING</h1>
+          <p className="text-muted-foreground">Visão geral do sistema de atendimento</p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm text-muted-foreground">Última atualização</p>
+          <p className="text-sm font-medium">{new Date().toLocaleTimeString('pt-BR')}</p>
+        </div>
       </div>
-      
-      {/* Reminder about Supabase */}
-      <Card className="bg-blue-50 border-blue-200 mt-8">
-        <CardHeader>
-          <CardTitle className="text-blue-700 text-lg">Próximos Passos: Backend e Dados Dinâmicos</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-blue-600">
-            Este painel agora reflete a estrutura solicitada com dados estáticos. Para funcionalidades completas,
-            como listas dinâmicas, métricas em tempo real e notificações,
-            será necessário integrar com o backend (FastAPI) e o banco de dados (Supabase).
-          </p>
-          <p className="text-sm text-blue-600 mt-2">
-            Lembre-se de conectar seu projeto Lovable ao Supabase para habilitar essas funcionalidades.
-            Você pode fazer isso clicando no botão verde do Supabase na interface do Lovable.
-          </p>
-        </CardContent>
-      </Card>
+
+      {/* Alertas em Destaque */}
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="md:col-span-2">
+          <AlertCard />
+        </div>
+        <MetricCard
+          title="SLA Atendimento"
+          value="87%"
+          change="-3% vs ontem"
+          changeType="negative"
+          icon={Clock}
+          description="Meta: 90%"
+        />
+      </div>
+
+      {/* Métricas Principais */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          title="Atendimentos Ativos"
+          value="23"
+          change="+15% vs média"
+          changeType="positive"
+          icon={MessageSquare}
+        />
+        <MetricCard
+          title="Agentes Online"
+          value="8"
+          change="2 ausentes"
+          changeType="neutral"
+          icon={Users}
+        />
+        <MetricCard
+          title="Tempo Médio Espera"
+          value="3m 45s"
+          change="+45s vs ontem"
+          changeType="negative"
+          icon={Clock}
+        />
+        <MetricCard
+          title="Taxa Resolução"
+          value="94%"
+          change="+2% vs semana"
+          changeType="positive"
+          icon={TrendingUp}
+        />
+      </div>
+
+      {/* Métricas Secundárias */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          title="Atendimentos Hoje"
+          value="342"
+          change="+28 vs ontem"
+          changeType="positive"
+          icon={BarChart3}
+        />
+        <MetricCard
+          title="Agentes Ativos"
+          value="6"
+          description="75% da equipe"
+          icon={UserCheck}
+        />
+        <MetricCard
+          title="Chamadas Perdidas"
+          value="4"
+          change="-2 vs média"
+          changeType="positive"
+          icon={PhoneCall}
+        />
+        <MetricCard
+          title="CSAT Médio"
+          value="4.7"
+          change="+0.2 vs semana"
+          changeType="positive"
+          icon={Star}
+        />
+      </div>
+
+      {/* Gráficos */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <AttendanceChart />
+        <ChannelChart />
+      </div>
+
+      {/* Tabela de Atividades */}
+      <LiveActivityTable />
     </div>
   );
 };
