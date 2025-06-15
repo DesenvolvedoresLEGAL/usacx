@@ -16,6 +16,7 @@ import SettingsPage from "./pages/SettingsPage";
 import AgentsPage from "./pages/AgentsPage";
 import ChannelsManagementPage from "./pages/ChannelsManagementPage";
 import ReportAttendancesPage from "./pages/ReportAttendancesPage";
+import MachineLearningPage from "./pages/MachineLearningPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -62,6 +63,9 @@ const App = () => (
               <Route path="/relatorios/performance" element={<PlaceholderPage title="Relatórios - Performance" />} />
               <Route path="/relatorios/analitico" element={<PlaceholderPage title="Relatórios - Analítico" />} />
               <Route path="/relatorios/exportar" element={<PlaceholderPage title="Relatórios - Exportar" />} />
+              {/* Inteligência Artificial */}
+              <Route path="/ia/chatbot" element={<PlaceholderPage title="IA - Chatbot" />} />
+              <Route path="/ia/machine-learning" element={<MachineLearningPage />} />
               {/* Acesso */}
               <Route path="/acesso/agentes" element={<PlaceholderPage title="Acesso - Agentes" />} />
               <Route path="/acesso/usuarios" element={<PlaceholderPage title="Acesso - Usuários" />} />
@@ -79,6 +83,7 @@ const App = () => (
               <Route path="/configuracoes/anexos" element={<PlaceholderPage title="Configurações - Anexos" />} />
               <Route path="/configuracoes/slas" element={<PlaceholderPage title="Configurações - SLAs" />} />
               <Route path="/configuracoes/prioridades" element={<PlaceholderPage title="Configurações - Prioridades" />} />
+              <Route path="/configuracoes/api" element={<PlaceholderPage title="Configurações - API" />} />
               {/* Ajuda */}
               <Route path="/ajuda/chat" element={<PlaceholderPage title="Ajuda - Chat" />} />
               <Route path="/ajuda/status" element={<PlaceholderPage title="Ajuda - Status" />} />
