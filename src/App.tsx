@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import LiveManagementPage from "./pages/LiveManagementPage";
+import AttendanceManagementPage from "./pages/AttendanceManagementPage";
 import MainLayout from "./components/MainLayout";
 import AgentsPage from "./pages/AgentsPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -41,7 +42,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardPage />} />
             {/* Gestão */}
             <Route path="/gestao/ao-vivo" element={<LiveManagementPage />} />
-            <Route path="/gestao/atendimentos" element={<PlaceholderPage title="Gestão - Atendimentos" />} />
+            <Route path="/gestao/atendimentos" element={<AttendanceManagementPage />} />
             <Route path="/gestao/agentes" element={<PlaceholderPage title="Gestão - Agentes" />} />
             <Route path="/gestao/canais" element={<PlaceholderPage title="Gestão - Canais" />} />
             {/* Relatórios */}
