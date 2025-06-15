@@ -50,7 +50,7 @@ const App = () => (
             <Route path="/gestao/canais" element={<ChannelsManagementPage />} />
             {/* Relatórios */}
             <Route path="/relatorios/atendimentos" element={<ReportAttendancesPage />} />
-            <Route path="/relatorios/auditoria" element={<PlaceholderPage title="Relatórios - Auditoria" />} />
+            <Route path="/relatorios/auditoria" element={<import("./pages/ReportAuditPage").then(m => m.default) />} />
             <Route path="/relatorios/clientes" element={<PlaceholderPage title="Relatórios - Clientes" />} />
             <Route path="/relatorios/avaliacoes" element={<PlaceholderPage title="Relatórios - Avaliações" />} />
             <Route path="/relatorios/pausas" element={<PlaceholderPage title="Relatórios - Pausas" />} />
