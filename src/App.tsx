@@ -37,6 +37,8 @@ const PlaceholderPage = ({ title }: { title: string }) => (
   </div>
 );
 
+const ReportEvaluationsPage = React.lazy(() => import("./pages/ReportEvaluationsPage"));
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -61,7 +63,7 @@ const App = () => (
               <Route path="/relatorios/atendimentos" element={<ReportAttendancesPage />} />
               <Route path="/relatorios/auditoria" element={<ReportAuditPage />} />
               <Route path="/relatorios/clientes" element={<ReportClientsPage />} />
-              <Route path="/relatorios/avaliacoes" element={<PlaceholderPage title="Relatórios - Avaliações" />} />
+              <Route path="/relatorios/avaliacoes" element={<ReportEvaluationsPage />} />
               <Route path="/relatorios/pausas" element={<PlaceholderPage title="Relatórios - Pausas" />} />
               <Route path="/relatorios/performance" element={<PlaceholderPage title="Relatórios - Performance" />} />
               <Route path="/relatorios/analitico" element={<ReportAnalyticsPage />} />
