@@ -14,10 +14,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Institutional Colors */
+    /* Institutional Colors - PING Brand */
     --legal-primary-hsl: 235 98% 37%; /* #020cbc */
-    --legal-secondary-hsl: 249 100% 59%; /* #4d2bfb */
-    --legal-accent-hsl: 180 100% 50%; /* #03f9ff */
+    --legal-secondary-hsl: 249 96% 58%; /* #4d2bfb */
+    --legal-accent-hsl: 184 100% 51%; /* #03f9ff */
 
     --legal-primary: hsl(var(--legal-primary-hsl));
     --legal-secondary: hsl(var(--legal-secondary-hsl));
@@ -26,14 +26,14 @@
     --primary: var(--legal-primary-hsl);
     --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: var(--legal-secondary-hsl); /* Updated to #4d2bfb */
-    --secondary-foreground: 0 0% 100%; /* White for contrast with new secondary */
+    --secondary: var(--legal-secondary-hsl);
+    --secondary-foreground: 0 0% 100%; /* White for contrast */
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: var(--legal-accent-hsl); /* Updated to #03f9ff */
-    --accent-foreground: 222.2 84% 4.9%; /* Dark text for contrast with new accent */
+    --accent: var(--legal-accent-hsl);
+    --accent-foreground: 222.2 84% 4.9%; /* Dark text for contrast */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -44,19 +44,18 @@
 
     --radius: 0.5rem;
 
-    /* Sidebar variables for white background and institutional colors */
+    /* Sidebar variables using PING brand colors */
     --sidebar-background: 0 0% 100%; /* White */
     --sidebar-foreground: var(--legal-primary-hsl); /* Text color: #020cbc */
-    --sidebar-primary: 240 4.8% 95.9%; /* Active/Hover background: Light gray */
-    --sidebar-primary-foreground: var(--legal-primary-hsl); /* Active/Hover text color: #020cbc */
-    --sidebar-accent: 240 4.8% 92.9%; /* General accent/hover background for items */
-    --sidebar-accent-foreground: var(--legal-primary-hsl); /* General accent/hover text color */
+    --sidebar-primary: var(--legal-accent-hsl); /* Active/Hover background: #03f9ff */
+    --sidebar-primary-foreground: var(--legal-primary-hsl); /* Active/Hover text: #020cbc */
+    --sidebar-accent: 240 4.8% 92.9%; /* Light gray for subtle hover */
+    --sidebar-accent-foreground: var(--legal-primary-hsl); /* Accent text color */
     --sidebar-border: 214.3 31.8% 91.4%; /* Light gray border */
     --sidebar-ring: var(--legal-primary-hsl);
   }
 
   .dark {
-    /* Keeping default dark mode for now, can be adjusted later if needed */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -66,20 +65,17 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Update dark mode primary, secondary, accent if they should also use institutional colors */
-    /* For now, primary is light, secondary and accent are dark grays */
-    --primary: 210 40% 98%; /* This is light, if dark mode needs dark bg with light primary text from institutional */
+    /* Dark mode using PING brand colors */
+    --primary: var(--legal-accent-hsl); /* Bright accent for dark mode */
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    /* If dark mode should use institutional colors, they'd need dark mode variants */
-    /* For instance, a darker shade of #020cbc or a different color scheme */
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: var(--legal-secondary-hsl); /* Secondary brand color */
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: var(--legal-primary-hsl); /* Primary brand color for accent */
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -87,17 +83,17 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: var(--legal-accent-hsl);
 
-    /* Dark mode sidebar (default for now, admin might always see light) */
+    /* Dark mode sidebar with brand colors */
     --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 224.3 76.3% 48%; /* Example: brighter blue for active in dark */
+    --sidebar-foreground: var(--legal-accent-hsl);
+    --sidebar-primary: var(--legal-secondary-hsl);
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-accent-foreground: var(--legal-accent-hsl);
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: var(--legal-accent-hsl);
   }
 }
 
@@ -111,7 +107,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans; /* Apply new default font */
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11"; /* Consistent font rendering */
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }

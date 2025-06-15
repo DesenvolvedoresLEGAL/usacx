@@ -26,11 +26,11 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))', // Updated to #020cbc via CSS var
+					DEFAULT: 'hsl(var(--primary))', /* #020cbc */
 					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
+					DEFAULT: 'hsl(var(--secondary))', /* #4d2bfb */
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
@@ -42,7 +42,7 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
+					DEFAULT: 'hsl(var(--accent))', /* #03f9ff */
 					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
@@ -53,10 +53,14 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-        // Institutional Colors
-        'legal-primary': 'hsl(var(--legal-primary))', // #020cbc
-        'legal-secondary': 'hsl(var(--legal-secondary))', // #4d2bfb
-        'legal-accent': 'hsl(var(--legal-accent))', // #03f9ff
+        // PING Brand Colors
+        'ping-primary': '#020cbc',
+        'ping-secondary': '#4d2bfb', 
+        'ping-accent': '#03f9ff',
+        // Legacy naming for backward compatibility
+        'legal-primary': '#020cbc',
+        'legal-secondary': '#4d2bfb',
+        'legal-accent': '#03f9ff',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -105,4 +109,3 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-
