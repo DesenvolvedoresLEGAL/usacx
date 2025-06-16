@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -22,6 +21,7 @@ import MachineLearningPage from "./pages/MachineLearningPage";
 import ChatbotPage from "./pages/ChatbotPage";
 import ReportAnalyticsPage from "./pages/ReportAnalyticsPage";
 import ReportPerformancePage from "./pages/ReportPerformancePage";
+import SettingsApiPage from "./pages/SettingsApiPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -93,7 +93,7 @@ const App = () => (
               <Route path="/configuracoes/anexos" element={<PlaceholderPage title="Configurações - Anexos" />} />
               <Route path="/configuracoes/slas" element={<PlaceholderPage title="Configurações - SLAs" />} />
               <Route path="/configuracoes/prioridades" element={<PlaceholderPage title="Configurações - Prioridades" />} />
-              <Route path="/configuracoes/api" element={<PlaceholderPage title="Configurações - API" />} />
+              <Route path="/configuracoes/api" element={<SettingsApiPage />} />
               {/* Ajuda */}
               <Route path="/ajuda/chat" element={<PlaceholderPage title="Ajuda - Chat" />} />
               <Route path="/ajuda/status" element={<PlaceholderPage title="Ajuda - Status" />} />
