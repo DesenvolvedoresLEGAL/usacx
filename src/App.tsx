@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -26,6 +27,9 @@ const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
 
 // Lazy load the breaks report page
 const ReportBreaksPage = React.lazy(() => import("./pages/ReportBreaksPage"));
+
+// Lazy load the performance report page
+const ReportPerformancePage = React.lazy(() => import("./pages/ReportPerformancePage"));
 
 const queryClient = new QueryClient();
 
@@ -68,7 +72,7 @@ const App = () => (
               <Route path="/relatorios/clientes" element={<ReportClientsPage />} />
               <Route path="/relatorios/avaliacoes" element={<ReportEvaluationsPage />} />
               <Route path="/relatorios/pausas" element={<ReportBreaksPage />} />
-              <Route path="/relatorios/performance" element={<PlaceholderPage title="Relatórios - Performance" />} />
+              <Route path="/relatorios/performance" element={<ReportPerformancePage />} />
               <Route path="/relatorios/analitico" element={<ReportAnalyticsPage />} />
               <Route path="/relatorios/exportar" element={<PlaceholderPage title="Relatórios - Exportar" />} />
               {/* Inteligência Artificial */}
