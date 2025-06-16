@@ -21,15 +21,13 @@ import ReportClientsPage from "./pages/ReportClientsPage";
 import MachineLearningPage from "./pages/MachineLearningPage";
 import ChatbotPage from "./pages/ChatbotPage";
 import ReportAnalyticsPage from "./pages/ReportAnalyticsPage";
+import ReportPerformancePage from "./pages/ReportPerformancePage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
 
 // Lazy load the breaks report page
 const ReportBreaksPage = React.lazy(() => import("./pages/ReportBreaksPage"));
-
-// Lazy load the performance report page
-const ReportPerformancePage = React.lazy(() => import("./pages/ReportPerformancePage"));
 
 const queryClient = new QueryClient();
 
