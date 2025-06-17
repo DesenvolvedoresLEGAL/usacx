@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -25,6 +24,7 @@ import ReportPerformancePage from "./pages/ReportPerformancePage";
 import SettingsApiPage from "./pages/SettingsApiPage";
 import ReportExportPage from "./pages/ReportExportPage";
 import AccessAgentsPage from "./pages/AccessAgentsPage";
+import AccessUsersPage from "./pages/AccessUsersPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -81,7 +81,7 @@ const App = () => (
               <Route path="/ia/machine-learning" element={<MachineLearningPage />} />
               {/* Acesso */}
               <Route path="/acesso/agentes" element={<AccessAgentsPage />} />
-              <Route path="/acesso/usuarios" element={<PlaceholderPage title="Acesso - Usuários" />} />
+              <Route path="/acesso/usuarios" element={<AccessUsersPage />} />
               <Route path="/acesso/logs" element={<PlaceholderPage title="Acesso - Logs de Acesso" />} />
               {/* Configurações */}
               <Route path="/configuracoes/agentes" element={<PlaceholderPage title="Configurações - Agentes" />} />
