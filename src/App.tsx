@@ -34,6 +34,9 @@ import SettingsTagsPage from "./pages/SettingsTagsPage";
 import SettingsQueuesPage from "./pages/SettingsQueuesPage";
 import SettingsPausesPage from "./pages/SettingsPausesPage";
 import SettingsSurveysPage from "./pages/SettingsSurveysPage";
+import SettingsHashtagsPage from "./pages/SettingsHashtagsPage";
+import SettingsTemplatesPage from "./pages/SettingsTemplatesPage";
+import SettingsAttachmentsPage from "./pages/SettingsAttachmentsPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -100,9 +103,9 @@ const App = () => (
               <Route path="/configuracoes/filas" element={<SettingsQueuesPage />} />
               <Route path="/configuracoes/pausas" element={<SettingsPausesPage />} />
               <Route path="/configuracoes/pesquisas" element={<SettingsSurveysPage />} />
-              <Route path="/configuracoes/hashtags" element={<PlaceholderPage title="Configurações - Hashtags" />} />
-              <Route path="/configuracoes/mensagens-prontas" element={<PlaceholderPage title="Configurações - Mensagens Prontas" />} />
-              <Route path="/configuracoes/anexos" element={<PlaceholderPage title="Configurações - Anexos" />} />
+              <Route path="/configuracoes/hashtags" element={<SettingsHashtagsPage />} />
+              <Route path="/configuracoes/mensagens-prontas" element={<SettingsTemplatesPage />} />
+              <Route path="/configuracoes/anexos" element={<SettingsAttachmentsPage />} />
               <Route path="/configuracoes/slas" element={<PlaceholderPage title="Configurações - SLAs" />} />
               <Route path="/configuracoes/prioridades" element={<PlaceholderPage title="Configurações - Prioridades" />} />
               <Route path="/configuracoes/api" element={<SettingsApiPage />} />
