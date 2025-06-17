@@ -27,6 +27,7 @@ import ReportExportPage from "./pages/ReportExportPage";
 import AccessAgentsPage from "./pages/AccessAgentsPage";
 import AccessUsersPage from "./pages/AccessUsersPage";
 import AccessLogsPage from "./pages/AccessLogsPage";
+import SettingsAgentsPage from "./pages/SettingsAgentsPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -86,7 +87,7 @@ const App = () => (
               <Route path="/acesso/usuarios" element={<AccessUsersPage />} />
               <Route path="/acesso/logs" element={<AccessLogsPage />} />
               {/* Configurações */}
-              <Route path="/configuracoes/agentes" element={<PlaceholderPage title="Configurações - Agentes" />} />
+              <Route path="/configuracoes/agentes" element={<SettingsAgentsPage />} />
               <Route path="/configuracoes/bots" element={<PlaceholderPage title="Configurações - Bots" />} />
               <Route path="/configuracoes/clientes" element={<PlaceholderPage title="Configurações - Clientes" />} />
               <Route path="/configuracoes/etiquetas" element={<PlaceholderPage title="Configurações - Etiquetas" />} />
