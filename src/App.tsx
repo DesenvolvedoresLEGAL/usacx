@@ -29,6 +29,8 @@ import AccessLogsPage from "./pages/AccessLogsPage";
 import SettingsAgentsPage from "./pages/SettingsAgentsPage";
 import SettingsBotPage from "./pages/SettingsBotPage";
 import SettingsClientsPage from "./pages/SettingsClientsPage";
+import SettingsTagsPage from "./pages/SettingsTagsPage";
+import SettingsQueuesPage from "./pages/SettingsQueuesPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -91,8 +93,8 @@ const App = () => (
               <Route path="/configuracoes/agentes" element={<SettingsAgentsPage />} />
               <Route path="/configuracoes/bots" element={<SettingsBotPage />} />
               <Route path="/configuracoes/clientes" element={<SettingsClientsPage />} />
-              <Route path="/configuracoes/etiquetas" element={<PlaceholderPage title="Configurações - Etiquetas" />} />
-              <Route path="/configuracoes/filas" element={<PlaceholderPage title="Configurações - Filas de Atendimento" />} />
+              <Route path="/configuracoes/etiquetas" element={<SettingsTagsPage />} />
+              <Route path="/configuracoes/filas" element={<SettingsQueuesPage />} />
               <Route path="/configuracoes/pausas" element={<PlaceholderPage title="Configurações - Pausas" />} />
               <Route path="/configuracoes/csat" element={<PlaceholderPage title="Configurações - CSAT" />} />
               <Route path="/configuracoes/hashtags" element={<PlaceholderPage title="Configurações - Hashtags" />} />
