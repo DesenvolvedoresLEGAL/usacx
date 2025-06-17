@@ -79,9 +79,9 @@ const mockLogs: AccessLog[] = [
 
 const AccessLogsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState("");
-  const [selectedAction, setSelectedAction] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedUser, setSelectedUser] = useState("all");
+  const [selectedAction, setSelectedAction] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
   const [dateRange, setDateRange] = useState<DateRange | null>(null);
   const [logs] = useState<AccessLog[]>(mockLogs);
 
@@ -91,9 +91,9 @@ const AccessLogsPage = () => {
       log.resource.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.ipAddress.includes(searchTerm);
     
-    const matchesUser = selectedUser === "" || log.user === selectedUser;
-    const matchesAction = selectedAction === "" || log.action === selectedAction;
-    const matchesStatus = selectedStatus === "" || log.status === selectedStatus;
+    const matchesUser = selectedUser === "all" || log.user === selectedUser;
+    const matchesAction = selectedAction === "all" || log.action === selectedAction;
+    const matchesStatus = selectedStatus === "all" || log.status === selectedStatus;
 
     return matchesSearch && matchesUser && matchesAction && matchesStatus;
   });
@@ -235,7 +235,7 @@ const AccessLogsPage = () => {
                 <SelectValue placeholder="Usuário" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os usuários</SelectItem>
+                <SelectItem value="all">Todos os usuários</SelectItem>
                 <SelectItem value="admin@empresa.com">admin@empresa.com</SelectItem>
                 <SelectItem value="agente01@empresa.com">agente01@empresa.com</SelectItem>
                 <SelectItem value="supervisor@empresa.com">supervisor@empresa.com</SelectItem>
@@ -247,7 +247,7 @@ const AccessLogsPage = () => {
                 <SelectValue placeholder="Ação" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas as ações</SelectItem>
+                <SelectItem value="all">Todas as ações</SelectItem>
                 <SelectItem value="Login">Login</SelectItem>
                 <SelectItem value="Logout">Logout</SelectItem>
                 <SelectItem value="View">Visualizar</SelectItem>
@@ -261,7 +261,7 @@ const AccessLogsPage = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os status</SelectItem>
+                <SelectItem value="all">Todos os status</SelectItem>
                 <SelectItem value="success">Sucesso</SelectItem>
                 <SelectItem value="failed">Falhou</SelectItem>
                 <SelectItem value="blocked">Bloqueado</SelectItem>
