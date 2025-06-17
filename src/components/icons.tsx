@@ -41,6 +41,10 @@ import {
   LayoutGrid, // Alternative for Gestão
   Network, // Alternative for Canais
   Package, // Alternative for Versão
+  Plus, // For adding new items
+  UserCheck, // For active users
+  Building, // For departments/companies
+  Target, // For goals/targets
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -94,7 +98,12 @@ export const Icons = {
   info: Info, // Status
   packageIcon: Package, // Versão (using Package as more generic)
   xOctagon: XOctagon, // Cancelamento
+
+  // Additional icons for SettingsAgentsPage
+  plus: Plus, // For adding new items
+  userCheck: UserCheck, // For active users
+  building: Building, // For departments/companies
+  target: Target, // For goals/targets
 };
 
 export default Icons;
-
