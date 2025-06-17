@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -28,6 +27,7 @@ import AccessAgentsPage from "./pages/AccessAgentsPage";
 import AccessUsersPage from "./pages/AccessUsersPage";
 import AccessLogsPage from "./pages/AccessLogsPage";
 import SettingsAgentsPage from "./pages/SettingsAgentsPage";
+import SettingsBotPage from "./pages/SettingsBotPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -88,7 +88,7 @@ const App = () => (
               <Route path="/acesso/logs" element={<AccessLogsPage />} />
               {/* Configurações */}
               <Route path="/configuracoes/agentes" element={<SettingsAgentsPage />} />
-              <Route path="/configuracoes/bots" element={<PlaceholderPage title="Configurações - Bots" />} />
+              <Route path="/configuracoes/bots" element={<SettingsBotPage />} />
               <Route path="/configuracoes/clientes" element={<PlaceholderPage title="Configurações - Clientes" />} />
               <Route path="/configuracoes/etiquetas" element={<PlaceholderPage title="Configurações - Etiquetas" />} />
               <Route path="/configuracoes/filas" element={<PlaceholderPage title="Configurações - Filas de Atendimento" />} />
