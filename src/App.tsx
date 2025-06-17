@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -31,6 +32,8 @@ import SettingsBotPage from "./pages/SettingsBotPage";
 import SettingsClientsPage from "./pages/SettingsClientsPage";
 import SettingsTagsPage from "./pages/SettingsTagsPage";
 import SettingsQueuesPage from "./pages/SettingsQueuesPage";
+import SettingsPausesPage from "./pages/SettingsPausesPage";
+import SettingsSurveysPage from "./pages/SettingsSurveysPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -95,8 +98,8 @@ const App = () => (
               <Route path="/configuracoes/clientes" element={<SettingsClientsPage />} />
               <Route path="/configuracoes/etiquetas" element={<SettingsTagsPage />} />
               <Route path="/configuracoes/filas" element={<SettingsQueuesPage />} />
-              <Route path="/configuracoes/pausas" element={<PlaceholderPage title="Configurações - Pausas" />} />
-              <Route path="/configuracoes/csat" element={<PlaceholderPage title="Configurações - CSAT" />} />
+              <Route path="/configuracoes/pausas" element={<SettingsPausesPage />} />
+              <Route path="/configuracoes/pesquisas" element={<SettingsSurveysPage />} />
               <Route path="/configuracoes/hashtags" element={<PlaceholderPage title="Configurações - Hashtags" />} />
               <Route path="/configuracoes/mensagens-prontas" element={<PlaceholderPage title="Configurações - Mensagens Prontas" />} />
               <Route path="/configuracoes/anexos" element={<PlaceholderPage title="Configurações - Anexos" />} />

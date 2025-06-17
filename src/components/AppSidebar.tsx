@@ -85,7 +85,7 @@ const menuGroups: MenuGroup[] = [
       { title: "Etiquetas", href: "/configuracoes/etiquetas", icon: Icons.tags },
       { title: "Filas de Atendimento", href: "/configuracoes/filas", icon: Icons.listOrdered },
       { title: "Pausas", href: "/configuracoes/pausas", icon: Icons.pauseCircle },
-      { title: "CSAT", href: "/configuracoes/csat", icon: Icons.smile },
+      { title: "Pesquisas", href: "/configuracoes/pesquisas", icon: Icons.smile },
       { title: "Hashtags", href: "/configuracoes/hashtags", icon: Icons.hash },
       { title: "Mensagens Prontas", href: "/configuracoes/mensagens-prontas", icon: Icons.messageSquarePlus },
       { title: "Anexos", href: "/configuracoes/anexos", icon: Icons.paperclip },
