@@ -24,6 +24,7 @@ import ReportAnalyticsPage from "./pages/ReportAnalyticsPage";
 import ReportPerformancePage from "./pages/ReportPerformancePage";
 import SettingsApiPage from "./pages/SettingsApiPage";
 import ReportExportPage from "./pages/ReportExportPage";
+import AccessAgentsPage from "./pages/AccessAgentsPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -79,7 +80,7 @@ const App = () => (
               <Route path="/ia/chatbot" element={<ChatbotPage />} />
               <Route path="/ia/machine-learning" element={<MachineLearningPage />} />
               {/* Acesso */}
-              <Route path="/acesso/agentes" element={<PlaceholderPage title="Acesso - Agentes" />} />
+              <Route path="/acesso/agentes" element={<AccessAgentsPage />} />
               <Route path="/acesso/usuarios" element={<PlaceholderPage title="Acesso - Usuários" />} />
               <Route path="/acesso/logs" element={<PlaceholderPage title="Acesso - Logs de Acesso" />} />
               {/* Configurações */}
