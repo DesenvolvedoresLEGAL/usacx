@@ -37,6 +37,12 @@ import SettingsSurveysPage from "./pages/SettingsSurveysPage";
 import SettingsHashtagsPage from "./pages/SettingsHashtagsPage";
 import SettingsTemplatesPage from "./pages/SettingsTemplatesPage";
 import SettingsAttachmentsPage from "./pages/SettingsAttachmentsPage";
+import SettingsSLAsPage from "./pages/SettingsSLAsPage";
+import SettingsPrioritiesPage from "./pages/SettingsPrioritiesPage";
+import HelpChatPage from "./pages/HelpChatPage";
+import HelpStatusPage from "./pages/HelpStatusPage";
+import HelpVersionPage from "./pages/HelpVersionPage";
+import HelpCancellationPage from "./pages/HelpCancellationPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -46,17 +52,7 @@ const ReportBreaksPage = React.lazy(() => import("./pages/ReportBreaksPage"));
 
 const queryClient = new QueryClient();
 
-// Placeholder for future pages, just to make sidebar links work without 404
-const PlaceholderPage = ({ title }: { title: string }) => (
-  <div className="p-4">
-    <h1 className="text-2xl font-bold">{title}</h1>
-    <p>Esta página está em construção.</p>
-    <p className="mt-4 text-sm text-muted-foreground">
-      Conteúdo para a página <span className="font-semibold">{title}</span> será adicionado em breve.
-    </p>
-  </div>
-);
-
+// Lazy load the evaluations report page
 const ReportEvaluationsPage = React.lazy(() => import("./pages/ReportEvaluationsPage"));
 
 const App = () => (
@@ -76,7 +72,6 @@ const App = () => (
               {/* Gestão */}
               <Route path="/gestao/ao-vivo" element={<LiveManagementPage />} />
               <Route path="/gestao/atendimentos" element={<AttendanceManagementPage />} />
-              {/* Novo: página completa de agentes */}
               <Route path="/gestao/agentes" element={<AgentsManagementPage />} />
               <Route path="/gestao/canais" element={<ChannelsManagementPage />} />
               {/* Relatórios */}
@@ -106,19 +101,19 @@ const App = () => (
               <Route path="/configuracoes/hashtags" element={<SettingsHashtagsPage />} />
               <Route path="/configuracoes/mensagens-prontas" element={<SettingsTemplatesPage />} />
               <Route path="/configuracoes/anexos" element={<SettingsAttachmentsPage />} />
-              <Route path="/configuracoes/slas" element={<PlaceholderPage title="Configurações - SLAs" />} />
-              <Route path="/configuracoes/prioridades" element={<PlaceholderPage title="Configurações - Prioridades" />} />
+              <Route path="/configuracoes/slas" element={<SettingsSLAsPage />} />
+              <Route path="/configuracoes/prioridades" element={<SettingsPrioritiesPage />} />
               <Route path="/configuracoes/api" element={<SettingsApiPage />} />
               {/* Ajuda */}
-              <Route path="/ajuda/chat" element={<PlaceholderPage title="Ajuda - Chat" />} />
-              <Route path="/ajuda/status" element={<PlaceholderPage title="Ajuda - Status" />} />
-              <Route path="/ajuda/versao" element={<PlaceholderPage title="Ajuda - Versão" />} />
-              <Route path="/ajuda/cancelamento" element={<PlaceholderPage title="Ajuda - Cancelamento" />} />
+              <Route path="/ajuda/chat" element={<HelpChatPage />} />
+              <Route path="/ajuda/status" element={<HelpStatusPage />} />
+              <Route path="/ajuda/versao" element={<HelpVersionPage />} />
+              <Route path="/ajuda/cancelamento" element={<HelpCancellationPage />} />
 
               {/* Old placeholder routes, can be removed if all are covered by new structure */}
-              <Route path="/conversations" element={<PlaceholderPage title="Conversas (Legado)" />} />
-              <Route path="/templates" element={<PlaceholderPage title="Templates (Legado)" />} />
-              <Route path="/reports" element={<PlaceholderPage title="Relatórios (Legado)" />} />
+              <Route path="/conversations" element={<div className="p-4"><h1>Conversas (Legado)</h1></div>} />
+              <Route path="/templates" element={<div className="p-4"><h1>Templates (Legado)</h1></div>} />
+              <Route path="/reports" element={<div className="p-4"><h1>Relatórios (Legado)</h1></div>} />
               <Route path="/agents" element={<AgentsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
