@@ -248,7 +248,7 @@ export default function HelpCancellationPage() {
                       <Checkbox 
                         id="confirmation"
                         checked={confirmationChecked}
-                        onCheckedChange={setConfirmationChecked}
+                        onCheckedChange={(checked) => setConfirmationChecked(checked === true)}
                       />
                       <Label htmlFor="confirmation" className="text-sm">
                         Eu entendo e confirmo que desejo cancelar minha assinatura
