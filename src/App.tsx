@@ -43,6 +43,7 @@ import HelpChatPage from "./pages/HelpChatPage";
 import HelpStatusPage from "./pages/HelpStatusPage";
 import HelpVersionPage from "./pages/HelpVersionPage";
 import HelpCancellationPage from "./pages/HelpCancellationPage";
+import ConversationsPage from "./pages/ConversationsPage";
 
 // Lazy load the audit report page
 const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
@@ -65,6 +66,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/conversations" element={<ConversationsPage />} />
             
             {/* Routes that use MainLayout */}
             <Route element={<MainLayout />}>
@@ -111,7 +113,6 @@ const App = () => (
               <Route path="/ajuda/cancelamento" element={<HelpCancellationPage />} />
 
               {/* Old placeholder routes, can be removed if all are covered by new structure */}
-              <Route path="/conversations" element={<div className="p-4"><h1>Conversas (Legado)</h1></div>} />
               <Route path="/templates" element={<div className="p-4"><h1>Templates (Legado)</h1></div>} />
               <Route path="/reports" element={<div className="p-4"><h1>Relatórios (Legado)</h1></div>} />
               <Route path="/agents" element={<AgentsPage />} />
