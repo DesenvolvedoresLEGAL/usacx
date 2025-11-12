@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,7 @@ export default function HelpCancellationPage() {
     "Mudança para outro fornecedor",
     "Não precisamos mais do serviço",
     "Problemas com suporte",
-    "Outros"
+    "Outros",
   ];
 
   const currentPlan = {
@@ -33,7 +32,7 @@ export default function HelpCancellationPage() {
     price: "R$ 299,00/mês",
     users: "25 usuários",
     nextBilling: "15 de Fevereiro, 2024",
-    contract: "Mensal"
+    contract: "Mensal",
   };
 
   const alternatives = [
@@ -41,20 +40,20 @@ export default function HelpCancellationPage() {
       title: "Mudar para Plano Básico",
       description: "Reduzir custos mantendo funcionalidades essenciais",
       price: "R$ 99,00/mês",
-      savings: "Economize R$ 200,00/mês"
+      savings: "Economize R$ 200,00/mês",
     },
     {
       title: "Pausar Temporariamente",
       description: "Suspender a conta por até 3 meses sem perder dados",
       price: "Gratuito",
-      savings: "Economize durante a pausa"
+      savings: "Economize durante a pausa",
     },
     {
       title: "Desconto Especial",
       description: "30% de desconto nos próximos 6 meses",
       price: "R$ 209,30/mês",
-      savings: "Economize R$ 89,70/mês"
-    }
+      savings: "Economize R$ 89,70/mês",
+    },
   ];
 
   return (
@@ -66,9 +65,7 @@ export default function HelpCancellationPage() {
             <XOctagon className="w-6 h-6 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">Ajuda - Cancelamento</h1>
           </div>
-          <p className="text-muted-foreground">
-            Processo de cancelamento e alternativas disponíveis
-          </p>
+          <p className="text-muted-foreground">Processo de cancelamento e alternativas disponíveis</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
@@ -122,7 +119,8 @@ export default function HelpCancellationPage() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Antes de cancelar,</strong> considere as alternativas abaixo que podem atender melhor às suas necessidades.
+              <strong>Antes de cancelar,</strong> considere as alternativas abaixo que podem atender melhor às suas
+              necessidades.
             </AlertDescription>
           </Alert>
 
@@ -159,9 +157,7 @@ export default function HelpCancellationPage() {
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Falar com Especialista
                 </Button>
-                <Button variant="destructive">
-                  Continuar Cancelamento
-                </Button>
+                <Button variant="destructive">Continuar Cancelamento</Button>
               </div>
             </CardContent>
           </Card>
@@ -183,7 +179,9 @@ export default function HelpCancellationPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {reasons.map((reason) => (
-                          <SelectItem key={reason} value={reason}>{reason}</SelectItem>
+                          <SelectItem key={reason} value={reason}>
+                            {reason}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -203,17 +201,13 @@ export default function HelpCancellationPage() {
                   <Alert>
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
-                      <strong>Importante:</strong> Após o cancelamento, você terá acesso até {currentPlan.nextBilling}. 
+                      <strong>Importante:</strong> Após o cancelamento, você terá acesso até {currentPlan.nextBilling}.
                       Seus dados serão mantidos por 90 dias para possível reativação.
                     </AlertDescription>
                   </Alert>
 
                   <div className="flex gap-3">
-                    <Button 
-                      onClick={() => setCancellationStep(2)}
-                      disabled={!cancellationReason}
-                      className="flex-1"
-                    >
+                    <Button onClick={() => setCancellationStep(2)} disabled={!cancellationReason} className="flex-1">
                       Continuar
                     </Button>
                     <Button variant="outline" className="flex-1">
@@ -245,7 +239,7 @@ export default function HelpCancellationPage() {
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
+                      <Checkbox
                         id="confirmation"
                         checked={confirmationChecked}
                         onCheckedChange={(checked) => setConfirmationChecked(checked === true)}
@@ -257,7 +251,7 @@ export default function HelpCancellationPage() {
                   </div>
 
                   <div className="flex gap-3">
-                    <Button 
+                    <Button
                       onClick={() => setCancellationStep(3)}
                       disabled={!confirmationChecked}
                       variant="destructive"
@@ -265,11 +259,7 @@ export default function HelpCancellationPage() {
                     >
                       Confirmar Cancelamento
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setCancellationStep(1)}
-                      className="flex-1"
-                    >
+                    <Button variant="outline" onClick={() => setCancellationStep(1)} className="flex-1">
                       Voltar
                     </Button>
                   </div>
@@ -285,7 +275,7 @@ export default function HelpCancellationPage() {
                       Sua assinatura foi cancelada com sucesso. Você receberá um email de confirmação em breve.
                     </p>
                   </div>
-                  
+
                   <div className="border rounded-lg p-4">
                     <h4 className="font-medium mb-2">Próximos Passos:</h4>
                     <ul className="text-sm space-y-1 text-muted-foreground">
@@ -374,9 +364,7 @@ export default function HelpCancellationPage() {
                     <CardTitle className="text-lg">Configurações</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Backup de todas as configurações do sistema
-                    </p>
+                    <p className="text-sm text-muted-foreground mb-4">Backup de todas as configurações do sistema</p>
                     <Button className="w-full">
                       <Download className="w-4 h-4 mr-2" />
                       Baixar (JSON)
@@ -413,7 +401,7 @@ export default function HelpCancellationPage() {
                 <p className="text-sm text-muted-foreground">
                   Nossa equipe está aqui para ajudar com qualquer dúvida sobre o cancelamento.
                 </p>
-                
+
                 <div className="space-y-3">
                   <Button className="w-full justify-start">
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -425,7 +413,7 @@ export default function HelpCancellationPage() {
                   </Button>
                   <Button variant="outline" className="w-full justify-start">
                     <Mail className="w-4 h-4 mr-2" />
-                    Email: cancelamento@ping.com
+                    Email: cancelamento@humanoid-os.ai
                   </Button>
                 </div>
               </CardContent>
