@@ -1,19 +1,9 @@
-
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { AlertCard } from "@/components/dashboard/AlertCard";
 import { AttendanceChart } from "@/components/dashboard/AttendanceChart";
 import { ChannelChart } from "@/components/dashboard/ChannelChart";
 import { LiveActivityTable } from "@/components/dashboard/LiveActivityTable";
-import { 
-  MessageSquare, 
-  Users, 
-  Clock, 
-  TrendingUp, 
-  UserCheck, 
-  PhoneCall,
-  Star,
-  BarChart3
-} from "lucide-react";
+import { MessageSquare, Users, Clock, TrendingUp, UserCheck, PhoneCall, Star, BarChart3 } from "lucide-react";
 
 const DashboardPage = () => {
   return (
@@ -21,12 +11,12 @@ const DashboardPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard PING</h1>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard Ultimate SAC</h1>
           <p className="text-muted-foreground">Visão geral do sistema de atendimento</p>
         </div>
         <div className="text-right">
           <p className="text-sm text-muted-foreground">Última atualização</p>
-          <p className="text-sm font-medium">{new Date().toLocaleTimeString('pt-BR')}</p>
+          <p className="text-sm font-medium">{new Date().toLocaleTimeString("pt-BR")}</p>
         </div>
       </div>
 
@@ -54,13 +44,7 @@ const DashboardPage = () => {
           changeType="positive"
           icon={MessageSquare}
         />
-        <MetricCard
-          title="Agentes Online"
-          value="8"
-          change="2 ausentes"
-          changeType="neutral"
-          icon={Users}
-        />
+        <MetricCard title="Agentes Online" value="8" change="2 ausentes" changeType="neutral" icon={Users} />
         <MetricCard
           title="Tempo Médio Espera"
           value="3m 45s"
@@ -68,13 +52,7 @@ const DashboardPage = () => {
           changeType="negative"
           icon={Clock}
         />
-        <MetricCard
-          title="Taxa Resolução"
-          value="94%"
-          change="+2% vs semana"
-          changeType="positive"
-          icon={TrendingUp}
-        />
+        <MetricCard title="Taxa Resolução" value="94%" change="+2% vs semana" changeType="positive" icon={TrendingUp} />
       </div>
 
       {/* Métricas Secundárias */}
@@ -86,26 +64,9 @@ const DashboardPage = () => {
           changeType="positive"
           icon={BarChart3}
         />
-        <MetricCard
-          title="Agentes Ativos"
-          value="6"
-          description="75% da equipe"
-          icon={UserCheck}
-        />
-        <MetricCard
-          title="Chamadas Perdidas"
-          value="4"
-          change="-2 vs média"
-          changeType="positive"
-          icon={PhoneCall}
-        />
-        <MetricCard
-          title="CSAT Médio"
-          value="4.7"
-          change="+0.2 vs semana"
-          changeType="positive"
-          icon={Star}
-        />
+        <MetricCard title="Agentes Ativos" value="6" description="75% da equipe" icon={UserCheck} />
+        <MetricCard title="Chamadas Perdidas" value="4" change="-2 vs média" changeType="positive" icon={PhoneCall} />
+        <MetricCard title="CSAT Médio" value="4.7" change="+0.2 vs semana" changeType="positive" icon={Star} />
       </div>
 
       {/* Gráficos */}
