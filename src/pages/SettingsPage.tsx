@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, User, Shield, Database, MessageSquare, Palette } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -21,14 +20,14 @@ const SettingsPage = () => {
     },
     profile: {
       name: "Admin User",
-      email: "admin@ping.com",
+      email: "admin@humanoid-os.ai",
       phone: "+55 11 99999-9999",
     },
     system: {
       language: "pt-BR",
       timezone: "America/Sao_Paulo",
       autoLogout: "30",
-    }
+    },
   });
 
   const handleSave = (section: string) => {
@@ -76,7 +75,7 @@ const SettingsPage = () => {
         <TabsContent value="profile" className="space-y-6">
           <ProfileTab
             settings={settings.profile}
-            onSettingsChange={(profileSettings) => setSettings(prev => ({ ...prev, profile: profileSettings }))}
+            onSettingsChange={(profileSettings) => setSettings((prev) => ({ ...prev, profile: profileSettings }))}
             onSave={() => handleSave("perfil")}
           />
         </TabsContent>
@@ -84,7 +83,9 @@ const SettingsPage = () => {
         <TabsContent value="notifications" className="space-y-6">
           <NotificationsTab
             settings={settings.notifications}
-            onSettingsChange={(notificationSettings) => setSettings(prev => ({ ...prev, notifications: notificationSettings }))}
+            onSettingsChange={(notificationSettings) =>
+              setSettings((prev) => ({ ...prev, notifications: notificationSettings }))
+            }
             onSave={() => handleSave("notificações")}
           />
         </TabsContent>
@@ -96,7 +97,7 @@ const SettingsPage = () => {
         <TabsContent value="system" className="space-y-6">
           <SystemTab
             settings={settings.system}
-            onSettingsChange={(systemSettings) => setSettings(prev => ({ ...prev, system: systemSettings }))}
+            onSettingsChange={(systemSettings) => setSettings((prev) => ({ ...prev, system: systemSettings }))}
             onSave={() => handleSave("sistema")}
           />
         </TabsContent>
