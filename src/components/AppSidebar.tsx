@@ -1,10 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -28,15 +24,13 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <Link to="/dashboard" className="flex items-center space-x-2">
           <Icons.logo className="h-8 w-8 text-primary" />
-          <span className="text-lg font-semibold text-primary">PING</span>
+          <span className="text-lg font-semibold text-primary">USAC</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="flex-grow">
         {navigationGroups.map((group, groupIndex) => {
           const groupKey = group.groupTitle ?? `group-${groupIndex}`;
-          const isGroupActive = group.items.some((item) =>
-            location.pathname.startsWith(item.href)
-          );
+          const isGroupActive = group.items.some((item) => location.pathname.startsWith(item.href));
 
           if (group.groupTitle) {
             return (
@@ -56,10 +50,7 @@ export function AppSidebar() {
                               <SidebarMenuButton isActive={active} className="w-full" asChild>
                                 <Link
                                   to={item.href}
-                                  className={cn(
-                                    "flex h-full w-full items-center",
-                                    active && "font-medium"
-                                  )}
+                                  className={cn("flex h-full w-full items-center", active && "font-medium")}
                                 >
                                   <item.icon className="mr-2 h-5 w-5 shrink-0" />
                                   <span className="truncate">{item.title}</span>
@@ -92,10 +83,7 @@ export function AppSidebar() {
                         <SidebarMenuButton isActive={active} className="w-full" asChild>
                           <Link
                             to={item.href}
-                            className={cn(
-                              "flex h-full w-full items-center",
-                              active && "font-medium"
-                            )}
+                            className={cn("flex h-full w-full items-center", active && "font-medium")}
                           >
                             <item.icon className="mr-2 h-5 w-5 shrink-0" />
                             <span className="truncate">{item.title}</span>
