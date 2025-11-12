@@ -5,8 +5,8 @@ import { Paperclip, Smile, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ChatInputProps {
-  onSendMessage: (content: string) => void;
-  onUploadFile: (file: File) => void;
+  onSendMessage: (content: string) => void | Promise<void>;
+  onUploadFile: (file: File) => void | Promise<void>;
   disabled?: boolean;
 }
 

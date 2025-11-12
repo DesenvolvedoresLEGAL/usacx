@@ -1,58 +1,88 @@
-import { useState } from 'react';
-import { Message } from '@/types/conversations';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Message, MessageStatus, MessageType } from '@/types/conversations';
 import { useToast } from '@/hooks/use-toast';
+
+type SendMessageType = Exclude<MessageType, 'sticker'>;
+
+const getFileMessageType = (file: File): SendMessageType => {
+  if (file.type.startsWith('image/')) return 'image';
+  if (file.type.startsWith('audio/')) return 'audio';
+  if (file.type.startsWith('video/')) return 'video';
+  return 'document';
+};
 
 export function useMessages(conversationId: string | null, initialMessages: Message[] = []) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [isTyping, setIsTyping] = useState(false);
+  const timeoutIds = useRef<number[]>([]);
   const { toast } = useToast();
 
-  const sendMessage = async (content: string, type: 'text' | 'image' | 'audio' | 'video' | 'document' = 'text') => {
-    if (!conversationId || !content.trim()) return;
+  const clearScheduledUpdates = useCallback(() => {
+    timeoutIds.current.forEach((timeout) => clearTimeout(timeout));
+    timeoutIds.current = [];
+  }, []);
 
-    const newMessage: Message = {
-      id: `m-${Date.now()}`,
-      conversationId,
-      type,
-      content: content.trim(),
-      sender: 'agent',
-      timestamp: new Date(),
-      status: 'sending',
-    };
+  useEffect(() => clearScheduledUpdates, [clearScheduledUpdates]);
 
-    setMessages(prev => [...prev, newMessage]);
+  const scheduleStatusUpdate = useCallback(
+    (messageId: string, status: MessageStatus, delay: number) => {
+      const timeout = window.setTimeout(() => {
+        setMessages((prev) =>
+          prev.map((msg) => (msg.id === messageId ? { ...msg, status } : msg))
+        );
+        timeoutIds.current = timeoutIds.current.filter((id) => id !== timeout);
+      }, delay);
 
-    // Simulate sending
-    setTimeout(() => {
-      setMessages(prev => prev.map(msg =>
-        msg.id === newMessage.id ? { ...msg, status: 'sent' as const } : msg
-      ));
-      
-      setTimeout(() => {
-        setMessages(prev => prev.map(msg =>
-          msg.id === newMessage.id ? { ...msg, status: 'delivered' as const } : msg
-        ));
-      }, 500);
-    }, 500);
-  };
+      timeoutIds.current.push(timeout);
+    },
+    []
+  );
 
-  const uploadFile = async (file: File) => {
-    const fileType = file.type.startsWith('image/') ? 'image' :
-                     file.type.startsWith('audio/') ? 'audio' :
-                     file.type.startsWith('video/') ? 'video' : 'document';
+  const sendMessage = useCallback(
+    async (
+      content: string,
+      type: SendMessageType = 'text'
+    ) => {
+      if (!conversationId || !content.trim()) return;
 
-    toast({
-      title: "Arquivo enviado",
-      description: `${file.name} foi enviado com sucesso.`,
-    });
+      const trimmedContent = content.trim();
+      const newMessage: Message = {
+        id: `m-${Date.now()}`,
+        conversationId,
+        type,
+        content: trimmedContent,
+        sender: 'agent',
+        timestamp: new Date(),
+        status: 'sending',
+      };
 
-    await sendMessage(file.name, fileType);
-  };
+      setMessages((prev) => [...prev, newMessage]);
 
-  return {
-    messages,
-    sendMessage,
-    uploadFile,
-    isTyping,
-  };
+      scheduleStatusUpdate(newMessage.id, 'sent', 500);
+      scheduleStatusUpdate(newMessage.id, 'delivered', 1000);
+    },
+    [conversationId, scheduleStatusUpdate]
+  );
+
+  const uploadFile = useCallback(
+    async (file: File) => {
+      const fileType = getFileMessageType(file);
+
+      toast({
+        title: 'Arquivo enviado',
+        description: `${file.name} foi enviado com sucesso.`,
+      });
+
+      await sendMessage(file.name, fileType);
+    },
+    [sendMessage, toast]
+  );
+
+  return useMemo(
+    () => ({
+      messages,
+      sendMessage,
+      uploadFile,
+    }),
+    [messages, sendMessage, uploadFile]
+  );
 }
