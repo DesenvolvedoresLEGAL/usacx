@@ -1,8 +1,8 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Icons } from '@/components/icons'; // Assuming Icons.logo is Ping's logo
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Icons } from "@/components/icons"; // Assuming Icons.logo is USAC's logo
 import {
   Search,
   PlusCircle,
@@ -17,7 +17,7 @@ import {
   Settings,
   HelpCircleIcon,
   LogOut,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const AgentsPage = () => {
   // Placeholder data
@@ -48,7 +48,7 @@ const AgentsPage = () => {
       <header className="flex items-center justify-between p-3 border-b bg-card text-card-foreground sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <Icons.logo className="h-7 w-7 text-primary" />
-          <span className="font-semibold text-md text-primary">PING</span>
+          <span className="font-semibold text-md text-primary">USAC</span>
           <span className="text-xs text-muted-foreground">{version}</span>
           <span className="ml-2 font-medium">Painel do Agente</span>
         </div>
@@ -104,11 +104,7 @@ const AgentsPage = () => {
           <div className="p-3 border-b">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Buscar por nome, telefone, texto..."
-                className="pl-8 w-full"
-              />
+              <Input type="search" placeholder="Buscar por nome, telefone, texto..." className="pl-8 w-full" />
             </div>
             <div className="flex items-center justify-between mt-3 gap-1">
               <span className="text-sm text-muted-foreground">Ordenar por:</span>
@@ -174,7 +170,7 @@ const AgentsPage = () => {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Ações do Atendimento</CardTitle>
