@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Institutional Colors - PING Brand */
+    /* Institutional Colors - USAC Brand */
     --legal-primary-hsl: 235 98% 37%; /* #020cbc */
     --legal-secondary-hsl: 249 96% 58%; /* #4d2bfb */
     --legal-accent-hsl: 184 100% 51%; /* #03f9ff */
@@ -22,7 +21,7 @@
     --legal-primary: hsl(var(--legal-primary-hsl));
     --legal-secondary: hsl(var(--legal-secondary-hsl));
     --legal-accent: hsl(var(--legal-accent-hsl));
-    
+
     --primary: var(--legal-primary-hsl);
     --primary-foreground: 0 0% 100%; /* White */
 
@@ -44,7 +43,7 @@
 
     --radius: 0.5rem;
 
-    /* Sidebar variables using PING brand colors */
+    /* Sidebar variables using USAC brand colors */
     --sidebar-background: 0 0% 100%; /* White */
     --sidebar-foreground: var(--legal-primary-hsl); /* Text color: #020cbc */
     --sidebar-primary: var(--legal-accent-hsl); /* Active/Hover background: #03f9ff */
@@ -65,7 +64,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    /* Dark mode using PING brand colors */
+    /* Dark mode using USAC brand colors */
     --primary: var(--legal-accent-hsl); /* Bright accent for dark mode */
     --primary-foreground: 222.2 47.4% 11.2%;
 
@@ -98,7 +97,9 @@
 }
 
 @layer base {
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
     margin: 0;
     padding: 0;
