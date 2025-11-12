@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,22 +11,66 @@ export default function HelpChatPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const faqs = [
-    { id: 1, question: "Como criar um novo atendimento?", answer: "Para criar um novo atendimento, acesse o menu Gestão > Atendimentos e clique em 'Novo Atendimento'.", category: "Básico" },
-    { id: 2, question: "Como configurar notificações?", answer: "Acesse Configurações > Notificações para personalizar seus alertas.", category: "Configurações" },
-    { id: 3, question: "Como gerar relatórios?", answer: "Vá até o menu Relatórios e selecione o tipo de relatório desejado.", category: "Relatórios" },
-    { id: 4, question: "Como redefinir minha senha?", answer: "Clique em 'Esqueci minha senha' na tela de login.", category: "Conta" },
+    {
+      id: 1,
+      question: "Como criar um novo atendimento?",
+      answer: "Para criar um novo atendimento, acesse o menu Gestão > Atendimentos e clique em 'Novo Atendimento'.",
+      category: "Básico",
+    },
+    {
+      id: 2,
+      question: "Como configurar notificações?",
+      answer: "Acesse Configurações > Notificações para personalizar seus alertas.",
+      category: "Configurações",
+    },
+    {
+      id: 3,
+      question: "Como gerar relatórios?",
+      answer: "Vá até o menu Relatórios e selecione o tipo de relatório desejado.",
+      category: "Relatórios",
+    },
+    {
+      id: 4,
+      question: "Como redefinir minha senha?",
+      answer: "Clique em 'Esqueci minha senha' na tela de login.",
+      category: "Conta",
+    },
   ];
 
   const tickets = [
-    { id: "#12345", subject: "Problema com integração", status: "Em andamento", created: "2 horas atrás", priority: "Alta" },
-    { id: "#12344", subject: "Dúvida sobre relatórios", status: "Resolvido", created: "1 dia atrás", priority: "Média" },
-    { id: "#12343", subject: "Erro ao exportar dados", status: "Aguardando", created: "2 dias atrás", priority: "Baixa" },
+    {
+      id: "#12345",
+      subject: "Problema com integração",
+      status: "Em andamento",
+      created: "2 horas atrás",
+      priority: "Alta",
+    },
+    {
+      id: "#12344",
+      subject: "Dúvida sobre relatórios",
+      status: "Resolvido",
+      created: "1 dia atrás",
+      priority: "Média",
+    },
+    {
+      id: "#12343",
+      subject: "Erro ao exportar dados",
+      status: "Aguardando",
+      created: "2 dias atrás",
+      priority: "Baixa",
+    },
   ];
 
   const chatMessages = [
-    { id: 1, type: "bot", message: "Olá! Sou o assistente virtual do PING. Como posso ajudá-lo hoje?", time: "14:30" },
+    { id: 1, type: "bot", message: "Olá! Sou o assistente virtual do USAC. Como posso ajudá-lo hoje?", time: "14:30" },
     { id: 2, type: "user", message: "Preciso de ajuda para configurar as filas de atendimento", time: "14:32" },
-    { id: 3, type: "bot", message: "Claro! Vou te ajudar com a configuração de filas. Você pode acessar em Configurações > Filas de Atendimento. Precisa de alguma configuração específica?", time: "14:33" },
+    {
+      id: 3,
+      type: "bot",
+      message:
+        "Claro! Vou te ajudar com a configuração de filas. Você pode acessar em Configurações > Filas de Atendimento. Precisa de alguma configuração específica?",
+      time: "14:33",
+    },
   ];
 
   return (
@@ -39,9 +82,7 @@ export default function HelpChatPage() {
             <MessageSquare className="w-6 h-6 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">Ajuda - Chat</h1>
           </div>
-          <p className="text-muted-foreground">
-            Central de ajuda e suporte técnico
-          </p>
+          <p className="text-muted-foreground">Central de ajuda e suporte técnico</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
@@ -81,10 +122,7 @@ export default function HelpChatPage() {
                   {/* Messages */}
                   <div className="flex-1 p-4 space-y-4 overflow-y-auto">
                     {chatMessages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
-                      >
+                      <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
                         <div
                           className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                             msg.type === "user"
@@ -93,11 +131,7 @@ export default function HelpChatPage() {
                           }`}
                         >
                           <div className="flex items-center gap-2 mb-1">
-                            {msg.type === "bot" ? (
-                              <Bot className="w-4 h-4" />
-                            ) : (
-                              <User className="w-4 h-4" />
-                            )}
+                            {msg.type === "bot" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                             <span className="text-xs">{msg.time}</span>
                           </div>
                           <p className="text-sm">{msg.message}</p>
@@ -105,7 +139,7 @@ export default function HelpChatPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Input */}
                   <div className="border-t p-4">
                     <div className="flex gap-2">
@@ -198,8 +232,12 @@ export default function HelpChatPage() {
                 <CardContent>
                   <p className="text-muted-foreground">{faq.answer}</p>
                   <div className="flex gap-2 mt-4">
-                    <Button variant="outline" size="sm">Útil</Button>
-                    <Button variant="outline" size="sm">Não útil</Button>
+                    <Button variant="outline" size="sm">
+                      Útil
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Não útil
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -224,8 +262,8 @@ export default function HelpChatPage() {
                             ticket.status === "Resolvido"
                               ? "default"
                               : ticket.status === "Em andamento"
-                              ? "secondary"
-                              : "outline"
+                                ? "secondary"
+                                : "outline"
                           }
                         >
                           {ticket.status}
@@ -236,9 +274,13 @@ export default function HelpChatPage() {
                     <h4 className="font-medium mb-2">{ticket.subject}</h4>
                     <p className="text-sm text-muted-foreground">{ticket.created}</p>
                     <div className="flex gap-2 mt-3">
-                      <Button variant="outline" size="sm">Ver Detalhes</Button>
+                      <Button variant="outline" size="sm">
+                        Ver Detalhes
+                      </Button>
                       {ticket.status !== "Resolvido" && (
-                        <Button variant="outline" size="sm">Adicionar Resposta</Button>
+                        <Button variant="outline" size="sm">
+                          Adicionar Resposta
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -266,7 +308,7 @@ export default function HelpChatPage() {
                   <Mail className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-sm text-muted-foreground">suporte@ping.com</p>
+                    <p className="text-sm text-muted-foreground">suporte@humanoid-os.ai</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -289,36 +331,28 @@ export default function HelpChatPage() {
                     <div className="w-3 h-3 bg-red-500 rounded-full" />
                     <span className="font-medium">Crítico</span>
                   </div>
-                  <p className="text-sm text-muted-foreground ml-5">
-                    Resposta imediata (até 15 min)
-                  </p>
+                  <p className="text-sm text-muted-foreground ml-5">Resposta imediata (até 15 min)</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-orange-500 rounded-full" />
                     <span className="font-medium">Alto</span>
                   </div>
-                  <p className="text-sm text-muted-foreground ml-5">
-                    Resposta em até 1 hora
-                  </p>
+                  <p className="text-sm text-muted-foreground ml-5">Resposta em até 1 hora</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-green-500 rounded-full" />
                     <span className="font-medium">Médio</span>
                   </div>
-                  <p className="text-sm text-muted-foreground ml-5">
-                    Resposta em até 4 horas
-                  </p>
+                  <p className="text-sm text-muted-foreground ml-5">Resposta em até 4 horas</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-gray-500 rounded-full" />
                     <span className="font-medium">Baixo</span>
                   </div>
-                  <p className="text-sm text-muted-foreground ml-5">
-                    Resposta em até 24 horas
-                  </p>
+                  <p className="text-sm text-muted-foreground ml-5">Resposta em até 24 horas</p>
                 </div>
               </CardContent>
             </Card>
