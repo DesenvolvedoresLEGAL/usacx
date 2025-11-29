@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Send, Search, Phone, Mail, Clock, CheckCircle, User, Bot } from "lucide-react";
+import { MessageSquare, Send, Search, Phone, Mail, Clock, User, Bot } from "lucide-react";
 
-export default function HelpChatPage() {
+export const HelpSupportTab = () => {
   const [message, setMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -75,25 +75,16 @@ export default function HelpChatPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <MessageSquare className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Ajuda - Chat</h1>
-          </div>
-          <p className="text-muted-foreground">Central de ajuda e suporte técnico</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Phone className="w-4 h-4 mr-2" />
-            Ligar para Suporte
-          </Button>
-          <Button>
-            <Mail className="w-4 h-4 mr-2" />
-            Abrir Ticket
-          </Button>
-        </div>
+      {/* Ações rápidas */}
+      <div className="flex gap-2">
+        <Button variant="outline">
+          <Phone className="w-4 h-4 mr-2" />
+          Ligar para Suporte
+        </Button>
+        <Button>
+          <Mail className="w-4 h-4 mr-2" />
+          Abrir Ticket
+        </Button>
       </div>
 
       <Tabs defaultValue="chat" className="space-y-4">
@@ -361,4 +352,4 @@ export default function HelpChatPage() {
       </Tabs>
     </div>
   );
-}
+};

@@ -87,10 +87,7 @@ export const navigationGroups: NavigationGroup[] = [
   {
     groupTitle: "Ajuda",
     items: [
-      { title: "Chat", href: "/ajuda/chat", icon: Icons.messageSquare },
-      { title: "Status", href: "/ajuda/status", icon: Icons.info },
-      { title: "Versão", href: "/ajuda/versao", icon: Icons.packageIcon },
-      { title: "Cancelamento", href: "/ajuda/cancelamento", icon: Icons.xOctagon },
+      { title: "Central de Ajuda", href: "/ajuda", icon: Icons.helpCircle },
     ],
   },
 ];

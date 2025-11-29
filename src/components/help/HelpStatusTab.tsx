@@ -1,11 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Info, CheckCircle, AlertTriangle, XCircle, Clock, Server, Database, Globe, Shield } from "lucide-react";
+import { CheckCircle, AlertTriangle, XCircle, Clock, Server } from "lucide-react";
 
-export default function HelpStatusPage() {
+export const HelpStatusTab = () => {
   const systemStatus = {
     overall: "operational",
     lastUpdate: "2 minutos atrás"
@@ -115,35 +114,23 @@ export default function HelpStatusPage() {
       case "degraded": return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
       case "outage": return <XCircle className="w-5 h-5 text-red-500" />;
       case "maintenance": return <Clock className="w-5 h-5 text-blue-500" />;
-      default: return <Info className="w-5 h-5 text-gray-500" />;
+      default: return <CheckCircle className="w-5 h-5 text-gray-500" />;
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Info className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Ajuda - Status do Sistema</h1>
-          </div>
-          <p className="text-muted-foreground">
-            Monitore o status dos serviços e a saúde do sistema
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className={`w-3 h-3 rounded-full ${getStatusColor(systemStatus.overall)}`} />
-          <span className="text-sm font-medium">
-            {getStatusText(systemStatus.overall)}
-          </span>
-          <span className="text-sm text-muted-foreground">
-            • Atualizado {systemStatus.lastUpdate}
-          </span>
-        </div>
+      {/* Status Overview */}
+      <div className="flex items-center justify-end gap-2">
+        <div className={`w-3 h-3 rounded-full ${getStatusColor(systemStatus.overall)}`} />
+        <span className="text-sm font-medium">
+          {getStatusText(systemStatus.overall)}
+        </span>
+        <span className="text-sm text-muted-foreground">
+          • Atualizado {systemStatus.lastUpdate}
+        </span>
       </div>
 
-      {/* Status Overview */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -250,7 +237,6 @@ export default function HelpStatusPage() {
             ))}
           </div>
 
-          {/* Performance Charts Placeholder */}
           <Card>
             <CardHeader>
               <CardTitle>Performance nas Últimas 24 Horas</CardTitle>
@@ -345,4 +331,4 @@ export default function HelpStatusPage() {
       </Tabs>
     </div>
   );
-}
+};
