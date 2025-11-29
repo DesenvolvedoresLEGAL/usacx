@@ -1,5 +1,6 @@
 import type { Icon } from "@/components/icons";
 import { Icons } from "@/components/icons";
+import type { Permission } from "@/types/permissions";
 
 export interface NavigationItem {
   title: string;
@@ -15,6 +16,10 @@ export interface NavigationItem {
    * helpers.
    */
   groupTitle?: string;
+  /**
+   * Optional permission required to view this item
+   */
+  permission?: Permission;
 }
 
 export interface NavigationGroup {
@@ -25,62 +30,62 @@ export interface NavigationGroup {
 export const navigationGroups: NavigationGroup[] = [
   {
     items: [
-      { title: "Dashboard", href: "/dashboard", icon: Icons.home },
+      { title: "Dashboard", href: "/dashboard", icon: Icons.home, permission: "dashboard:view_own" },
     ],
   },
   {
     groupTitle: "Gestão",
     items: [
-      { title: "Ao Vivo", href: "/gestao/ao-vivo", icon: Icons.radioTower },
-      { title: "Atendimentos", href: "/gestao/atendimentos", icon: Icons.clipboardList },
-      { title: "Agentes", href: "/gestao/agentes", icon: Icons.users },
-      { title: "Canais", href: "/gestao/canais", icon: Icons.network },
+      { title: "Ao Vivo", href: "/gestao/ao-vivo", icon: Icons.radioTower, permission: "management:live" },
+      { title: "Atendimentos", href: "/gestao/atendimentos", icon: Icons.clipboardList, permission: "conversations:view_all" },
+      { title: "Agentes", href: "/gestao/agentes", icon: Icons.users, permission: "management:agents" },
+      { title: "Canais", href: "/gestao/canais", icon: Icons.network, permission: "management:channels" },
     ],
   },
   {
     groupTitle: "Relatórios",
     items: [
-      { title: "Atendimentos", href: "/relatorios/atendimentos", icon: Icons.clipboardList },
-      { title: "Auditoria", href: "/relatorios/auditoria", icon: Icons.shieldCheck },
-      { title: "Clientes", href: "/relatorios/clientes", icon: Icons.users2 },
-      { title: "Avaliações", href: "/relatorios/avaliacoes", icon: Icons.star },
-      { title: "Pausas", href: "/relatorios/pausas", icon: Icons.pauseCircle },
-      { title: "Performance", href: "/relatorios/performance", icon: Icons.trendingUp },
-      { title: "Analítico", href: "/relatorios/analitico", icon: Icons.pieChart },
-      { title: "Exportar", href: "/relatorios/exportar", icon: Icons.download },
+      { title: "Atendimentos", href: "/relatorios/atendimentos", icon: Icons.clipboardList, permission: "reports:view_own" },
+      { title: "Auditoria", href: "/relatorios/auditoria", icon: Icons.shieldCheck, permission: "reports:view_all" },
+      { title: "Clientes", href: "/relatorios/clientes", icon: Icons.users2, permission: "reports:view_team" },
+      { title: "Avaliações", href: "/relatorios/avaliacoes", icon: Icons.star, permission: "reports:view_team" },
+      { title: "Pausas", href: "/relatorios/pausas", icon: Icons.pauseCircle, permission: "reports:view_team" },
+      { title: "Performance", href: "/relatorios/performance", icon: Icons.trendingUp, permission: "reports:view_team" },
+      { title: "Analítico", href: "/relatorios/analitico", icon: Icons.pieChart, permission: "reports:view_all" },
+      { title: "Exportar", href: "/relatorios/exportar", icon: Icons.download, permission: "reports:export" },
     ],
   },
   {
     groupTitle: "Inteligência Artificial",
     items: [
-      { title: "Chatbot", href: "/ia/chatbot", icon: Icons.messageSquare },
-      { title: "Machine Learning", href: "/ia/machine-learning", icon: Icons.barChart2 },
+      { title: "Chatbot", href: "/ia/chatbot", icon: Icons.messageSquare, permission: "ai:chatbot" },
+      { title: "Machine Learning", href: "/ia/machine-learning", icon: Icons.barChart2, permission: "ai:ml" },
     ],
   },
   {
     groupTitle: "Acesso",
     items: [
-      { title: "Agentes", href: "/acesso/agentes", icon: Icons.users },
-      { title: "Usuários", href: "/acesso/usuarios", icon: Icons.userCog },
-      { title: "Logs de Acesso", href: "/acesso/logs", icon: Icons.history },
+      { title: "Agentes", href: "/acesso/agentes", icon: Icons.users, permission: "access:agents" },
+      { title: "Usuários", href: "/acesso/usuarios", icon: Icons.userCog, permission: "access:users" },
+      { title: "Logs de Acesso", href: "/acesso/logs", icon: Icons.history, permission: "access:logs" },
     ],
   },
   {
     groupTitle: "Configurações",
     items: [
-      { title: "Agentes", href: "/configuracoes/agentes", icon: Icons.users },
-      { title: "Bots", href: "/configuracoes/bots", icon: Icons.bot },
-      { title: "Clientes", href: "/configuracoes/clientes", icon: Icons.users2 },
-      { title: "Etiquetas", href: "/configuracoes/etiquetas", icon: Icons.tags },
-      { title: "Filas de Atendimento", href: "/configuracoes/filas", icon: Icons.listOrdered },
-      { title: "Pausas", href: "/configuracoes/pausas", icon: Icons.pauseCircle },
-      { title: "Pesquisas", href: "/configuracoes/pesquisas", icon: Icons.smile },
-      { title: "Hashtags", href: "/configuracoes/hashtags", icon: Icons.hash },
-      { title: "Mensagens Prontas", href: "/configuracoes/mensagens-prontas", icon: Icons.messageSquarePlus },
-      { title: "Anexos", href: "/configuracoes/anexos", icon: Icons.paperclip },
-      { title: "SLAs", href: "/configuracoes/slas", icon: Icons.timer },
-      { title: "Prioridades", href: "/configuracoes/prioridades", icon: Icons.alertTriangle },
-      { title: "API", href: "/configuracoes/api", icon: Icons.settings, highlight: "blue" },
+      { title: "Agentes", href: "/configuracoes/agentes", icon: Icons.users, permission: "settings:edit" },
+      { title: "Bots", href: "/configuracoes/bots", icon: Icons.bot, permission: "settings:edit" },
+      { title: "Clientes", href: "/configuracoes/clientes", icon: Icons.users2, permission: "settings:edit" },
+      { title: "Etiquetas", href: "/configuracoes/etiquetas", icon: Icons.tags, permission: "settings:edit" },
+      { title: "Filas de Atendimento", href: "/configuracoes/filas", icon: Icons.listOrdered, permission: "settings:edit" },
+      { title: "Pausas", href: "/configuracoes/pausas", icon: Icons.pauseCircle, permission: "settings:edit" },
+      { title: "Pesquisas", href: "/configuracoes/pesquisas", icon: Icons.smile, permission: "settings:edit" },
+      { title: "Hashtags", href: "/configuracoes/hashtags", icon: Icons.hash, permission: "settings:edit" },
+      { title: "Mensagens Prontas", href: "/configuracoes/mensagens-prontas", icon: Icons.messageSquarePlus, permission: "settings:edit" },
+      { title: "Anexos", href: "/configuracoes/anexos", icon: Icons.paperclip, permission: "settings:edit" },
+      { title: "SLAs", href: "/configuracoes/slas", icon: Icons.timer, permission: "settings:edit" },
+      { title: "Prioridades", href: "/configuracoes/prioridades", icon: Icons.alertTriangle, permission: "settings:edit" },
+      { title: "API", href: "/configuracoes/api", icon: Icons.settings, highlight: "blue", permission: "settings:edit" },
     ],
   },
   {

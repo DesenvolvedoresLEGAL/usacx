@@ -5,6 +5,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { PermissionsProvider } from "@/contexts/PermissionsContext";
+import { RouteGuard } from "@/components/auth/RouteGuard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
@@ -62,20 +65,46 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <React.Suspense fallback={<div className="p-10 text-center">Carregando...</div>}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/conversations" element={<ConversationsPage />} />
+        <AuthProvider>
+          <PermissionsProvider>
+            <React.Suspense fallback={<div className="p-10 text-center">Carregando...</div>}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/conversations" element={
+                  <RouteGuard permission="conversations:view_own">
+                    <ConversationsPage />
+                  </RouteGuard>
+                } />
             
-            {/* Routes that use MainLayout */}
-            <Route element={<MainLayout />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              {/* Gestão */}
-              <Route path="/gestao/ao-vivo" element={<LiveManagementPage />} />
-              <Route path="/gestao/atendimentos" element={<AttendanceManagementPage />} />
-              <Route path="/gestao/agentes" element={<AgentsManagementPage />} />
-              <Route path="/gestao/canais" element={<ChannelsManagementPage />} />
+                {/* Routes that use MainLayout */}
+                <Route element={<MainLayout />}>
+                  <Route path="/dashboard" element={
+                    <RouteGuard permission="dashboard:view_own">
+                      <DashboardPage />
+                    </RouteGuard>
+                  } />
+                  {/* Gestão */}
+                  <Route path="/gestao/ao-vivo" element={
+                    <RouteGuard permission="management:live">
+                      <LiveManagementPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/gestao/atendimentos" element={
+                    <RouteGuard permission="conversations:view_all">
+                      <AttendanceManagementPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/gestao/agentes" element={
+                    <RouteGuard permission="management:agents">
+                      <AgentsManagementPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/gestao/canais" element={
+                    <RouteGuard permission="management:channels">
+                      <ChannelsManagementPage />
+                    </RouteGuard>
+                  } />
               {/* Relatórios */}
               <Route path="/relatorios/atendimentos" element={<ReportAttendancesPage />} />
               <Route path="/relatorios/auditoria" element={<ReportAuditPage />} />
@@ -88,41 +117,107 @@ const App = () => (
               {/* Inteligência Artificial */}
               <Route path="/ia/chatbot" element={<ChatbotPage />} />
               <Route path="/ia/machine-learning" element={<MachineLearningPage />} />
-              {/* Acesso */}
-              <Route path="/acesso/agentes" element={<AccessAgentsPage />} />
-              <Route path="/acesso/usuarios" element={<AccessUsersPage />} />
-              <Route path="/acesso/logs" element={<AccessLogsPage />} />
-              {/* Configurações */}
-              <Route path="/configuracoes/agentes" element={<SettingsAgentsPage />} />
-              <Route path="/configuracoes/bots" element={<SettingsBotPage />} />
-              <Route path="/configuracoes/clientes" element={<SettingsClientsPage />} />
-              <Route path="/configuracoes/etiquetas" element={<SettingsTagsPage />} />
-              <Route path="/configuracoes/filas" element={<SettingsQueuesPage />} />
-              <Route path="/configuracoes/pausas" element={<SettingsPausesPage />} />
-              <Route path="/configuracoes/pesquisas" element={<SettingsSurveysPage />} />
-              <Route path="/configuracoes/hashtags" element={<SettingsHashtagsPage />} />
-              <Route path="/configuracoes/mensagens-prontas" element={<SettingsTemplatesPage />} />
-              <Route path="/configuracoes/anexos" element={<SettingsAttachmentsPage />} />
-              <Route path="/configuracoes/slas" element={<SettingsSLAsPage />} />
-              <Route path="/configuracoes/prioridades" element={<SettingsPrioritiesPage />} />
-              <Route path="/configuracoes/api" element={<SettingsApiPage />} />
+                  {/* Acesso */}
+                  <Route path="/acesso/agentes" element={
+                    <RouteGuard permission="access:agents">
+                      <AccessAgentsPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/acesso/usuarios" element={
+                    <RouteGuard permission="access:users">
+                      <AccessUsersPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/acesso/logs" element={
+                    <RouteGuard permission="access:logs">
+                      <AccessLogsPage />
+                    </RouteGuard>
+                  } />
+                  {/* Configurações */}
+                  <Route path="/configuracoes/agentes" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsAgentsPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/bots" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsBotPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/clientes" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsClientsPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/etiquetas" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsTagsPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/filas" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsQueuesPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/pausas" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsPausesPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/pesquisas" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsSurveysPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/hashtags" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsHashtagsPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/mensagens-prontas" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsTemplatesPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/anexos" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsAttachmentsPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/slas" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsSLAsPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/prioridades" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsPrioritiesPage />
+                    </RouteGuard>
+                  } />
+                  <Route path="/configuracoes/api" element={
+                    <RouteGuard permission="settings:edit">
+                      <SettingsApiPage />
+                    </RouteGuard>
+                  } />
               {/* Ajuda */}
               <Route path="/ajuda/chat" element={<HelpChatPage />} />
               <Route path="/ajuda/status" element={<HelpStatusPage />} />
               <Route path="/ajuda/versao" element={<HelpVersionPage />} />
               <Route path="/ajuda/cancelamento" element={<HelpCancellationPage />} />
 
-              {/* Old placeholder routes, can be removed if all are covered by new structure */}
-              <Route path="/templates" element={<div className="p-4"><h1>Templates (Legado)</h1></div>} />
-              <Route path="/reports" element={<div className="p-4"><h1>Relatórios (Legado)</h1></div>} />
-              <Route path="/agents" element={<AgentsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Route>
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </React.Suspense>
+                  {/* Old placeholder routes, can be removed if all are covered by new structure */}
+                  <Route path="/templates" element={<div className="p-4"><h1>Templates (Legado)</h1></div>} />
+                  <Route path="/reports" element={<div className="p-4"><h1>Relatórios (Legado)</h1></div>} />
+                  <Route path="/agents" element={<AgentsPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                </Route>
+                
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </React.Suspense>
+          </PermissionsProvider>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

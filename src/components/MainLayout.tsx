@@ -22,13 +22,22 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { matchNavigationItem } from "@/data/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const MainLayout = () => {
   const location = useLocation();
+  const { user, profile, signOut } = useAuth();
   const matchedNavigation = useMemo(
     () => matchNavigationItem(location.pathname),
     [location.pathname]
   );
+
+  const userInitials = profile?.display_name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase() || user?.email?.[0].toUpperCase() || '?';
 
   const isDashboard = matchedNavigation?.href === "/dashboard";
   const breadcrumbs = useMemo(() => {
@@ -97,13 +106,20 @@ const MainLayout = () => {
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <UserCircle className="h-6 w-6" />
-                    <span className="sr-only">Perfil</span>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={profile?.avatar_url || ''} alt={profile?.display_name || ''} />
+                      <AvatarFallback>{userInitials}</AvatarFallback>
+                    </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{profile?.display_name || 'Usuário'}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/perfil/configuracoes">
@@ -118,11 +134,9 @@ const MainLayout = () => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/login">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Sair</span>
-                    </Link>
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sair</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
