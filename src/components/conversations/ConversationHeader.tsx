@@ -105,8 +105,10 @@ export function ConversationHeader({ onAttendNext }: ConversationHeaderProps) {
   return (
     <>
       <header className="border-b bg-background px-6 py-3 flex items-center justify-between">
-        {/* LADO ESQUERDO - Empty/Clean */}
-        <div></div>
+        {/* LADO ESQUERDO - Logo USAC */}
+        <div className="flex items-center">
+          <h1 className="text-xl font-bold text-primary">USAC</h1>
+        </div>
 
         {/* LADO DIREITO - Ações Agrupadas */}
         <div className="flex items-center gap-3">
@@ -125,31 +127,16 @@ export function ConversationHeader({ onAttendNext }: ConversationHeaderProps) {
             Atender próximo
           </Button>
 
-          {/* Dropdown + Novo */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Plus className="h-4 w-4" />
-                Novo
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setNewChatDialogOpen(true)}>
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Novo atendimento
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           {/* Notificações */}
           <Button variant="ghost" size="icon" className="rounded-full">
             <Bell className="h-5 w-5" />
           </Button>
 
-          {/* Avatar com Dropdown do Usuário */}
+          {/* Avatar com Dropdown do Usuário - com indicador online */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
+              <Button variant="ghost" className="h-10 w-10 rounded-full p-0 relative">
+                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-8 bg-green-500 rounded-full"></div>
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={profile?.avatar_url || undefined} />
                   <AvatarFallback className="bg-primary text-primary-foreground">

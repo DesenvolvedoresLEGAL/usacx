@@ -23,8 +23,8 @@ interface ConversationsListProps {
   onSelectConversation: (id: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  quickFilter: 'all' | 'unread' | 'favorites' | 'waiting';
-  onQuickFilterChange: (filter: 'all' | 'unread' | 'favorites' | 'waiting') => void;
+  quickFilter: 'all' | 'unread' | 'favorites';
+  onQuickFilterChange: (filter: 'all' | 'unread' | 'favorites') => void;
 }
 
 interface PauseReason {
@@ -143,14 +143,6 @@ export function ConversationsList({
           onClick={() => onQuickFilterChange('favorites')}
         >
           Favoritas
-        </Button>
-        <Button
-          variant={quickFilter === 'waiting' ? 'default' : 'ghost'}
-          size="sm"
-          className="rounded-full"
-          onClick={() => onQuickFilterChange('waiting')}
-        >
-          Aguardando
         </Button>
       </div>
 
