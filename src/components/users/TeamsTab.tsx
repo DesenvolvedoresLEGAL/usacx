@@ -241,12 +241,12 @@ export const TeamsTab = () => {
             </div>
             <div>
               <Label htmlFor="manager">Gestor (opcional)</Label>
-              <Select value={formData.manager_id} onValueChange={(value) => setFormData({ ...formData, manager_id: value })}>
+              <Select value={formData.manager_id || "none"} onValueChange={(value) => setFormData({ ...formData, manager_id: value === "none" ? "" : value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um gestor" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Sem gestor</SelectItem>
+                  <SelectItem value="none">Sem gestor</SelectItem>
                   {managers.map((manager) => (
                     <SelectItem key={manager.id} value={manager.id}>
                       {manager.name}
