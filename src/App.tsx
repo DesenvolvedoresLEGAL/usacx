@@ -41,6 +41,7 @@ import SettingsSLAsPage from "./pages/SettingsSLAsPage";
 import SettingsPrioritiesPage from "./pages/SettingsPrioritiesPage";
 import HelpCenterPage from "./pages/HelpCenterPage";
 import ConversationsPage from "./pages/ConversationsPage";
+import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 
 
 // Lazy load the breaks report page
@@ -189,6 +190,13 @@ const App = () => (
               <Route path="/ajuda/status" element={<Navigate to="/ajuda?tab=status" replace />} />
               <Route path="/ajuda/versao" element={<Navigate to="/ajuda?tab=version" replace />} />
               <Route path="/ajuda/cancelamento" element={<Navigate to="/ajuda?tab=account" replace />} />
+
+              {/* Perfil */}
+              <Route path="/perfil/configuracoes" element={
+                <RouteGuard permission="dashboard:view_own">
+                  <ProfileSettingsPage />
+                </RouteGuard>
+              } />
 
                   <Route path="/settings" element={<SettingsPage />} />
                 </Route>
