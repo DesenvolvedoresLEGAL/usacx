@@ -38,7 +38,6 @@ export const navigationGroups: NavigationGroup[] = [
     items: [
       { title: "Ao Vivo", href: "/gestao/ao-vivo", icon: Icons.radioTower, permission: "management:live" },
       { title: "Atendimentos", href: "/gestao/atendimentos", icon: Icons.clipboardList, permission: "conversations:view_all" },
-      { title: "Agentes", href: "/gestao/agentes", icon: Icons.users, permission: "management:agents" },
       { title: "Canais", href: "/gestao/canais", icon: Icons.network, permission: "management:channels" },
     ],
   },
@@ -65,15 +64,13 @@ export const navigationGroups: NavigationGroup[] = [
   {
     groupTitle: "Acesso",
     items: [
-      { title: "Agentes", href: "/acesso/agentes", icon: Icons.users, permission: "access:agents" },
-      { title: "Usuários", href: "/acesso/usuarios", icon: Icons.userCog, permission: "access:users" },
+      { title: "Gestão de Usuários", href: "/acesso/usuarios", icon: Icons.userCog, permission: "access:users" },
       { title: "Logs de Acesso", href: "/acesso/logs", icon: Icons.history, permission: "access:logs" },
     ],
   },
   {
     groupTitle: "Configurações",
     items: [
-      { title: "Agentes", href: "/configuracoes/agentes", icon: Icons.users, permission: "settings:edit" },
       { title: "Bots", href: "/configuracoes/bots", icon: Icons.bot, permission: "settings:edit" },
       { title: "Clientes", href: "/configuracoes/clientes", icon: Icons.users2, permission: "settings:edit" },
       { title: "Etiquetas", href: "/configuracoes/etiquetas", icon: Icons.tags, permission: "settings:edit" },

@@ -15,7 +15,6 @@ import DashboardPage from "./pages/DashboardPage";
 import LiveManagementPage from "./pages/LiveManagementPage";
 import AttendanceManagementPage from "./pages/AttendanceManagementPage";
 import MainLayout from "./components/MainLayout";
-import AgentsManagementPage from "./pages/AgentsManagementPage";
 import SettingsPage from "./pages/SettingsPage";
 import AgentsPage from "./pages/AgentsPage";
 import ChannelsManagementPage from "./pages/ChannelsManagementPage";
@@ -27,10 +26,8 @@ import ReportAnalyticsPage from "./pages/ReportAnalyticsPage";
 import ReportPerformancePage from "./pages/ReportPerformancePage";
 import SettingsApiPage from "./pages/SettingsApiPage";
 import ReportExportPage from "./pages/ReportExportPage";
-import AccessAgentsPage from "./pages/AccessAgentsPage";
-import AccessUsersPage from "./pages/AccessUsersPage";
+import UserManagementPage from "./pages/UserManagementPage";
 import AccessLogsPage from "./pages/AccessLogsPage";
-import SettingsAgentsPage from "./pages/SettingsAgentsPage";
 import SettingsBotPage from "./pages/SettingsBotPage";
 import SettingsClientsPage from "./pages/SettingsClientsPage";
 import SettingsTagsPage from "./pages/SettingsTagsPage";
@@ -95,11 +92,6 @@ const App = () => (
                       <AttendanceManagementPage />
                     </RouteGuard>
                   } />
-                  <Route path="/gestao/agentes" element={
-                    <RouteGuard permission="management:agents">
-                      <AgentsManagementPage />
-                    </RouteGuard>
-                  } />
                   <Route path="/gestao/canais" element={
                     <RouteGuard permission="management:channels">
                       <ChannelsManagementPage />
@@ -118,27 +110,21 @@ const App = () => (
               <Route path="/ia/chatbot" element={<ChatbotPage />} />
               <Route path="/ia/machine-learning" element={<MachineLearningPage />} />
                   {/* Acesso */}
-                  <Route path="/acesso/agentes" element={
-                    <RouteGuard permission="access:agents">
-                      <AccessAgentsPage />
-                    </RouteGuard>
-                  } />
                   <Route path="/acesso/usuarios" element={
                     <RouteGuard permission="access:users">
-                      <AccessUsersPage />
+                      <UserManagementPage />
                     </RouteGuard>
                   } />
+                  {/* Redirects de compatibilidade */}
+                  <Route path="/acesso/agentes" element={<Navigate to="/acesso/usuarios" replace />} />
+                  <Route path="/configuracoes/agentes" element={<Navigate to="/acesso/usuarios?tab=config" replace />} />
+                  <Route path="/gestao/agentes" element={<Navigate to="/acesso/usuarios" replace />} />
                   <Route path="/acesso/logs" element={
                     <RouteGuard permission="access:logs">
                       <AccessLogsPage />
                     </RouteGuard>
                   } />
                   {/* Configurações */}
-                  <Route path="/configuracoes/agentes" element={
-                    <RouteGuard permission="settings:edit">
-                      <SettingsAgentsPage />
-                    </RouteGuard>
-                  } />
                   <Route path="/configuracoes/bots" element={
                     <RouteGuard permission="settings:edit">
                       <SettingsBotPage />
