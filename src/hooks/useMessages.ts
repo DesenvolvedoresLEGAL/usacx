@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Message, MessageStatus, MessageType } from '@/types/conversations';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { mapMessageFromDB } from '@/types/database';
+import { useCurrentAgent } from './useCurrentAgent';
 
 type SendMessageType = Exclude<MessageType, 'sticker'>;
 
@@ -13,40 +16,52 @@ const getFileMessageType = (file: File): SendMessageType => {
 
 export function useMessages(conversationId: string | null, initialMessages: Message[] = []) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const timeoutIds = useRef<number[]>([]);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const currentAgent = useCurrentAgent();
 
-  const clearScheduledUpdates = useCallback(() => {
-    timeoutIds.current.forEach((timeout) => clearTimeout(timeout));
-    timeoutIds.current = [];
-  }, []);
+  // Sincronizar mensagens iniciais
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
 
-  useEffect(() => clearScheduledUpdates, [clearScheduledUpdates]);
+  // Setup realtime para novas mensagens
+  useEffect(() => {
+    if (!conversationId) return;
 
-  const scheduleStatusUpdate = useCallback(
-    (messageId: string, status: MessageStatus, delay: number) => {
-      const timeout = window.setTimeout(() => {
-        setMessages((prev) =>
-          prev.map((msg) => (msg.id === messageId ? { ...msg, status } : msg))
-        );
-        timeoutIds.current = timeoutIds.current.filter((id) => id !== timeout);
-      }, delay);
+    const channel = supabase
+      .channel(`messages-${conversationId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          console.log('New message received:', payload);
+          const newMessage = mapMessageFromDB(payload.new as any);
+          setMessages((prev) => [...prev, newMessage]);
+        }
+      )
+      .subscribe();
 
-      timeoutIds.current.push(timeout);
-    },
-    []
-  );
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId]);
 
   const sendMessage = useCallback(
-    async (
-      content: string,
-      type: SendMessageType = 'text'
-    ) => {
-      if (!conversationId || !content.trim()) return;
+    async (content: string, type: SendMessageType = 'text') => {
+      if (!conversationId || !content.trim() || !currentAgent?.profile?.id) return;
 
       const trimmedContent = content.trim();
-      const newMessage: Message = {
-        id: `m-${Date.now()}`,
+      const tempId = `temp-${Date.now()}`;
+
+      // Criar mensagem temporária para mostrar imediatamente
+      const tempMessage: Message = {
+        id: tempId,
         conversationId,
         type,
         content: trimmedContent,
@@ -55,26 +70,122 @@ export function useMessages(conversationId: string | null, initialMessages: Mess
         status: 'sending',
       };
 
-      setMessages((prev) => [...prev, newMessage]);
+      setMessages((prev) => [...prev, tempMessage]);
+      setLoading(true);
 
-      scheduleStatusUpdate(newMessage.id, 'sent', 500);
-      scheduleStatusUpdate(newMessage.id, 'delivered', 1000);
+      try {
+        // Inserir no banco
+        const { data, error } = await supabase
+          .from('messages')
+          .insert({
+            conversation_id: conversationId,
+            sender_type: 'agent',
+            sender_id: currentAgent.profile.id,
+            content: trimmedContent,
+            message_type: type,
+            status: 'sent',
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Remover mensagem temporária e adicionar a real
+        setMessages((prev) => {
+          const filtered = prev.filter((m) => m.id !== tempId);
+          if (data) {
+            const realMessage = mapMessageFromDB(data);
+            return [...filtered, realMessage];
+          }
+          return filtered;
+        });
+
+        toast({
+          title: 'Mensagem enviada',
+          description: 'Sua mensagem foi enviada com sucesso.',
+        });
+      } catch (error) {
+        console.error('Error sending message:', error);
+
+        // Marcar mensagem como falha
+        setMessages((prev) =>
+          prev.map((m) => (m.id === tempId ? { ...m, status: 'failed' as MessageStatus } : m))
+        );
+
+        toast({
+          title: 'Erro ao enviar mensagem',
+          description: 'Não foi possível enviar sua mensagem. Tente novamente.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
     },
-    [conversationId, scheduleStatusUpdate]
+    [conversationId, currentAgent, toast]
   );
 
   const uploadFile = useCallback(
     async (file: File) => {
+      if (!conversationId || !currentAgent?.profile?.id) return;
+
       const fileType = getFileMessageType(file);
 
-      toast({
-        title: 'Arquivo enviado',
-        description: `${file.name} foi enviado com sucesso.`,
-      });
+      try {
+        setLoading(true);
 
-      await sendMessage(file.name, fileType);
+        // Upload para storage
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${conversationId}/${Date.now()}.${fileExt}`;
+
+        const { error: uploadError, data: uploadData } = await supabase.storage
+          .from('attachments')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        // Obter URL pública
+        const { data: urlData } = supabase.storage.from('attachments').getPublicUrl(filePath);
+
+        // Enviar mensagem com o arquivo
+        const { data, error } = await supabase
+          .from('messages')
+          .insert({
+            conversation_id: conversationId,
+            sender_type: 'agent',
+            sender_id: currentAgent.profile.id,
+            content: file.name,
+            message_type: fileType,
+            media_url: urlData.publicUrl,
+            file_name: file.name,
+            status: 'sent',
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Adicionar mensagem
+        if (data) {
+          const newMessage = mapMessageFromDB(data);
+          setMessages((prev) => [...prev, newMessage]);
+        }
+
+        toast({
+          title: 'Arquivo enviado',
+          description: `${file.name} foi enviado com sucesso.`,
+        });
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        toast({
+          title: 'Erro ao enviar arquivo',
+          description: 'Não foi possível enviar o arquivo. Tente novamente.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
     },
-    [sendMessage, toast]
+    [conversationId, currentAgent, toast]
   );
 
   return useMemo(
@@ -82,7 +193,8 @@ export function useMessages(conversationId: string | null, initialMessages: Mess
       messages,
       sendMessage,
       uploadFile,
+      loading,
     }),
-    [messages, sendMessage, uploadFile]
+    [messages, sendMessage, uploadFile, loading]
   );
 }
