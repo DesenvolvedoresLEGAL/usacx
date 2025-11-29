@@ -54,18 +54,52 @@ const ProfileSettingsPage = () => {
     const file = event.target.files?.[0];
     if (!file || !currentAgent) return;
 
+    // Validate file size (2MB max)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "Arquivo muito grande",
+        description: "O avatar deve ter no máximo 2MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Formato inválido",
+        description: "Por favor, envie apenas imagens.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const filePath = `${currentAgent.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${currentAgent.id}/avatar.${fileExt}`;
 
-      // Upload to Supabase Storage (you'll need to create the avatars bucket)
+      // Remove old avatar if exists
+      const { data: oldFiles } = await supabase.storage
+        .from('avatars')
+        .list(currentAgent.id);
+
+      if (oldFiles && oldFiles.length > 0) {
+        const oldFilePaths = oldFiles.map(f => `${currentAgent.id}/${f.name}`);
+        await supabase.storage.from('avatars').remove(oldFilePaths);
+      }
+
+      // Upload new avatar
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          upsert: true,
+          contentType: file.type
+        });
 
       if (uploadError) throw uploadError;
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
@@ -82,11 +116,14 @@ const ProfileSettingsPage = () => {
         title: "Avatar atualizado",
         description: "Sua foto de perfil foi atualizada com sucesso.",
       });
+
+      // Reload page to show new avatar
+      window.location.reload();
     } catch (error) {
       console.error('Error uploading avatar:', error);
       toast({
         title: "Erro ao atualizar avatar",
-        description: "Não foi possível atualizar sua foto de perfil.",
+        description: error instanceof Error ? error.message : "Não foi possível atualizar sua foto de perfil.",
         variant: "destructive",
       });
     } finally {
@@ -256,7 +293,7 @@ const ProfileSettingsPage = () => {
                   {currentAgent?.email}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Clique na foto para fazer upload de uma nova imagem (máx. 5MB)
+                  Clique na foto para fazer upload de uma nova imagem (máx. 2MB)
                 </p>
               </div>
             </div>
