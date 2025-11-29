@@ -26,7 +26,7 @@ import ReportPerformancePage from "./pages/ReportPerformancePage";
 import SettingsApiPage from "./pages/SettingsApiPage";
 import ReportExportPage from "./pages/ReportExportPage";
 import UserManagementPage from "./pages/UserManagementPage";
-import AccessLogsPage from "./pages/AccessLogsPage";
+import AuditCenterPage from "./pages/AuditCenterPage";
 import SettingsBotPage from "./pages/SettingsBotPage";
 import SettingsClientsPage from "./pages/SettingsClientsPage";
 import SettingsTagsPage from "./pages/SettingsTagsPage";
@@ -44,8 +44,6 @@ import HelpVersionPage from "./pages/HelpVersionPage";
 import HelpCancellationPage from "./pages/HelpCancellationPage";
 import ConversationsPage from "./pages/ConversationsPage";
 
-// Lazy load the audit report page
-const ReportAuditPage = React.lazy(() => import("./pages/ReportAuditPage"));
 
 // Lazy load the breaks report page
 const ReportBreaksPage = React.lazy(() => import("./pages/ReportBreaksPage"));
@@ -98,7 +96,6 @@ const App = () => (
                   } />
               {/* Relatórios */}
               <Route path="/relatorios/atendimentos" element={<ReportAttendancesPage />} />
-              <Route path="/relatorios/auditoria" element={<ReportAuditPage />} />
               <Route path="/relatorios/clientes" element={<ReportClientsPage />} />
               <Route path="/relatorios/avaliacoes" element={<ReportEvaluationsPage />} />
               <Route path="/relatorios/pausas" element={<ReportBreaksPage />} />
@@ -118,9 +115,11 @@ const App = () => (
                   <Route path="/acesso/agentes" element={<Navigate to="/acesso/usuarios" replace />} />
                   <Route path="/configuracoes/agentes" element={<Navigate to="/acesso/usuarios?tab=config" replace />} />
                   <Route path="/gestao/agentes" element={<Navigate to="/acesso/usuarios" replace />} />
-                  <Route path="/acesso/logs" element={
+                  <Route path="/acesso/logs" element={<Navigate to="/acesso/auditoria?tab=access" replace />} />
+                  <Route path="/relatorios/auditoria" element={<Navigate to="/acesso/auditoria?tab=attendance" replace />} />
+                  <Route path="/acesso/auditoria" element={
                     <RouteGuard permission="access:logs">
-                      <AccessLogsPage />
+                      <AuditCenterPage />
                     </RouteGuard>
                   } />
                   {/* Configurações */}

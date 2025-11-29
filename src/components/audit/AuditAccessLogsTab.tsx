@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,7 +76,7 @@ const mockLogs: AccessLog[] = [
   }
 ];
 
-const AccessLogsPage = () => {
+export const AuditAccessLogsTab = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState("all");
   const [selectedAction, setSelectedAction] = useState("all");
@@ -126,36 +125,14 @@ const AccessLogsPage = () => {
 
   const exportLogs = () => {
     console.log("Exportando logs de acesso...");
-    // Implementar lógica de exportação
   };
 
   const clearLogs = () => {
     console.log("Limpando logs antigos...");
-    // Implementar lógica de limpeza
   };
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Logs de Acesso</h1>
-          <p className="text-muted-foreground">
-            Monitore e audite todas as atividades de acesso ao sistema
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportLogs}>
-            <Icons.download className="mr-2 h-4 w-4" />
-            Exportar
-          </Button>
-          <Button variant="outline" onClick={clearLogs}>
-            <Icons.history className="mr-2 h-4 w-4" />
-            Limpar Antigos
-          </Button>
-        </div>
-      </div>
-
       {/* Estatísticas */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
@@ -209,6 +186,18 @@ const AccessLogsPage = () => {
             </p>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Ações */}
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={exportLogs}>
+          <Icons.download className="mr-2 h-4 w-4" />
+          Exportar
+        </Button>
+        <Button variant="outline" onClick={clearLogs}>
+          <Icons.history className="mr-2 h-4 w-4" />
+          Limpar Antigos
+        </Button>
       </div>
 
       {/* Filtros */}
@@ -355,5 +344,3 @@ const AccessLogsPage = () => {
     </div>
   );
 };
-
-export default AccessLogsPage;

@@ -45,7 +45,6 @@ export const navigationGroups: NavigationGroup[] = [
     groupTitle: "Relatórios",
     items: [
       { title: "Atendimentos", href: "/relatorios/atendimentos", icon: Icons.clipboardList, permission: "reports:view_own" },
-      { title: "Auditoria", href: "/relatorios/auditoria", icon: Icons.shieldCheck, permission: "reports:view_all" },
       { title: "Clientes", href: "/relatorios/clientes", icon: Icons.users2, permission: "reports:view_team" },
       { title: "Avaliações", href: "/relatorios/avaliacoes", icon: Icons.star, permission: "reports:view_team" },
       { title: "Pausas", href: "/relatorios/pausas", icon: Icons.pauseCircle, permission: "reports:view_team" },
@@ -65,7 +64,7 @@ export const navigationGroups: NavigationGroup[] = [
     groupTitle: "Acesso",
     items: [
       { title: "Gestão de Usuários", href: "/acesso/usuarios", icon: Icons.userCog, permission: "access:users" },
-      { title: "Logs de Acesso", href: "/acesso/logs", icon: Icons.history, permission: "access:logs" },
+      { title: "Auditoria", href: "/acesso/auditoria", icon: Icons.shieldCheck, permission: "access:logs" },
     ],
   },
   {

@@ -6,8 +6,7 @@ import { RolesPermissionsTab } from "@/components/users/RolesPermissionsTab";
 import { TeamsTab } from "@/components/users/TeamsTab";
 import { OperationalConfigTab } from "@/components/users/OperationalConfigTab";
 import { SecurityTab } from "@/components/users/SecurityTab";
-import { AuditTab } from "@/components/users/AuditTab";
-import { Users, Shield, Building2, Settings, Lock, FileText } from "lucide-react";
+import { Users, Shield, Building2, Settings, Lock } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
 const UserManagementPage = () => {
@@ -32,7 +31,7 @@ const UserManagementPage = () => {
 
       {/* TABS PRINCIPAIS */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-6 mb-6">
+        <TabsList className="grid w-full grid-cols-5 mb-6">
           <TabsTrigger value="usuarios" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             <span className="hidden sm:inline">Usuários</span>
@@ -52,10 +51,6 @@ const UserManagementPage = () => {
           <TabsTrigger value="seguranca" className="flex items-center gap-2">
             <Lock className="w-4 h-4" />
             <span className="hidden sm:inline">Segurança</span>
-          </TabsTrigger>
-          <TabsTrigger value="auditoria" className="flex items-center gap-2">
-            <FileText className="w-4 h-4" />
-            <span className="hidden sm:inline">Auditoria</span>
           </TabsTrigger>
         </TabsList>
 
@@ -77,10 +72,6 @@ const UserManagementPage = () => {
 
         <TabsContent value="seguranca" className="flex-1 overflow-hidden">
           <SecurityTab />
-        </TabsContent>
-
-        <TabsContent value="auditoria" className="flex-1 overflow-hidden">
-          <AuditTab />
         </TabsContent>
       </Tabs>
     </div>
