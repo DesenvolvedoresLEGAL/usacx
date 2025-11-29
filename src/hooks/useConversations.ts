@@ -9,7 +9,7 @@ export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ConversationStatus | 'all'>('all');
+  const [quickFilter, setQuickFilter] = useState<'all' | 'unread' | 'favorites' | 'waiting'>('all');
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
   
@@ -175,13 +175,30 @@ export function useConversations() {
   // Filtrar conversas
   const filteredConversations = useMemo(() => {
     return conversations.filter((conv) => {
+      // Search filter
       const matchesSearch =
         conv.client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         conv.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || conv.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      
+      // Quick filter (pills)
+      let matchesQuickFilter = true;
+      switch (quickFilter) {
+        case 'unread':
+          matchesQuickFilter = conv.unreadCount > 0;
+          break;
+        case 'favorites':
+          matchesQuickFilter = conv.isFavorite === true;
+          break;
+        case 'waiting':
+          matchesQuickFilter = conv.status === 'waiting';
+          break;
+        default:
+          matchesQuickFilter = true;
+      }
+      
+      return matchesSearch && matchesQuickFilter;
     });
-  }, [conversations, searchQuery, statusFilter]);
+  }, [conversations, searchQuery, quickFilter]);
 
   const selectedConversation = useMemo(() => {
     return conversations.find((conv) => conv.id === selectedId) || null;
@@ -275,8 +292,8 @@ export function useConversations() {
     selectConversation,
     searchQuery,
     setSearchQuery,
-    statusFilter,
-    setStatusFilter,
+    quickFilter,
+    setQuickFilter,
     attendNext,
     loading,
   };

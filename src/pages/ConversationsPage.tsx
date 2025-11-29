@@ -11,8 +11,8 @@ export default function ConversationsPage() {
     selectConversation,
     searchQuery,
     setSearchQuery,
-    statusFilter,
-    setStatusFilter,
+    quickFilter,
+    setQuickFilter,
     attendNext,
     loading,
   } = useConversations();
@@ -40,8 +40,8 @@ export default function ConversationsPage() {
             onSelectConversation={selectConversation}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
+            quickFilter={quickFilter}
+            onQuickFilterChange={setQuickFilter}
           />
         </div>
 
