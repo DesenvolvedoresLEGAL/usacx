@@ -21,7 +21,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { matchNavigationItem } from "@/data/navigation";
+import { matchNavigationItem, navigationGroups } from "@/data/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -40,19 +40,62 @@ const MainLayout = () => {
     .toUpperCase() || user?.email?.[0].toUpperCase() || '?';
 
   const isDashboard = matchedNavigation?.href === "/dashboard";
+  
   const breadcrumbs = useMemo(() => {
     if (!matchedNavigation || isDashboard) {
       return [] as { label: string; href?: string }[];
     }
 
     const items: { label: string; href?: string }[] = [];
+    
+    // Find the group and subgroup for this navigation item
+    let foundSubgroupTitle: string | undefined;
+    
+    for (const group of navigationGroups) {
+      if (group.subgroups) {
+        for (const subgroup of group.subgroups) {
+          if (subgroup.items.some(item => item.href === matchedNavigation.href)) {
+            foundSubgroupTitle = subgroup.subgroupTitle;
+            break;
+          }
+        }
+      }
+      if (foundSubgroupTitle) break;
+    }
+    
+    // Add group title
     if (matchedNavigation.groupTitle) {
       items.push({ label: matchedNavigation.groupTitle });
     }
-
+    
+    // Add subgroup title if found
+    if (foundSubgroupTitle) {
+      items.push({ label: foundSubgroupTitle });
+    }
+    
+    // Add current page
     items.push({ label: matchedNavigation.title, href: matchedNavigation.href });
+    
+    // Handle query parameters (e.g., tabs)
+    const searchParams = new URLSearchParams(location.search);
+    const tab = searchParams.get('tab');
+    if (tab) {
+      const tabLabels: Record<string, string> = {
+        'support': 'Suporte',
+        'status': 'Status',
+        'version': 'Versão',
+        'account': 'Minha Conta',
+        'access': 'Logs de Acesso',
+        'activities': 'Atividades',
+        'attendance': 'Auditoria de Atendimentos',
+      };
+      if (tabLabels[tab]) {
+        items.push({ label: tabLabels[tab] });
+      }
+    }
+    
     return items;
-  }, [isDashboard, matchedNavigation]);
+  }, [isDashboard, matchedNavigation, location.search]);
 
   return (
     <SidebarProvider>
