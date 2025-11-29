@@ -22,9 +22,15 @@ export interface NavigationItem {
   permission?: Permission;
 }
 
+export interface NavigationSubgroup {
+  subgroupTitle?: string;
+  items: NavigationItem[];
+}
+
 export interface NavigationGroup {
   groupTitle?: string;
-  items: NavigationItem[];
+  items?: NavigationItem[];
+  subgroups?: NavigationSubgroup[];
 }
 
 export const navigationGroups: NavigationGroup[] = [
@@ -69,19 +75,34 @@ export const navigationGroups: NavigationGroup[] = [
   },
   {
     groupTitle: "Configurações",
-    items: [
-      { title: "Bots", href: "/configuracoes/bots", icon: Icons.bot, permission: "settings:edit" },
-      { title: "Clientes", href: "/configuracoes/clientes", icon: Icons.users2, permission: "settings:edit" },
-      { title: "Etiquetas", href: "/configuracoes/etiquetas", icon: Icons.tags, permission: "settings:edit" },
-      { title: "Filas de Atendimento", href: "/configuracoes/filas", icon: Icons.listOrdered, permission: "settings:edit" },
-      { title: "Pausas", href: "/configuracoes/pausas", icon: Icons.pauseCircle, permission: "settings:edit" },
-      { title: "Pesquisas", href: "/configuracoes/pesquisas", icon: Icons.smile, permission: "settings:edit" },
-      { title: "Hashtags", href: "/configuracoes/hashtags", icon: Icons.hash, permission: "settings:edit" },
-      { title: "Mensagens Prontas", href: "/configuracoes/mensagens-prontas", icon: Icons.messageSquarePlus, permission: "settings:edit" },
-      { title: "Anexos", href: "/configuracoes/anexos", icon: Icons.paperclip, permission: "settings:edit" },
-      { title: "SLAs", href: "/configuracoes/slas", icon: Icons.timer, permission: "settings:edit" },
-      { title: "Prioridades", href: "/configuracoes/prioridades", icon: Icons.alertTriangle, permission: "settings:edit" },
-      { title: "API", href: "/configuracoes/api", icon: Icons.settings, highlight: "blue", permission: "settings:edit" },
+    subgroups: [
+      {
+        subgroupTitle: "Atendimento",
+        items: [
+          { title: "Filas de Atendimento", href: "/configuracoes/filas", icon: Icons.listOrdered, permission: "settings:edit" },
+          { title: "Pausas", href: "/configuracoes/pausas", icon: Icons.pauseCircle, permission: "settings:edit" },
+          { title: "SLAs", href: "/configuracoes/slas", icon: Icons.timer, permission: "settings:edit" },
+          { title: "Prioridades", href: "/configuracoes/prioridades", icon: Icons.alertTriangle, permission: "settings:edit" },
+        ],
+      },
+      {
+        subgroupTitle: "Conteúdo",
+        items: [
+          { title: "Clientes", href: "/configuracoes/clientes", icon: Icons.users2, permission: "settings:edit" },
+          { title: "Etiquetas", href: "/configuracoes/etiquetas", icon: Icons.tags, permission: "settings:edit" },
+          { title: "Hashtags", href: "/configuracoes/hashtags", icon: Icons.hash, permission: "settings:edit" },
+          { title: "Mensagens Prontas", href: "/configuracoes/mensagens-prontas", icon: Icons.messageSquarePlus, permission: "settings:edit" },
+          { title: "Anexos", href: "/configuracoes/anexos", icon: Icons.paperclip, permission: "settings:edit" },
+          { title: "Pesquisas", href: "/configuracoes/pesquisas", icon: Icons.smile, permission: "settings:edit" },
+        ],
+      },
+      {
+        subgroupTitle: "Integrações",
+        items: [
+          { title: "Bots", href: "/configuracoes/bots", icon: Icons.bot, permission: "settings:edit" },
+          { title: "API", href: "/configuracoes/api", icon: Icons.settings, highlight: "blue", permission: "settings:edit" },
+        ],
+      },
     ],
   },
   {
@@ -92,9 +113,14 @@ export const navigationGroups: NavigationGroup[] = [
   },
 ];
 
-const flattenedItems: NavigationItem[] = navigationGroups.flatMap((group) =>
-  group.items.map((item) => ({ ...item, groupTitle: item.groupTitle ?? group.groupTitle }))
-);
+const flattenedItems: NavigationItem[] = navigationGroups.flatMap((group) => {
+  if (group.subgroups) {
+    return group.subgroups.flatMap((subgroup) =>
+      subgroup.items.map((item) => ({ ...item, groupTitle: item.groupTitle ?? group.groupTitle }))
+    );
+  }
+  return (group.items ?? []).map((item) => ({ ...item, groupTitle: item.groupTitle ?? group.groupTitle }));
+});
 
 /**
  * Returns the navigation item whose `href` best matches the provided path. The
