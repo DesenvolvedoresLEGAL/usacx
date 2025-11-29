@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Conversation, ConversationStatus } from '@/types/conversations';
+import { Conversation, ConversationStatus, Message } from '@/types/conversations';
 import { mockConversations } from '@/data/mockConversations';
+import { useRealtimeSimulation } from './useRealtimeSimulation';
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>(mockConversations);
@@ -38,6 +39,41 @@ export function useConversations() {
       selectConversation(nextInQueue.id);
     }
   };
+
+  // Handlers para simulação realtime
+  const handleNewMessage = (conversationId: string, message: Message) => {
+    setConversations(prev => prev.map(conv => {
+      if (conv.id === conversationId) {
+        return {
+          ...conv,
+          messages: [...conv.messages, message],
+          lastMessage: message,
+          unreadCount: selectedId === conversationId ? 0 : conv.unreadCount + 1,
+          updatedAt: new Date(),
+        };
+      }
+      return conv;
+    }));
+  };
+
+  const handleNewConversation = (conversation: Conversation) => {
+    setConversations(prev => [conversation, ...prev]);
+  };
+
+  const handleStatusUpdate = (conversationId: string, status: ConversationStatus) => {
+    setConversations(prev => prev.map(conv =>
+      conv.id === conversationId ? { ...conv, status } : conv
+    ));
+  };
+
+  // Conectar simulação de realtime
+  useRealtimeSimulation({
+    conversations,
+    onNewMessage: handleNewMessage,
+    onNewConversation: handleNewConversation,
+    onStatusUpdate: handleStatusUpdate,
+    selectedConversationId: selectedId,
+  });
 
   return {
     conversations: filteredConversations,
