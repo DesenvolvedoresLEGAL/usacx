@@ -38,6 +38,7 @@ export interface Conversation {
   assignedAgent?: string;
   startedAt: Date;
   updatedAt: Date;
+  isFavorite?: boolean;
 }
 
 export interface Agent {

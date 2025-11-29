@@ -105,31 +105,8 @@ export function ConversationHeader({ onAttendNext }: ConversationHeaderProps) {
   return (
     <>
       <header className="border-b bg-background px-6 py-3 flex items-center justify-between">
-        {/* LADO ESQUERDO - Status do Agente */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-2 hover:bg-accent">
-              <div className="h-2 w-2 rounded-full bg-green-500"></div>
-              <span className="text-sm font-medium">{currentAgent?.displayName || 'Agente'}</span>
-              <Badge variant="secondary" className="text-xs">Online</Badge>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuLabel>Alterar Status</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
-              Online
-            </DropdownMenuItem>
-            {pauseReasons.map(reason => (
-              <DropdownMenuItem key={reason.id} onClick={() => handlePause(reason)}>
-                <Coffee className="h-4 w-4 mr-2" />
-                {reason.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* LADO ESQUERDO - Empty/Clean */}
+        <div></div>
 
         {/* LADO DIREITO - Ações Agrupadas */}
         <div className="flex items-center gap-3">
