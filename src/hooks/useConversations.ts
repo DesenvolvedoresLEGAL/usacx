@@ -47,7 +47,10 @@ export function useConversations() {
         .order('updated_at', { ascending: false });
 
       if (convError) throw convError;
-      if (!conversationsData) return;
+      if (!conversationsData) {
+        setConversations([]);
+        return;
+      }
 
       // Para cada conversa, buscar mensagens e tags
       const conversationsWithData: Conversation[] = await Promise.all(
@@ -145,7 +148,8 @@ export function useConversations() {
       supabase.removeChannel(conversationsChannel);
       supabase.removeChannel(messagesChannel);
     };
-  }, [currentAgent, fetchConversations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAgent]);
 
   // Filtrar conversas
   const filteredConversations = useMemo(() => {
