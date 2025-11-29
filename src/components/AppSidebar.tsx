@@ -15,9 +15,14 @@ import {
 import { Icons } from "@/components/icons";
 import { navigationGroups } from "@/data/navigation";
 import { ChevronDown } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { usePermissions } from "@/contexts/PermissionsContext";
+import { Badge } from "@/components/ui/badge";
 
 export function AppSidebar() {
   const location = useLocation();
+  const { role, signOut } = useAuth();
+  const { hasPermission } = usePermissions();
 
   return (
     <Sidebar className="border-r bg-sidebar text-sidebar-foreground">
@@ -26,11 +31,27 @@ export function AppSidebar() {
           <Icons.logo className="h-8 w-8 text-primary" />
           <span className="text-lg font-semibold text-primary">USAC</span>
         </Link>
+        {role && (
+          <Badge variant="secondary" className="mt-2 justify-center">
+            {role === 'agent' && 'Vendedor'}
+            {role === 'manager' && 'Gestor'}
+            {role === 'admin' && 'Administrador'}
+          </Badge>
+        )}
       </SidebarHeader>
       <SidebarContent className="flex-grow">
         {navigationGroups.map((group, groupIndex) => {
           const groupKey = group.groupTitle ?? `group-${groupIndex}`;
-          const isGroupActive = group.items.some((item) => location.pathname.startsWith(item.href));
+          
+          // Filter items based on permissions
+          const visibleItems = group.items.filter(item => 
+            !item.permission || hasPermission(item.permission)
+          );
+
+          // Skip group if no visible items
+          if (visibleItems.length === 0) return null;
+
+          const isGroupActive = visibleItems.some((item) => location.pathname.startsWith(item.href));
 
           if (group.groupTitle) {
             return (
@@ -43,7 +64,7 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <SidebarGroupContent className="pt-1">
                       <SidebarMenu>
-                        {group.items.map((item) => {
+                        {visibleItems.map((item) => {
                           const active = location.pathname.startsWith(item.href);
                           return (
                             <SidebarMenuItem key={item.title}>
@@ -76,7 +97,7 @@ export function AppSidebar() {
             <SidebarGroup key={groupKey}>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {group.items.map((item) => {
+                  {visibleItems.map((item) => {
                     const active = location.pathname.startsWith(item.href);
                     return (
                       <SidebarMenuItem key={item.title}>
@@ -101,11 +122,9 @@ export function AppSidebar() {
       <SidebarFooter className="border-t p-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="w-full" asChild>
-              <Link to="/login" className="flex h-full w-full items-center">
-                <Icons.logout className="mr-2 h-5 w-5 shrink-0" />
-                <span className="truncate">Sair</span>
-              </Link>
+            <SidebarMenuButton className="w-full" onClick={signOut}>
+              <Icons.logout className="mr-2 h-5 w-5 shrink-0" />
+              <span className="truncate">Sair</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
