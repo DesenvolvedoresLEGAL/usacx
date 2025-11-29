@@ -6,20 +6,62 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Rate limiting: Simple in-memory store (for production, use Redis or similar)
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 10; // requests per minute
+const RATE_WINDOW = 60 * 1000; // 1 minute in ms
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const userLimit = rateLimitStore.get(userId);
+  
+  if (!userLimit || now > userLimit.resetAt) {
+    rateLimitStore.set(userId, { count: 1, resetAt: now + RATE_WINDOW });
+    return true;
+  }
+  
+  if (userLimit.count >= RATE_LIMIT) {
+    return false;
+  }
+  
+  userLimit.count++;
+  return true;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { reportType, filters = {}, cacheMinutes = 60 } = await req.json();
+    const authHeader = req.headers.get('Authorization');
+    const token = authHeader?.replace('Bearer ', '');
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    // Authenticate user
+    const { data: userData, error: authError } = await supabase.auth.getUser(token || '');
+    if (authError || !userData?.user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check rate limit
+    if (!checkRateLimit(userData.user.id)) {
+      console.warn(`Rate limit exceeded for user: ${userData.user.id}`);
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { reportType, filters = {}, cacheMinutes = 60 } = await req.json();
 
     // Verificar se existe relatório em cache válido
-    const cacheKey = JSON.stringify({ reportType, filters });
     const { data: cachedReport } = await supabase
       .from('reports_cache')
       .select('*')
@@ -41,7 +83,6 @@ serve(async (req) => {
 
     switch (reportType) {
       case 'attendance_summary': {
-        // Resumo de atendimentos
         const { data: conversations } = await supabase
           .from('conversations')
           .select('*')
@@ -64,7 +105,6 @@ serve(async (req) => {
       }
 
       case 'agent_performance': {
-        // Performance dos agentes
         const { data: conversations } = await supabase
           .from('conversations')
           .select(`
@@ -98,7 +138,6 @@ serve(async (req) => {
       }
 
       case 'channel_distribution': {
-        // Distribuição por canal
         const { data: conversations } = await supabase
           .from('conversations')
           .select(`
@@ -130,10 +169,6 @@ serve(async (req) => {
 
     // Salvar em cache
     const expiresAt = new Date(Date.now() + cacheMinutes * 60 * 1000);
-    const authHeader = req.headers.get('Authorization');
-    const token = authHeader?.replace('Bearer ', '');
-    
-    const { data: userData } = await supabase.auth.getUser(token || '');
     
     await supabase
       .from('reports_cache')
@@ -142,7 +177,7 @@ serve(async (req) => {
         filters,
         data: reportData,
         expires_at: expiresAt.toISOString(),
-        generated_by: userData?.user?.id,
+        generated_by: userData.user.id,
       });
 
     console.log('Generated new report:', reportType);

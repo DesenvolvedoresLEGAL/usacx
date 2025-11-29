@@ -1,13 +1,39 @@
 # 📚 Documentação das Edge Functions - USAC
 
+## 🔒 Segurança e Rate Limiting
+
+Todas as Edge Functions implementam camadas de segurança robustas:
+
+### Rate Limiting Implementado
+- **`generate-report`**: 10 requisições/minuto por usuário autenticado
+- **`ai-suggest-response`**: 20 requisições/minuto por IP
+- **`ai-summarize-conversation`**: 10 requisições/minuto por IP
+
+### Proteções de Segurança
+- ✅ CORS configurado adequadamente
+- ✅ Validação de autenticação JWT (onde aplicável)
+- ✅ Logging de tentativas suspeitas
+- ✅ Proteção contra abuso via rate limiting
+- ✅ Tratamento seguro de erros (sem vazamento de informações sensíveis)
+
+### Códigos de Status HTTP
+- `200` - Sucesso
+- `401` - Não autorizado (token inválido/ausente)
+- `429` - Rate limit excedido (aguarde antes de tentar novamente)
+- `402` - Créditos de IA esgotados
+- `500` - Erro interno do servidor
+
+---
+
 ## 🎯 Funções Disponíveis
 
 ### 1. `generate-report`
 Gera relatórios analíticos com cache inteligente.
 
+**Rate Limit:** 10 requisições/minuto por usuário  
 **Endpoint:** `/functions/v1/generate-report`  
 **Método:** POST  
-**Autenticação:** Requerida
+**Autenticação:** ✅ Requerida (JWT)
 
 **Payload:**
 ```json
@@ -78,9 +104,10 @@ Distribuição por canal
 ### 2. `ai-suggest-response`
 Gera 3 sugestões de resposta usando IA (Lovable AI - Gemini 2.5 Flash).
 
+**Rate Limit:** 20 requisições/minuto por IP  
 **Endpoint:** `/functions/v1/ai-suggest-response`  
 **Método:** POST  
-**Autenticação:** Opcional
+**Autenticação:** ⚠️ Opcional (recomendada para produção)
 
 **Payload:**
 ```json
@@ -112,9 +139,10 @@ Gera 3 sugestões de resposta usando IA (Lovable AI - Gemini 2.5 Flash).
 ### 3. `ai-summarize-conversation`
 Gera resumo automático de uma conversa usando IA.
 
+**Rate Limit:** 10 requisições/minuto por IP  
 **Endpoint:** `/functions/v1/ai-summarize-conversation`  
 **Método:** POST  
-**Autenticação:** Requerida
+**Autenticação:** ✅ Requerida (JWT)
 
 **Payload:**
 ```json
@@ -227,19 +255,28 @@ const { data, error } = await supabase.functions.invoke('ai-summarize-conversati
 
 ## 🔧 Troubleshooting
 
-### Erro 429 - Rate Limit
+### Erro 401 - Unauthorized
 ```
-Solução: Aguardar alguns minutos ou implementar retry logic
+Causa: Token de autenticação ausente, inválido ou expirado
+Solução: Verificar se o header Authorization está correto e o token é válido
+```
+
+### Erro 429 - Rate Limit Exceeded
+```
+Causa: Excedeu o limite de requisições permitidas
+Solução: Aguardar ~1 minuto antes de tentar novamente ou implementar retry logic com backoff exponencial
 ```
 
 ### Erro 402 - Payment Required
 ```
+Causa: Créditos de IA esgotados no Lovable AI Gateway
 Solução: Adicionar créditos em Settings → Workspace → Usage
 ```
 
 ### Erro 500 - Internal Server Error
 ```
-Solução: Verificar logs da função em Lovable Cloud → Backend → Edge Functions
+Causa: Erro inesperado no processamento da função
+Solução: Verificar logs da função em Lovable Cloud → Backend → Edge Functions → Logs
 ```
 
 ---
