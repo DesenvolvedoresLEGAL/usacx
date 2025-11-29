@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Coffee, Play, Plus } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Users, Coffee, Play, Plus, Bell, ChevronDown, LayoutDashboard, Settings, HelpCircle, LogOut, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentAgent } from '@/hooks/useCurrentAgent';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ConversationHeaderProps {
@@ -19,13 +22,18 @@ interface PauseReason {
 }
 
 export function ConversationHeader({ onAttendNext }: ConversationHeaderProps) {
-  const [pauseDialogOpen, setPauseDialogOpen] = useState(false);
   const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
-  const [selectedPauseReason, setSelectedPauseReason] = useState<string>('');
   const [pauseReasons, setPauseReasons] = useState<PauseReason[]>([]);
   const [queueSize, setQueueSize] = useState(0);
   const { toast } = useToast();
   const currentAgent = useCurrentAgent();
+  const { user, profile, signOut } = useAuth();
+
+  const userInitials = profile?.display_name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase() || '??';
 
   // Buscar motivos de pausa do banco
   useEffect(() => {
@@ -79,23 +87,11 @@ export function ConversationHeader({ onAttendNext }: ConversationHeaderProps) {
     };
   }, []);
 
-  const handlePauseRequest = () => {
-    if (!selectedPauseReason) {
-      toast({
-        title: "Selecione um motivo",
-        description: "Por favor, selecione o motivo da pausa.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const reason = pauseReasons.find(r => r.id === selectedPauseReason);
+  const handlePause = (reason: PauseReason) => {
     toast({
       title: "Pausa solicitada",
-      description: `Você entrou em pausa: ${reason?.label}`,
+      description: `Você entrou em pausa: ${reason.label}`,
     });
-    setPauseDialogOpen(false);
-    setSelectedPauseReason('');
   };
 
   const handleNewChat = () => {
@@ -109,87 +105,119 @@ export function ConversationHeader({ onAttendNext }: ConversationHeaderProps) {
   return (
     <>
       <header className="border-b bg-background px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-green-500"></div>
-            <span className="text-sm font-medium">{currentAgent?.displayName || 'Agente'}</span>
-            <Badge variant="secondary" className="text-xs">
+        {/* LADO ESQUERDO - Status do Agente */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="gap-2 hover:bg-accent">
+              <div className="h-2 w-2 rounded-full bg-green-500"></div>
+              <span className="text-sm font-medium">{currentAgent?.displayName || 'Agente'}</span>
+              <Badge variant="secondary" className="text-xs">Online</Badge>
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuLabel>Alterar Status</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
               Online
+            </DropdownMenuItem>
+            {pauseReasons.map(reason => (
+              <DropdownMenuItem key={reason.id} onClick={() => handlePause(reason)}>
+                <Coffee className="h-4 w-4 mr-2" />
+                {reason.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* LADO DIREITO - Ações Agrupadas */}
+        <div className="flex items-center gap-3">
+          {/* Badge de Fila */}
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Users className="h-4 w-4" />
+            <span>Fila</span>
+            <Badge variant={queueSize > 0 ? "destructive" : "secondary"}>
+              {queueSize}
             </Badge>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Users className="h-4 w-4" />
-            Clientes na fila
-            <Badge variant="secondary" className="ml-1">{queueSize}</Badge>
-          </Button>
-
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="gap-2"
-            onClick={() => setPauseDialogOpen(true)}
-          >
-            <Coffee className="h-4 w-4" />
-            Solicitar pausa
-          </Button>
-
-          <Button 
-            size="sm" 
-            className="gap-2"
-            onClick={onAttendNext}
-          >
+          {/* Botão Primário - Atender Próximo */}
+          <Button size="sm" className="gap-2" onClick={onAttendNext}>
             <Play className="h-4 w-4" />
             Atender próximo
           </Button>
 
-          <Button 
-            size="sm" 
-            variant="secondary"
-            className="gap-2"
-            onClick={() => setNewChatDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4" />
-            Novo atendimento
+          {/* Dropdown + Novo */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Plus className="h-4 w-4" />
+                Novo
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setNewChatDialogOpen(true)}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Novo atendimento
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Notificações */}
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <Bell className="h-5 w-5" />
           </Button>
+
+          {/* Avatar com Dropdown do Usuário */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={profile?.avatar_url || undefined} />
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {userInitials}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium">{profile?.display_name || 'Usuário'}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/dashboard" className="cursor-pointer">
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  Meu Dashboard
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/perfil/configuracoes" className="cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Configurações
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/ajuda" className="cursor-pointer">
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  Suporte
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={signOut} className="cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
-      <Dialog open={pauseDialogOpen} onOpenChange={setPauseDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Solicitar Pausa</DialogTitle>
-            <DialogDescription>
-              Selecione o motivo da sua pausa
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <Select value={selectedPauseReason} onValueChange={setSelectedPauseReason}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o motivo" />
-              </SelectTrigger>
-              <SelectContent>
-                {pauseReasons.map(reason => (
-                  <SelectItem key={reason.id} value={reason.id}>
-                    {reason.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setPauseDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handlePauseRequest}>
-                Confirmar pausa
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
+      {/* Dialog Novo Atendimento */}
       <Dialog open={newChatDialogOpen} onOpenChange={setNewChatDialogOpen}>
         <DialogContent>
           <DialogHeader>
