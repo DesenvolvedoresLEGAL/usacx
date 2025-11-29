@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, RefreshCw } from "lucide-react";
@@ -7,58 +7,39 @@ import { Badge } from "@/components/ui/badge";
 import { DateRange } from "react-day-picker";
 import { addDays, format } from "date-fns";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
-import { Icons } from "@/components/icons";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-const MOCK_RESUMO = [
-  {
-    label: "Auditorias Realizadas",
-    value: 32,
-  },
-  {
-    label: "Erros Encontrados",
-    value: 8,
-  },
-  {
-    label: "Aprovações",
-    value: 20,
-  },
-  {
-    label: "Pendências",
-    value: 4,
-  },
-];
+interface AuditLog {
+  id: string;
+  user_id: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string | null;
+  old_values: any;
+  new_values: any;
+  created_at: string;
+  user_display_name?: string;
+}
 
-const MOCK_AUDITORIAS = [
-  {
-    id: 201,
-    agente: "João Lima",
-    acao: "Mensagem não autorizada",
-    status: "erro",
-    data: "2024-06-10 13:15",
-    observacao: "Enviou mensagem fora do padrão.",
-  },
-  {
-    id: 202,
-    agente: "Maria Silva",
-    acao: "Atendimento aprovado",
-    status: "ok",
-    data: "2024-06-10 14:52",
-    observacao: "-",
-  },
-  {
-    id: 203,
-    agente: "Carlos Souza",
-    acao: "Pendência",
-    status: "pendente",
-    data: "2024-06-11 09:23",
-    observacao: "Análise em andamento.",
-  },
-];
+const actionLabels: Record<string, string> = {
+  create: 'Criação',
+  update: 'Atualização',
+  delete: 'Exclusão',
+  assign: 'Atribuição',
+  finish: 'Finalização',
+  pause: 'Pausa',
+  resume: 'Retomada',
+};
 
-const statusColors = {
-  ok: "bg-green-100 text-green-800",
-  erro: "bg-red-100 text-red-700",
-  pendente: "bg-yellow-100 text-yellow-800",
+const actionColors: Record<string, string> = {
+  create: "bg-blue-100 text-blue-800",
+  update: "bg-yellow-100 text-yellow-800",
+  delete: "bg-red-100 text-red-700",
+  assign: "bg-green-100 text-green-800",
+  finish: "bg-purple-100 text-purple-800",
+  pause: "bg-orange-100 text-orange-800",
+  resume: "bg-green-100 text-green-800",
 };
 
 export const AuditAttendanceTab = () => {
@@ -66,133 +47,191 @@ export const AuditAttendanceTab = () => {
     from: addDays(new Date(), -7),
     to: new Date(),
   });
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [actionFilter, setActionFilter] = useState<'assign' | 'create' | 'delete' | 'finish' | 'update' | null>(null);
+  const { toast } = useToast();
 
-  const lista = MOCK_AUDITORIAS.filter((item) =>
-    !statusFilter ? true : item.status === statusFilter
-  );
+  const fetchAuditLogs = async () => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from('audit_logs')
+        .select('*')
+        .eq('entity_type', 'conversation')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (date?.from) {
+        query = query.gte('created_at', date.from.toISOString());
+      }
+      if (date?.to) {
+        query = query.lte('created_at', date.to.toISOString());
+      }
+      if (actionFilter) {
+        query = query.eq('action', actionFilter);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      if (data) {
+        setLogs(data);
+      }
+    } catch (error) {
+      console.error('Error fetching audit logs:', error);
+      toast({
+        title: 'Erro ao carregar logs',
+        description: 'Não foi possível carregar os logs de auditoria.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAuditLogs();
+  }, [date, actionFilter]);
+
+  const stats = {
+    total: logs.length,
+    updates: logs.filter(l => l.action === 'update').length,
+    assigns: logs.filter(l => l.action === 'assign').length,
+    finishes: logs.filter(l => l.action === 'finish').length,
+  };
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Filtros de status e ações */}
-      <div className="flex flex-wrap gap-2">
+      {/* Resumo de estatísticas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold">{stats.total}</div>
+            <p className="text-xs text-muted-foreground mt-1">Total de Ações</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold">{stats.updates}</div>
+            <p className="text-xs text-muted-foreground mt-1">Atualizações</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold">{stats.assigns}</div>
+            <p className="text-xs text-muted-foreground mt-1">Atribuições</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-2xl font-bold">{stats.finishes}</div>
+            <p className="text-xs text-muted-foreground mt-1">Finalizações</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filtros de ação */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <CalendarDateRangePicker value={date} onChange={setDate} />
+        
         <Button 
-          variant={statusFilter === null ? "default" : "outline"} 
+          variant={actionFilter === null ? "default" : "outline"} 
           size="sm" 
-          onClick={() => setStatusFilter(null)}
+          onClick={() => setActionFilter(null)}
         >
           <FileText className="w-4 h-4 mr-2" />
           Todas
         </Button>
         <Button 
-          variant={statusFilter === "ok" ? "default" : "outline"} 
+          variant={actionFilter === "assign" ? "default" : "outline"} 
           size="sm" 
-          onClick={() => setStatusFilter("ok")}
+          onClick={() => setActionFilter("assign")}
         >
-          <Badge className="mr-1 bg-green-100 text-green-800" variant="outline">OK</Badge>
-          Aprovados
+          Atribuições
         </Button>
         <Button 
-          variant={statusFilter === "erro" ? "default" : "outline"} 
+          variant={actionFilter === "update" ? "default" : "outline"} 
           size="sm" 
-          onClick={() => setStatusFilter("erro")}
+          onClick={() => setActionFilter("update")}
         >
-          <Badge className="mr-1 bg-red-100 text-red-700" variant="outline">Erro</Badge>
-          Erros
+          Atualizações
         </Button>
         <Button 
-          variant={statusFilter === "pendente" ? "default" : "outline"} 
+          variant={actionFilter === "finish" ? "default" : "outline"} 
           size="sm" 
-          onClick={() => setStatusFilter("pendente")}
+          onClick={() => setActionFilter("finish")}
         >
-          <Badge className="mr-1 bg-yellow-100 text-yellow-800" variant="outline">Pendente</Badge>
-          Pendências
+          Finalizações
         </Button>
+
         <div className="ml-auto flex gap-2">
+          <Button variant="outline" size="sm" onClick={fetchAuditLogs} disabled={loading}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Atualizar
+          </Button>
           <Button variant="outline" size="sm">
             <Download className="w-4 h-4 mr-2" />
             Exportar
           </Button>
-          <Button variant="outline" size="sm">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Atualizar
-          </Button>
         </div>
       </div>
 
-      {/* Filtro de período */}
+      {/* Tabela de auditoria */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-            <label className="text-sm font-medium text-muted-foreground">
-              Período
-            </label>
-            <CalendarDateRangePicker
-              value={date}
-              onChange={setDate}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Cards de resumo */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {MOCK_RESUMO.map((item) => (
-          <Card key={item.label}>
-            <CardContent className="py-4 flex flex-col gap-1 items-start">
-              <span className="text-sm text-muted-foreground">{item.label}</span>
-              <span className="font-bold text-2xl">{item.value}</span>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Tabela de auditorias */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Data/Hora</TableHead>
+                <TableHead>Usuário</TableHead>
+                <TableHead>Ação</TableHead>
+                <TableHead>Conversa ID</TableHead>
+                <TableHead>Alterações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {logs.length === 0 ? (
                 <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Agente</TableHead>
-                  <TableHead>Ação</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Observação</TableHead>
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    {loading ? 'Carregando logs...' : 'Nenhum log de auditoria encontrado no período selecionado.'}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lista.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-10">
-                      <Icons.shieldCheck className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
-                      <p>Nenhum registro encontrado para os filtros selecionados.</p>
+              ) : (
+                logs.map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell className="font-mono text-xs">
+                      {format(new Date(log.created_at), 'dd/MM/yyyy HH:mm:ss')}
+                    </TableCell>
+                    <TableCell>
+                      {log.user_id || 'Sistema'}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={actionColors[log.action] || "bg-gray-100 text-gray-800"}>
+                        {actionLabels[log.action] || log.action}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {log.entity_id ? log.entity_id.slice(0, 8) + '...' : '-'}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {log.old_values && log.new_values && (
+                        <div className="space-y-1">
+                          <div className="text-muted-foreground">
+                            De: <span className="font-mono">{JSON.stringify(log.old_values).slice(0, 50)}</span>
+                          </div>
+                          <div className="text-foreground">
+                            Para: <span className="font-mono">{JSON.stringify(log.new_values).slice(0, 50)}</span>
+                          </div>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
-                ) : (
-                  lista.map((a) => (
-                    <TableRow key={a.id}>
-                      <TableCell>{a.id}</TableCell>
-                      <TableCell>{a.agente}</TableCell>
-                      <TableCell>{a.acao}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[a.status as keyof typeof statusColors]}`}>
-                          {a.status === "ok"
-                            ? "Aprovado"
-                            : a.status === "erro"
-                            ? "Erro"
-                            : "Pendente"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">{a.data}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{a.observacao}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

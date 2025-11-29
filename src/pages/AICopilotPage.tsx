@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Lightbulb, MessageSquare, TrendingUp, Zap, Brain } from "lucide-react";
+import { AISuggestionPanel } from "@/components/ai/AISuggestionPanel";
+import { AISummaryPanel } from "@/components/ai/AISummaryPanel";
 
 export default function AICopilotPage() {
   return (
@@ -151,12 +153,23 @@ export default function AICopilotPage() {
         </CardContent>
       </Card>
 
-      <div className="text-center py-8 text-muted-foreground">
-        <p className="font-medium">🚀 Funcionalidade em Desenvolvimento</p>
-        <p className="text-sm mt-2">
-          O Copiloto do Agente estará disponível em breve para auxiliar sua equipe com IA em tempo real
-        </p>
+      {/* Painel de Testes de IA */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <AISuggestionPanel />
+        <AISummaryPanel />
       </div>
+
+      <Card className="bg-muted/30">
+        <CardContent className="pt-6">
+          <div className="text-center space-y-2">
+            <Brain className="w-12 h-12 mx-auto text-primary opacity-50" />
+            <p className="font-medium text-foreground">✨ Funcionalidades de IA Ativas</p>
+            <p className="text-sm text-muted-foreground">
+              As funções de IA estão prontas e podem ser testadas acima. Em breve serão integradas automaticamente no painel de conversas.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
