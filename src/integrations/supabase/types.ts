@@ -55,6 +55,48 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: Database["public"]["Enums"]["audit_action"]
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          new_values: Json | null
+          old_values: Json | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["audit_action"]
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["audit_action"]
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       channels: {
         Row: {
           config: Json | null
@@ -388,6 +430,39 @@ export type Database = {
           },
         ]
       }
+      reports_cache: {
+        Row: {
+          created_at: string
+          data: Json
+          expires_at: string
+          filters: Json
+          generated_at: string
+          generated_by: string | null
+          id: string
+          report_type: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          expires_at: string
+          filters?: Json
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          report_type: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          expires_at?: string
+          filters?: Json
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          report_type?: string
+        }
+        Relationships: []
+      }
       slas: {
         Row: {
           created_at: string
@@ -516,6 +591,7 @@ export type Database = {
         Args: { _agent_profile_id: string; _conversation_id: string }
         Returns: boolean
       }
+      cleanup_expired_reports: { Args: never; Returns: number }
       finish_conversation: {
         Args: { _conversation_id: string }
         Returns: boolean
@@ -528,9 +604,31 @@ export type Database = {
         }
         Returns: boolean
       }
+      log_audit: {
+        Args: {
+          _action: Database["public"]["Enums"]["audit_action"]
+          _entity_id: string
+          _entity_type: string
+          _metadata?: Json
+          _new_values?: Json
+          _old_values?: Json
+          _user_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "agent" | "manager" | "admin"
+      audit_action:
+        | "create"
+        | "update"
+        | "delete"
+        | "login"
+        | "logout"
+        | "assign"
+        | "finish"
+        | "pause"
+        | "resume"
       channel_type:
         | "whatsapp"
         | "instagram"
@@ -675,6 +773,17 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["agent", "manager", "admin"],
+      audit_action: [
+        "create",
+        "update",
+        "delete",
+        "login",
+        "logout",
+        "assign",
+        "finish",
+        "pause",
+        "resume",
+      ],
       channel_type: [
         "whatsapp",
         "instagram",
