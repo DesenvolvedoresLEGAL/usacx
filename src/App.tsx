@@ -16,7 +16,6 @@ import LiveManagementPage from "./pages/LiveManagementPage";
 import AttendanceManagementPage from "./pages/AttendanceManagementPage";
 import MainLayout from "./components/MainLayout";
 import SettingsPage from "./pages/SettingsPage";
-import AgentsPage from "./pages/AgentsPage";
 import ChannelsManagementPage from "./pages/ChannelsManagementPage";
 import ReportAttendancesPage from "./pages/ReportAttendancesPage";
 import ReportClientsPage from "./pages/ReportClientsPage";
@@ -191,10 +190,6 @@ const App = () => (
               <Route path="/ajuda/versao" element={<HelpVersionPage />} />
               <Route path="/ajuda/cancelamento" element={<HelpCancellationPage />} />
 
-                  {/* Old placeholder routes, can be removed if all are covered by new structure */}
-                  <Route path="/templates" element={<div className="p-4"><h1>Templates (Legado)</h1></div>} />
-                  <Route path="/reports" element={<div className="p-4"><h1>Relatórios (Legado)</h1></div>} />
-                  <Route path="/agents" element={<AgentsPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                 </Route>
                 
