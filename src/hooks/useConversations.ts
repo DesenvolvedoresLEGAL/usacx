@@ -21,15 +21,29 @@ export function useConversations() {
     try {
       setLoading(true);
 
-      // Query base - busca conversas do agente ou na fila
-      const { data: conversationsData, error: convError } = await supabase
+      // Query base - busca conversas baseado na role do usuário
+      let query = supabase
         .from('conversations')
         .select(`
           *,
           client:clients(*),
           channel:channels(*)
-        `)
-        .or(`assigned_agent_id.eq.${currentAgent.profile?.id},status.eq.waiting`)
+        `);
+
+      // ADMIN: vê todas as conversas
+      if (currentAgent.role === 'admin') {
+        // Não adiciona filtro, vê tudo
+      }
+      // MANAGER: vê conversas do time + em espera
+      else if (currentAgent.role === 'manager') {
+        // RLS policy já cuida disso, não precisa filtro adicional
+      }
+      // AGENT: vê apenas suas conversas + em espera
+      else {
+        query = query.or(`assigned_agent_id.eq.${currentAgent.profile?.id},status.eq.waiting`);
+      }
+
+      const { data: conversationsData, error: convError } = await query
         .order('updated_at', { ascending: false });
 
       if (convError) throw convError;
