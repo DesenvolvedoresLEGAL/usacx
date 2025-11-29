@@ -168,12 +168,12 @@ export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserForm
           </div>
           <div>
             <Label htmlFor="team">Time (opcional)</Label>
-            <Select value={formData.team_id} onValueChange={(value) => setFormData({ ...formData, team_id: value })}>
+            <Select value={formData.team_id || "none"} onValueChange={(value) => setFormData({ ...formData, team_id: value === "none" ? "" : value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um time" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Sem time</SelectItem>
+                <SelectItem value="none">Sem time</SelectItem>
                 {teams.map((team) => (
                   <SelectItem key={team.id} value={team.id}>
                     {team.name}
