@@ -1,7 +1,7 @@
 
 import { Fragment, useMemo } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Bell, HelpCircleIcon, LogOut, Menu as MenuIcon, Settings, UserCircle } from "lucide-react";
+import { Bell, HelpCircleIcon, LogOut, Menu as MenuIcon, MessageSquare, Settings, UserCircle } from "lucide-react";
 import { AppSidebar } from "./AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -165,13 +165,19 @@ const MainLayout = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
+                    <Link to="/conversations">
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      <span>Meus Atendimentos</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link to="/perfil/configuracoes">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Configurar Perfil</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/suporte">
+                    <Link to="/ajuda">
                       <HelpCircleIcon className="mr-2 h-4 w-4" />
                       <span>Suporte</span>
                     </Link>
