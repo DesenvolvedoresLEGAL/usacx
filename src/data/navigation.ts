@@ -62,8 +62,10 @@ export const navigationGroups: NavigationGroup[] = [
   {
     groupTitle: "Inteligência Artificial",
     items: [
-      { title: "Chatbot", href: "/ia/chatbot", icon: Icons.messageSquare, permission: "ai:chatbot" },
-      { title: "Machine Learning", href: "/ia/machine-learning", icon: Icons.barChart2, permission: "ai:ml" },
+      { title: "Agentes de IA", href: "/ia/agentes", icon: Icons.bot, permission: "ai:chatbot" },
+      { title: "Copiloto", href: "/ia/copiloto", icon: Icons.sparkles, permission: "ai:ml" },
+      { title: "Analytics IA", href: "/ia/analytics", icon: Icons.pieChart, permission: "ai:ml" },
+      { title: "Base de Conhecimento", href: "/ia/conhecimento", icon: Icons.bookOpen, permission: "ai:ml" },
     ],
   },
   {
@@ -99,7 +101,6 @@ export const navigationGroups: NavigationGroup[] = [
       {
         subgroupTitle: "Integrações",
         items: [
-          { title: "Bots", href: "/configuracoes/bots", icon: Icons.bot, permission: "settings:edit" },
           { title: "API", href: "/configuracoes/api", icon: Icons.settings, highlight: "blue", permission: "settings:edit" },
         ],
       },

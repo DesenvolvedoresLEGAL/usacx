@@ -45,6 +45,8 @@ import {
   UserCheck, // For active users
   Building, // For departments/companies
   Target, // For goals/targets
+  Sparkles, // For IA Copiloto
+  BookOpen, // For Base de Conhecimento
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -104,6 +106,10 @@ export const Icons = {
   userCheck: UserCheck, // For active users
   building: Building, // For departments/companies
   target: Target, // For goals/targets
+  
+  // IA
+  sparkles: Sparkles, // Copiloto
+  bookOpen: BookOpen, // Base de Conhecimento
 };
 
 export default Icons;

@@ -19,15 +19,16 @@ import SettingsPage from "./pages/SettingsPage";
 import ChannelsManagementPage from "./pages/ChannelsManagementPage";
 import ReportAttendancesPage from "./pages/ReportAttendancesPage";
 import ReportClientsPage from "./pages/ReportClientsPage";
-import MachineLearningPage from "./pages/MachineLearningPage";
-import ChatbotPage from "./pages/ChatbotPage";
+import AIAgentsPage from "./pages/AIAgentsPage";
+import AICopilotPage from "./pages/AICopilotPage";
+import AIAnalyticsPage from "./pages/AIAnalyticsPage";
+import AIKnowledgePage from "./pages/AIKnowledgePage";
 import ReportAnalyticsPage from "./pages/ReportAnalyticsPage";
 import ReportPerformancePage from "./pages/ReportPerformancePage";
 import SettingsApiPage from "./pages/SettingsApiPage";
 import ReportExportPage from "./pages/ReportExportPage";
 import UserManagementPage from "./pages/UserManagementPage";
 import AuditCenterPage from "./pages/AuditCenterPage";
-import SettingsBotPage from "./pages/SettingsBotPage";
 import SettingsClientsPage from "./pages/SettingsClientsPage";
 import SettingsTagsPage from "./pages/SettingsTagsPage";
 import SettingsQueuesPage from "./pages/SettingsQueuesPage";
@@ -100,8 +101,14 @@ const App = () => (
               <Route path="/relatorios/analitico" element={<ReportAnalyticsPage />} />
               <Route path="/relatorios/exportar" element={<ReportExportPage />} />
               {/* Inteligência Artificial */}
-              <Route path="/ia/chatbot" element={<ChatbotPage />} />
-              <Route path="/ia/machine-learning" element={<MachineLearningPage />} />
+              <Route path="/ia/agentes" element={<AIAgentsPage />} />
+              <Route path="/ia/copiloto" element={<AICopilotPage />} />
+              <Route path="/ia/analytics" element={<AIAnalyticsPage />} />
+              <Route path="/ia/conhecimento" element={<AIKnowledgePage />} />
+              {/* Redirects de compatibilidade IA */}
+              <Route path="/ia/chatbot" element={<Navigate to="/ia/agentes" replace />} />
+              <Route path="/ia/machine-learning" element={<Navigate to="/ia/conhecimento" replace />} />
+              <Route path="/configuracoes/bots" element={<Navigate to="/ia/agentes" replace />} />
                   {/* Acesso */}
                   <Route path="/acesso/usuarios" element={
                     <RouteGuard permission="access:users">
@@ -120,11 +127,6 @@ const App = () => (
                     </RouteGuard>
                   } />
                   {/* Configurações */}
-                  <Route path="/configuracoes/bots" element={
-                    <RouteGuard permission="settings:edit">
-                      <SettingsBotPage />
-                    </RouteGuard>
-                  } />
                   <Route path="/configuracoes/clientes" element={
                     <RouteGuard permission="settings:edit">
                       <SettingsClientsPage />
