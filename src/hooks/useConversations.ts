@@ -9,7 +9,7 @@ export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [quickFilter, setQuickFilter] = useState<'all' | 'unread' | 'favorites'>('all');
+  const [quickFilter, setQuickFilter] = useState<'all' | 'unread' | 'favorites' | 'archived'>('all');
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
   
@@ -188,6 +188,9 @@ export function useConversations() {
           break;
         case 'favorites':
           matchesQuickFilter = conv.isFavorite === true;
+          break;
+        case 'archived':
+          matchesQuickFilter = conv.status === 'finished';
           break;
         default:
           matchesQuickFilter = true;

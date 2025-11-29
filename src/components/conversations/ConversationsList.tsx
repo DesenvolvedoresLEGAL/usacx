@@ -23,8 +23,8 @@ interface ConversationsListProps {
   onSelectConversation: (id: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  quickFilter: 'all' | 'unread' | 'favorites';
-  onQuickFilterChange: (filter: 'all' | 'unread' | 'favorites') => void;
+  quickFilter: 'all' | 'unread' | 'favorites' | 'archived';
+  onQuickFilterChange: (filter: 'all' | 'unread' | 'favorites' | 'archived') => void;
 }
 
 interface PauseReason {
@@ -60,6 +60,10 @@ export function ConversationsList({
     toast.info(`Status alterado: ${reason.label}`);
   };
 
+  const handleSetOnline = () => {
+    toast.success('Status alterado: Online');
+  };
+
   return (
     <div className="flex flex-col h-full border-r bg-background">
       {/* MINI HEADER - WhatsApp Style */}
@@ -80,16 +84,16 @@ export function ConversationsList({
           />
         </div>
 
-        {/* 3-Dots Menu */}
+        {/* 3-Dots Menu - APENAS STATUS */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
               <MoreVertical className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuLabel>Meu Status</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSetOnline}>
               <div className="h-2 w-2 rounded-full bg-green-500 mr-2" />
               Online
             </DropdownMenuItem>
@@ -99,27 +103,12 @@ export function ConversationsList({
                 {reason.label}
               </DropdownMenuItem>
             ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>Ações Rápidas</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <Archive className="h-4 w-4 mr-2" />
-              Conversas arquivadas
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Star className="h-4 w-4 mr-2" />
-              Favoritas
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Settings className="h-4 w-4 mr-2" />
-              Configurações
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {/* QUICK FILTERS - Pills WhatsApp Style */}
-      <div className="px-4 py-2 border-b flex gap-2 overflow-x-auto">
+      {/* QUICK FILTERS - Pills Centralizados */}
+      <div className="px-4 py-2 border-b flex justify-center gap-2">
         <Button
           variant={quickFilter === 'all' ? 'default' : 'ghost'}
           size="sm"
@@ -143,6 +132,14 @@ export function ConversationsList({
           onClick={() => onQuickFilterChange('favorites')}
         >
           Favoritas
+        </Button>
+        <Button
+          variant={quickFilter === 'archived' ? 'default' : 'ghost'}
+          size="sm"
+          className="rounded-full"
+          onClick={() => onQuickFilterChange('archived')}
+        >
+          Arquivadas
         </Button>
       </div>
 
