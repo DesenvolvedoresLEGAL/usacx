@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Conversation, ConversationStatus } from '@/types/conversations';
 import { supabase } from '@/integrations/supabase/client';
 import { mapConversationFromDB, ConversationWithRelations } from '@/types/database';
@@ -11,12 +11,24 @@ export function useConversations() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ConversationStatus | 'all'>('all');
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
+  
   const currentAgent = useCurrentAgent();
   const { toast } = useToast();
+  
+  // Extrair valores primitivos estáveis para evitar loop infinito
+  const agentProfileId = currentAgent?.profile?.id;
+  const agentRole = currentAgent?.role;
+  
+  // Ref para usar em subscriptions sem causar re-renders
+  const fetchConversationsRef = useRef<() => Promise<void>>();
 
   // Buscar conversas do banco
   const fetchConversations = useCallback(async () => {
-    if (!currentAgent) return;
+    if (!agentProfileId) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -31,16 +43,16 @@ export function useConversations() {
         `);
 
       // ADMIN: vê todas as conversas
-      if (currentAgent.role === 'admin') {
+      if (agentRole === 'admin') {
         // Não adiciona filtro, vê tudo
       }
       // MANAGER: vê conversas do time + em espera
-      else if (currentAgent.role === 'manager') {
+      else if (agentRole === 'manager') {
         // RLS policy já cuida disso, não precisa filtro adicional
       }
       // AGENT: vê apenas suas conversas + em espera
       else {
-        query = query.or(`assigned_agent_id.eq.${currentAgent.profile?.id},status.eq.waiting`);
+        query = query.or(`assigned_agent_id.eq.${agentProfileId},status.eq.waiting`);
       }
 
       const { data: conversationsData, error: convError } = await query
@@ -99,16 +111,24 @@ export function useConversations() {
     } finally {
       setLoading(false);
     }
-  }, [currentAgent, toast]);
+  }, [agentProfileId, agentRole, toast]);
 
-  // Carregar conversas ao montar
+  // Manter ref atualizado para subscriptions
   useEffect(() => {
-    fetchConversations();
+    fetchConversationsRef.current = fetchConversations;
   }, [fetchConversations]);
+
+  // Carregar conversas ao montar (apenas uma vez)
+  useEffect(() => {
+    if (!initialized && agentProfileId) {
+      setInitialized(true);
+      fetchConversations();
+    }
+  }, [initialized, agentProfileId, fetchConversations]);
 
   // Setup realtime subscriptions
   useEffect(() => {
-    if (!currentAgent) return;
+    if (!agentProfileId) return;
 
     // Subscribe to conversations changes
     const conversationsChannel = supabase
@@ -122,7 +142,8 @@ export function useConversations() {
         },
         (payload) => {
           console.log('Conversation changed:', payload);
-          fetchConversations();
+          // Usar ref para evitar stale closure
+          fetchConversationsRef.current?.();
         }
       )
       .subscribe();
@@ -139,7 +160,8 @@ export function useConversations() {
         },
         (payload) => {
           console.log('New message:', payload);
-          fetchConversations();
+          // Usar ref para evitar stale closure
+          fetchConversationsRef.current?.();
         }
       )
       .subscribe();
@@ -148,8 +170,7 @@ export function useConversations() {
       supabase.removeChannel(conversationsChannel);
       supabase.removeChannel(messagesChannel);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAgent]);
+  }, [agentProfileId]);
 
   // Filtrar conversas
   const filteredConversations = useMemo(() => {
@@ -193,7 +214,7 @@ export function useConversations() {
 
   // Pegar próxima conversa da fila
   const attendNext = useCallback(async () => {
-    if (!currentAgent?.profile?.id) return;
+    if (!agentProfileId) return;
 
     try {
       // Buscar primeira conversa em espera
@@ -217,7 +238,7 @@ export function useConversations() {
       // Atribuir ao agente atual usando a função do banco
       const { data, error } = await supabase.rpc('assign_conversation_to_agent', {
         _conversation_id: nextConversation.id,
-        _agent_profile_id: currentAgent.profile.id,
+        _agent_profile_id: agentProfileId,
       });
 
       if (error) throw error;
@@ -246,7 +267,7 @@ export function useConversations() {
         variant: 'destructive',
       });
     }
-  }, [currentAgent, fetchConversations, toast]);
+  }, [agentProfileId, fetchConversations, toast]);
 
   return {
     conversations: filteredConversations,
