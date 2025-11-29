@@ -38,10 +38,7 @@ import SettingsTemplatesPage from "./pages/SettingsTemplatesPage";
 import SettingsAttachmentsPage from "./pages/SettingsAttachmentsPage";
 import SettingsSLAsPage from "./pages/SettingsSLAsPage";
 import SettingsPrioritiesPage from "./pages/SettingsPrioritiesPage";
-import HelpChatPage from "./pages/HelpChatPage";
-import HelpStatusPage from "./pages/HelpStatusPage";
-import HelpVersionPage from "./pages/HelpVersionPage";
-import HelpCancellationPage from "./pages/HelpCancellationPage";
+import HelpCenterPage from "./pages/HelpCenterPage";
 import ConversationsPage from "./pages/ConversationsPage";
 
 
@@ -184,10 +181,12 @@ const App = () => (
                     </RouteGuard>
                   } />
               {/* Ajuda */}
-              <Route path="/ajuda/chat" element={<HelpChatPage />} />
-              <Route path="/ajuda/status" element={<HelpStatusPage />} />
-              <Route path="/ajuda/versao" element={<HelpVersionPage />} />
-              <Route path="/ajuda/cancelamento" element={<HelpCancellationPage />} />
+              <Route path="/ajuda" element={<HelpCenterPage />} />
+              {/* Redirects de compatibilidade */}
+              <Route path="/ajuda/chat" element={<Navigate to="/ajuda?tab=support" replace />} />
+              <Route path="/ajuda/status" element={<Navigate to="/ajuda?tab=status" replace />} />
+              <Route path="/ajuda/versao" element={<Navigate to="/ajuda?tab=version" replace />} />
+              <Route path="/ajuda/cancelamento" element={<Navigate to="/ajuda?tab=account" replace />} />
 
                   <Route path="/settings" element={<SettingsPage />} />
                 </Route>

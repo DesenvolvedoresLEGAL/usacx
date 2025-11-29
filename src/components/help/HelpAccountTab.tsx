@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { XOctagon, AlertTriangle, Download, MessageSquare, Phone, Mail, CheckCircle } from "lucide-react";
+import { AlertTriangle, Download, MessageSquare, Phone, CheckCircle } from "lucide-react";
 
-export default function HelpCancellationPage() {
+export const HelpAccountTab = () => {
   const [cancellationStep, setCancellationStep] = useState(1);
   const [cancellationReason, setCancellationReason] = useState("");
   const [feedback, setFeedback] = useState("");
@@ -58,25 +57,16 @@ export default function HelpCancellationPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <XOctagon className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Ajuda - Cancelamento</h1>
-          </div>
-          <p className="text-muted-foreground">Processo de cancelamento e alternativas disponíveis</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Phone className="w-4 h-4 mr-2" />
-            Falar com Suporte
-          </Button>
-          <Button variant="outline">
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Chat ao Vivo
-          </Button>
-        </div>
+      {/* Action buttons */}
+      <div className="flex gap-2">
+        <Button variant="outline">
+          <Phone className="w-4 h-4 mr-2" />
+          Falar com Suporte
+        </Button>
+        <Button variant="outline">
+          <MessageSquare className="w-4 h-4 mr-2" />
+          Chat ao Vivo
+        </Button>
       </div>
 
       <Tabs defaultValue="alternatives" className="space-y-4">
@@ -411,10 +401,6 @@ export default function HelpCancellationPage() {
                     <Phone className="w-4 h-4 mr-2" />
                     Telefone: (11) 1234-5678
                   </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Mail className="w-4 h-4 mr-2" />
-                    Email: cancelamento@humanoid-os.ai
-                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -449,4 +435,4 @@ export default function HelpCancellationPage() {
       </Tabs>
     </div>
   );
-}
+};

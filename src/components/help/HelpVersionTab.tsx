@@ -1,11 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Download, CheckCircle, Clock, Star, Bug, Zap, Shield } from "lucide-react";
+import { Download, CheckCircle, Clock, Star, Bug, Zap, Shield } from "lucide-react";
 
-export default function HelpVersionPage() {
+export const HelpVersionTab = () => {
   const currentVersion = {
     version: "2.4.1",
     releaseDate: "15 de Janeiro, 2024",
@@ -131,17 +130,8 @@ export default function HelpVersionPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Package className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Ajuda - Versão do Sistema</h1>
-          </div>
-          <p className="text-muted-foreground">
-            Informações sobre a versão atual e histórico de atualizações
-          </p>
-        </div>
+      {/* Action button */}
+      <div className="flex justify-end">
         <Button>
           <Download className="w-4 h-4 mr-2" />
           Baixar Notas da Versão
@@ -365,4 +355,4 @@ export default function HelpVersionPage() {
       </Tabs>
     </div>
   );
-}
+};
