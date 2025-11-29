@@ -33,7 +33,7 @@ export default function ConversationsPage() {
       <ConversationHeader onAttendNext={attendNext} />
       
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-80 flex-shrink-0">
+        <div className="w-96 flex-shrink-0">
           <ConversationsList
             conversations={conversations}
             selectedId={selectedConversation?.id || null}

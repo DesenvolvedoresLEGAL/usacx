@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useCurrentAgent } from '@/hooks/useCurrentAgent';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 
 interface ConversationHeaderProps {
   onAttendNext: () => void;
@@ -132,17 +133,23 @@ export function ConversationHeader({ onAttendNext }: ConversationHeaderProps) {
             <Bell className="h-5 w-5" />
           </Button>
 
-          {/* Avatar com Dropdown do Usuário - com indicador online */}
+          {/* Avatar com Dropdown do Usuário - com status dot */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-10 w-10 rounded-full p-0 relative">
-                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-8 bg-green-500 rounded-full"></div>
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={profile?.avatar_url || undefined} />
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
+                {/* Status dot - estilo Slack/Discord */}
+                <div className={cn(
+                  "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background",
+                  profile?.status === 'online' ? 'bg-green-500' :
+                  profile?.status === 'away' ? 'bg-yellow-500' :
+                  profile?.status === 'busy' ? 'bg-red-500' : 'bg-gray-400'
+                )} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
