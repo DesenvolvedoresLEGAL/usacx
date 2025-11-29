@@ -121,6 +121,42 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_tags: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_tags_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           assigned_agent_id: string | null
@@ -245,6 +281,69 @@ export type Database = {
           },
         ]
       }
+      pause_reasons: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          is_active: boolean
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon: string
+          id?: string
+          is_active?: boolean
+          label: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      priorities: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          level: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          level: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          level?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       queues: {
         Row: {
           created_at: string
@@ -288,6 +387,80 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      slas: {
+        Row: {
+          created_at: string
+          description: string | null
+          first_response_time: unknown
+          id: string
+          is_active: boolean
+          name: string
+          priority_id: string | null
+          resolution_time: unknown
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          first_response_time: unknown
+          id?: string
+          is_active?: boolean
+          name: string
+          priority_id?: string | null
+          resolution_time: unknown
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          first_response_time?: unknown
+          id?: string
+          is_active?: boolean
+          name?: string
+          priority_id?: string | null
+          resolution_time?: unknown
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "slas_priority_id_fkey"
+            columns: ["priority_id"]
+            isOneToOne: false
+            referencedRelation: "priorities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tags: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       teams: {
         Row: {
