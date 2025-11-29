@@ -7,6 +7,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -43,12 +44,73 @@ export function AppSidebar() {
         {navigationGroups.map((group, groupIndex) => {
           const groupKey = group.groupTitle ?? `group-${groupIndex}`;
           
-          // Filter items based on permissions
-          const visibleItems = group.items.filter(item => 
+          // Handle groups with subgroups (like Configurações)
+          if (group.subgroups) {
+            const allSubgroupItems = group.subgroups.flatMap(sg => sg.items);
+            const visibleSubgroups = group.subgroups.map(subgroup => ({
+              ...subgroup,
+              items: subgroup.items.filter(item => !item.permission || hasPermission(item.permission))
+            })).filter(subgroup => subgroup.items.length > 0);
+
+            if (visibleSubgroups.length === 0) return null;
+
+            const isGroupActive = allSubgroupItems.some((item) => 
+              location.pathname.startsWith(item.href)
+            );
+
+            return (
+              <SidebarGroup key={groupKey}>
+                <Collapsible defaultOpen={isGroupActive}>
+                  <CollapsibleTrigger className="group flex h-8 w-full items-center justify-between rounded-md px-2 text-left text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2">
+                    <span>{group.groupTitle}</span>
+                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarGroupContent className="pt-1">
+                      {visibleSubgroups.map((subgroup, subgroupIndex) => (
+                        <div key={`${groupKey}-subgroup-${subgroupIndex}`} className="mb-3 last:mb-0">
+                          {subgroup.subgroupTitle && (
+                            <SidebarGroupLabel className="px-2 py-1 text-[10px] uppercase tracking-wider text-sidebar-foreground/50">
+                              {subgroup.subgroupTitle}
+                            </SidebarGroupLabel>
+                          )}
+                          <SidebarMenu>
+                            {subgroup.items.map((item) => {
+                              const active = location.pathname.startsWith(item.href);
+                              return (
+                                <SidebarMenuItem key={item.title}>
+                                  <SidebarMenuButton isActive={active} className="w-full" asChild>
+                                    <Link
+                                      to={item.href}
+                                      className={cn("flex h-full w-full items-center", active && "font-medium")}
+                                    >
+                                      <item.icon className="mr-2 h-5 w-5 shrink-0" />
+                                      <span className="truncate">{item.title}</span>
+                                      {item.highlight === "blue" && (
+                                        <span className="ml-2 rounded bg-blue-600 px-2 py-0.5 text-xs font-bold text-white">
+                                          BLUE
+                                        </span>
+                                      )}
+                                    </Link>
+                                  </SidebarMenuButton>
+                                </SidebarMenuItem>
+                              );
+                            })}
+                          </SidebarMenu>
+                        </div>
+                      ))}
+                    </SidebarGroupContent>
+                  </CollapsibleContent>
+                </Collapsible>
+              </SidebarGroup>
+            );
+          }
+
+          // Handle regular groups without subgroups
+          const visibleItems = (group.items ?? []).filter(item => 
             !item.permission || hasPermission(item.permission)
           );
 
-          // Skip group if no visible items
           if (visibleItems.length === 0) return null;
 
           const isGroupActive = visibleItems.some((item) => location.pathname.startsWith(item.href));
@@ -75,11 +137,6 @@ export function AppSidebar() {
                                 >
                                   <item.icon className="mr-2 h-5 w-5 shrink-0" />
                                   <span className="truncate">{item.title}</span>
-                                  {item.highlight === "blue" && (
-                                    <span className="ml-2 rounded bg-blue-600 px-2 py-0.5 text-xs font-bold text-white">
-                                      BLUE
-                                    </span>
-                                  )}
                                 </Link>
                               </SidebarMenuButton>
                             </SidebarMenuItem>
