@@ -2,31 +2,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
-const MOCK_TREND_DATA = [
-  { name: "Jan", atendimentos: 980, satisfacao: 4.2, conversao: 65 },
-  { name: "Fev", atendimentos: 1120, satisfacao: 4.4, conversao: 68 },
-  { name: "Mar", atendimentos: 1050, satisfacao: 4.3, conversao: 67 },
-  { name: "Abr", atendimentos: 1200, satisfacao: 4.6, conversao: 70 },
-  { name: "Mai", atendimentos: 1350, satisfacao: 4.5, conversao: 72 },
-  { name: "Jun", atendimentos: 1247, satisfacao: 4.7, conversao: 69 },
-];
-
-const MOCK_CHANNEL_DATA = [
-  { name: "WhatsApp", value: 45, color: "#10B981" },
-  { name: "Chat Web", value: 30, color: "#3B82F6" },
-  { name: "Email", value: 15, color: "#F59E0B" },
-  { name: "Telefone", value: 10, color: "#EF4444" },
-];
-
-const MOCK_AGENT_PERFORMANCE = [
-  { agente: "Ana Silva", atendimentos: 145, satisfacao: 4.8, eficiencia: 92 },
-  { agente: "João Lima", atendimentos: 132, satisfacao: 4.6, eficiencia: 88 },
-  { agente: "Maria Costa", atendimentos: 128, satisfacao: 4.7, eficiencia: 90 },
-  { agente: "Pedro Santos", atendimentos: 118, satisfacao: 4.5, eficiencia: 85 },
-  { agente: "Carla Oliveira", atendimentos: 110, satisfacao: 4.9, eficiencia: 94 },
-];
-
 export function ReportAnalyticsCharts({ filters }: { filters: any }) {
+  const trendData: any[] = [];
+  const channelData: any[] = [];
+  const agentPerformance: any[] = [];
+
+  if (trendData.length === 0) {
+    return (
+      <div className="rounded-lg border bg-card p-8 text-center">
+        <p className="text-muted-foreground">Nenhum dado analítico disponível no momento.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Tendência de Atendimentos */}
@@ -36,7 +24,7 @@ export function ReportAnalyticsCharts({ filters }: { filters: any }) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={MOCK_TREND_DATA}>
+            <AreaChart data={trendData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
@@ -64,7 +52,7 @@ export function ReportAnalyticsCharts({ filters }: { filters: any }) {
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
-                data={MOCK_CHANNEL_DATA}
+                data={channelData}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -72,7 +60,7 @@ export function ReportAnalyticsCharts({ filters }: { filters: any }) {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {MOCK_CHANNEL_DATA.map((entry, index) => (
+                {channelData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
@@ -90,7 +78,7 @@ export function ReportAnalyticsCharts({ filters }: { filters: any }) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={MOCK_AGENT_PERFORMANCE} layout="horizontal">
+            <BarChart data={agentPerformance} layout="horizontal">
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
               <YAxis dataKey="agente" type="category" width={80} />
@@ -108,7 +96,7 @@ export function ReportAnalyticsCharts({ filters }: { filters: any }) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={MOCK_TREND_DATA}>
+            <LineChart data={trendData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis yAxisId="left" />

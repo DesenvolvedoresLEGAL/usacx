@@ -2,21 +2,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
-const MOCK_STATS = {
-  total: 254,
-  avgTime: "6m 24s",
-  sla: "91%",
-  csat: "4.4",
-  byChannel: [
-    { name: "WhatsApp", value: 120, color: "#25D366" },
-    { name: "Email", value: 54, color: "#4285F4" },
-    { name: "Chat Web", value: 80, color: "#735DF8" },
-  ],
-};
-
 export function ReportAttendanceStats({ filters }: { filters: any }) {
-  // No fetch ainda, só simulação.
-  const stats = MOCK_STATS;
+  const stats = {
+    total: 0,
+    avgTime: "--",
+    sla: "--",
+    csat: "--",
+    byChannel: [],
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-3">

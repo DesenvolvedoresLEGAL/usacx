@@ -5,94 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, TrendingUp, TrendingDown, Star } from "lucide-react";
 
-const MOCK_PERFORMANCE_DATA = [
-  {
-    id: 1,
-    agent: "Maria Silva",
-    department: "Vendas",
-    totalTickets: 156,
-    resolvedTickets: 152,
-    avgResponseTime: "1m 12s",
-    avgResolutionTime: "12m 34s",
-    satisfaction: 4.8,
-    productivity: 97.4,
-    availability: 98.2,
-    status: "online",
-    trend: "up"
-  },
-  {
-    id: 2,
-    agent: "João Santos",
-    department: "Suporte",
-    totalTickets: 142,
-    resolvedTickets: 138,
-    avgResponseTime: "1m 28s",
-    avgResolutionTime: "14m 15s",
-    satisfaction: 4.6,
-    productivity: 94.2,
-    availability: 96.8,
-    status: "online",
-    trend: "up"
-  },
-  {
-    id: 3,
-    agent: "Ana Costa",
-    department: "Financeiro",
-    totalTickets: 138,
-    resolvedTickets: 135,
-    avgResponseTime: "1m 35s",
-    avgResolutionTime: "13m 52s",
-    satisfaction: 4.7,
-    productivity: 93.8,
-    availability: 97.1,
-    status: "busy",
-    trend: "stable"
-  },
-  {
-    id: 4,
-    agent: "Pedro Oliveira",
-    department: "Comercial",
-    totalTickets: 134,
-    resolvedTickets: 129,
-    avgResponseTime: "1m 45s",
-    avgResolutionTime: "15m 08s",
-    satisfaction: 4.5,
-    productivity: 91.2,
-    availability: 95.3,
-    status: "online",
-    trend: "down"
-  },
-  {
-    id: 5,
-    agent: "Carla Souza",
-    department: "Suporte",
-    totalTickets: 129,
-    resolvedTickets: 124,
-    avgResponseTime: "1m 52s",
-    avgResolutionTime: "16m 23s",
-    satisfaction: 4.4,
-    productivity: 89.7,
-    availability: 94.2,
-    status: "away",
-    trend: "down"
-  },
-  {
-    id: 6,
-    agent: "Lucas Ferreira",
-    department: "Vendas",
-    totalTickets: 125,
-    resolvedTickets: 121,
-    avgResponseTime: "2m 05s",
-    avgResolutionTime: "17m 14s",
-    satisfaction: 4.3,
-    productivity: 87.5,
-    availability: 93.8,
-    status: "offline",
-    trend: "stable"
-  }
-];
-
 export function ReportPerformanceTable({ filters }: { filters: any }) {
+  const performanceData: any[] = [];
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       online: { label: "Online", variant: "default" as const },
@@ -156,7 +70,13 @@ export function ReportPerformanceTable({ filters }: { filters: any }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {MOCK_PERFORMANCE_DATA.map((agent) => (
+              {performanceData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={12} className="text-center text-muted-foreground py-8">
+                    Nenhum dado de performance disponível no momento.
+                  </TableCell>
+                </TableRow>
+              ) : performanceData.map((agent) => (
                 <TableRow key={agent.id}>
                   <TableCell className="font-medium">{agent.agent}</TableCell>
                   <TableCell>{agent.department}</TableCell>

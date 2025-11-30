@@ -5,57 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Eye, MessageSquare, Mail } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-const CLIENTS = [
-  {
-    id: "1",
-    name: "João Silva",
-    email: "joao@email.com",
-    phone: "(11) 99999-9999",
-    segment: "VIP",
-    status: "active",
-    lastContact: "2024-06-15",
-    totalTickets: 12,
-    avgRating: 4.8,
-    preferredChannel: "WhatsApp",
-  },
-  {
-    id: "2",
-    name: "Maria Santos",
-    email: "maria@empresa.com",
-    phone: "(11) 88888-8888",
-    segment: "Premium",
-    status: "active",
-    lastContact: "2024-06-14",
-    totalTickets: 8,
-    avgRating: 4.5,
-    preferredChannel: "Email",
-  },
-  {
-    id: "3",
-    name: "Pedro Costa",
-    email: "pedro@gmail.com",
-    phone: "(11) 77777-7777",
-    segment: "Regular",
-    status: "inactive",
-    lastContact: "2024-05-20",
-    totalTickets: 3,
-    avgRating: 4.0,
-    preferredChannel: "Chat Web",
-  },
-  {
-    id: "4",
-    name: "Ana Lima",
-    email: "ana@outlook.com",
-    phone: "(11) 66666-6666",
-    segment: "Novo",
-    status: "active",
-    lastContact: "2024-06-13",
-    totalTickets: 1,
-    avgRating: 5.0,
-    preferredChannel: "WhatsApp",
-  },
-];
-
 const segmentColors = {
   "VIP": "bg-purple-100 text-purple-800",
   "Premium": "bg-blue-100 text-blue-800",
@@ -77,8 +26,7 @@ const channelIcons = {
 };
 
 export function ReportClientTable({ filters }: { filters: any }) {
-  // Normalmente aplicaria filtros aqui
-  const data = CLIENTS;
+  const data: any[] = [];
 
   return (
     <div className="space-y-4">
@@ -98,7 +46,13 @@ export function ReportClientTable({ filters }: { filters: any }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((client) => {
+            {data.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
+                  Nenhum cliente encontrado.
+                </TableCell>
+              </TableRow>
+            ) : data.map((client) => {
               const ChannelIcon = channelIcons[client.preferredChannel as keyof typeof channelIcons];
               return (
                 <TableRow key={client.id}>

@@ -3,59 +3,6 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { PauseCircle } from "lucide-react";
 
-const MOCK_BREAKS = [
-  {
-    id: "1",
-    agente: "João Lima",
-    tipo: "Almoço",
-    inicio: "2024-06-15 12:00",
-    fim: "2024-06-15 13:00",
-    duracao: "1h 00m",
-    departamento: "Vendas",
-    status: "finalizada",
-  },
-  {
-    id: "2",
-    agente: "Ana Silva",
-    tipo: "Lanche",
-    inicio: "2024-06-15 15:30",
-    fim: "2024-06-15 15:45",
-    duracao: "15m",
-    departamento: "Suporte",
-    status: "finalizada",
-  },
-  {
-    id: "3",
-    agente: "Carlos Souza",
-    tipo: "Reunião",
-    inicio: "2024-06-15 14:00",
-    fim: "2024-06-15 15:30",
-    duracao: "1h 30m",
-    departamento: "Técnico",
-    status: "finalizada",
-  },
-  {
-    id: "4",
-    agente: "Maria Santos",
-    tipo: "Treinamento",
-    inicio: "2024-06-15 16:00",
-    fim: null,
-    duracao: "45m",
-    departamento: "Vendas",
-    status: "em andamento",
-  },
-  {
-    id: "5",
-    agente: "Pedro Costa",
-    tipo: "Banheiro",
-    inicio: "2024-06-15 10:15",
-    fim: "2024-06-15 10:20",
-    duracao: "5m",
-    departamento: "Suporte",
-    status: "finalizada",
-  },
-];
-
 const getBreakTypeBadge = (tipo: string) => {
   const colors = {
     "Almoço": "bg-blue-100 text-blue-800",
@@ -103,8 +50,7 @@ const getDepartmentBadge = (department: string) => {
 };
 
 export function ReportBreakTable({ filters }: { filters: any }) {
-  // Simulação: normalmente aplicaria filtros aqui
-  const data = MOCK_BREAKS;
+  const data: any[] = [];
 
   return (
     <div className="rounded-lg border bg-card">
@@ -128,7 +74,13 @@ export function ReportBreakTable({ filters }: { filters: any }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((breakRecord) => (
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                Nenhuma pausa registrada no período selecionado.
+              </TableCell>
+            </TableRow>
+          ) : data.map((breakRecord) => (
             <TableRow key={breakRecord.id}>
               <TableCell className="font-medium">{breakRecord.agente}</TableCell>
               <TableCell>{getBreakTypeBadge(breakRecord.tipo)}</TableCell>

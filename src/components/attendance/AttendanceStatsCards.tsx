@@ -4,56 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { MessageSquare, Clock, CheckCircle, AlertCircle, Users, TrendingUp } from "lucide-react";
 
 export const AttendanceStatsCards = () => {
-  const stats = [
-    {
-      title: "Total de Atendimentos",
-      value: "2,847",
-      change: "+12% desde ontem",
-      trend: "up",
-      icon: MessageSquare,
-      color: "blue"
-    },
-    {
-      title: "Atendimentos Ativos",
-      value: "47",
-      change: "3 novos na última hora",
-      trend: "up",
-      icon: Users,
-      color: "green"
-    },
-    {
-      title: "Tempo Médio",
-      value: "8m 32s",
-      change: "-2m desde ontem",
-      trend: "down",
-      icon: Clock,
-      color: "yellow"
-    },
-    {
-      title: "Taxa de Resolução",
-      value: "94.2%",
-      change: "+1.2% esta semana",
-      trend: "up",
-      icon: CheckCircle,
-      color: "green"
-    },
-    {
-      title: "Pendentes",
-      value: "23",
-      change: "5 novos hoje",
-      trend: "neutral",
-      icon: AlertCircle,
-      color: "orange"
-    },
-    {
-      title: "Satisfação (CSAT)",
-      value: "4.7/5",
-      change: "+0.2 este mês",
-      trend: "up",
-      icon: TrendingUp,
-      color: "purple"
-    }
-  ];
+  const stats: any[] = [];
 
   const getColorClasses = (color: string) => {
     switch (color) {
@@ -71,6 +22,14 @@ export const AttendanceStatsCards = () => {
     if (trend === "down") return "↘";
     return "→";
   };
+
+  if (stats.length === 0) {
+    return (
+      <div className="rounded-lg border bg-card p-8 text-center">
+        <p className="text-muted-foreground">Nenhuma estatística disponível no momento.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

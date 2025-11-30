@@ -2,27 +2,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
-const MOCK_STATS = {
-  totalClients: 2847,
-  newClients: 156,
-  activeClients: 2341,
-  avgSatisfaction: 4.3,
-  bySegment: [
-    { name: "Regular", value: 1420, color: "#8884d8" },
-    { name: "Premium", value: 853, color: "#82ca9d" },
-    { name: "VIP", value: 412, color: "#ffc658" },
-    { name: "Novo", value: 162, color: "#ff7c7c" },
-  ],
-  byChannel: [
-    { name: "WhatsApp", clients: 1240 },
-    { name: "Email", clients: 687 },
-    { name: "Chat Web", clients: 523 },
-    { name: "Telefone", clients: 397 },
-  ],
-};
-
 export function ReportClientStats({ filters }: { filters: any }) {
-  const stats = MOCK_STATS;
+  const stats = {
+    totalClients: 0,
+    newClients: 0,
+    activeClients: 0,
+    avgSatisfaction: 0,
+    bySegment: [],
+    byChannel: [],
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

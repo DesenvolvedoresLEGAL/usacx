@@ -2,21 +2,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, PauseCircle, TrendingUp, TrendingDown, Users, Timer } from "lucide-react";
 
-const MOCK_STATS = {
-  totalBreaks: 342,
-  avgBreakDuration: "18m 45s",
-  totalBreakTime: "107h 23m",
-  agentsOnBreak: 12,
-  trend: {
-    breaks: "+15",
-    duration: "-2m 15s",
-    totalTime: "+8h 12m",
-    agents: "+3",
-  }
-};
-
 export function ReportBreakStats({ filters }: { filters: any }) {
-  const stats = MOCK_STATS;
+  const stats = {
+    totalBreaks: 0,
+    avgBreakDuration: "--",
+    totalBreakTime: "--",
+    agentsOnBreak: 0,
+    trend: {
+      breaks: "--",
+      duration: "--",
+      totalTime: "--",
+      agents: "--",
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

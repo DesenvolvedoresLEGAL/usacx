@@ -3,59 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, TrendingUp, Lightbulb, Target, Clock, Users } from "lucide-react";
 
-const MOCK_INSIGHTS = [
-  {
-    type: "warning",
-    icon: AlertTriangle,
-    title: "Pico de Atendimentos Detectado",
-    description: "Volume de atendimentos 35% acima da média nas últimas 2 horas.",
-    action: "Considere alocar mais agentes para reduzir tempo de espera.",
-    priority: "high",
-  },
-  {
-    type: "positive",
-    icon: TrendingUp,
-    title: "Melhoria na Satisfação",
-    description: "Satisfação do cliente aumentou 12% este mês comparado ao anterior.",
-    action: "Identifique e replique as práticas que levaram a essa melhoria.",
-    priority: "medium",
-  },
-  {
-    type: "suggestion",
-    icon: Lightbulb,
-    title: "Oportunidade de Otimização",
-    description: "Atendimentos via WhatsApp têm 20% mais satisfação que outros canais.",
-    action: "Considere migrar mais atendimentos para WhatsApp.",
-    priority: "low",
-  },
-  {
-    type: "target",
-    icon: Target,
-    title: "Meta de Conversão",
-    description: "Taxa de conversão está 2.1% abaixo da meta mensal.",
-    action: "Revisar estratégias de follow-up e qualificação de leads.",
-    priority: "high",
-  },
-];
-
-const MOCK_RECOMMENDATIONS = [
-  {
-    title: "Horários de Pico",
-    description: "Maior volume entre 14h-16h nos dias úteis",
-    suggestion: "Alocar 2 agentes adicionais neste período",
-  },
-  {
-    title: "Treinamento Sugerido",
-    description: "Agentes com satisfação <4.5 precisam de capacitação",
-    suggestion: "Programa de mentoria com top performers",
-  },
-  {
-    title: "Automação",
-    description: "30% das perguntas são sobre horário de funcionamento",
-    suggestion: "Implementar resposta automática para FAQ",
-  },
-];
-
 const getInsightColor = (type: string) => {
   switch (type) {
     case "warning":
@@ -85,6 +32,17 @@ const getPriorityColor = (priority: string) => {
 };
 
 export function ReportAnalyticsInsights({ filters }: { filters: any }) {
+  const insights: any[] = [];
+  const recommendations: any[] = [];
+
+  if (insights.length === 0 && recommendations.length === 0) {
+    return (
+      <div className="rounded-lg border bg-card p-8 text-center">
+        <p className="text-muted-foreground">Nenhum insight ou recomendação disponível no momento.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Insights Automatizados */}
@@ -97,7 +55,7 @@ export function ReportAnalyticsInsights({ filters }: { filters: any }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {MOCK_INSIGHTS.map((insight, index) => {
+            {insights.map((insight, index) => {
               const IconComponent = insight.icon;
               return (
                 <div 
@@ -136,7 +94,7 @@ export function ReportAnalyticsInsights({ filters }: { filters: any }) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {MOCK_RECOMMENDATIONS.map((rec, index) => (
+          {recommendations.map((rec, index) => (
             <div key={index} className="p-3 border rounded-lg">
               <h4 className="font-semibold text-sm mb-1">{rec.title}</h4>
               <p className="text-xs text-muted-foreground mb-2">
