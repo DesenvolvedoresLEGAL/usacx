@@ -2,20 +2,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, TrendingUp, TrendingDown, ThumbsUp, MessageSquare } from "lucide-react";
 
-const MOCK_STATS = {
-  totalEvaluations: 1847,
-  averageRating: 4.6,
-  satisfactionRate: 92.3,
-  responseRate: 78.5,
-  trend: {
-    rating: "+0.2",
-    satisfaction: "+4.1%",
-    response: "-2.3%",
-  }
-};
-
 export function ReportEvaluationStats({ filters }: { filters: any }) {
-  const stats = MOCK_STATS;
+  const stats = {
+    totalEvaluations: 0,
+    averageRating: 0,
+    satisfactionRate: 0,
+    responseRate: 0,
+    trend: {
+      rating: "--",
+      satisfaction: "--",
+      response: "--",
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

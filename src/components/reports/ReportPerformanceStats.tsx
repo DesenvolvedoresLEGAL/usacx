@@ -2,29 +2,27 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Target, Star, TrendingUp, TrendingDown, Users, Timer, Zap } from "lucide-react";
 
-const MOCK_STATS = {
-  avgResponseTime: "1m 23s",
-  avgResolutionTime: "15m 42s",
-  avgSatisfaction: 4.6,
-  productivity: "89%",
-  availability: "96%",
-  totalTickets: 1247,
-  resolvedTickets: 1156,
-  activeAgents: 23,
-  trends: {
-    responseTime: "-12%",
-    resolutionTime: "-8%",
-    satisfaction: "+0.3",
-    productivity: "+5%",
-    availability: "+2%",
-    totalTickets: "+18%",
-    resolvedTickets: "+22%",
-    activeAgents: "+2",
-  }
-};
-
 export function ReportPerformanceStats({ filters }: { filters: any }) {
-  const stats = MOCK_STATS;
+  const stats = {
+    avgResponseTime: "--",
+    avgResolutionTime: "--",
+    avgSatisfaction: 0,
+    productivity: "--",
+    availability: "--",
+    totalTickets: 0,
+    resolvedTickets: 0,
+    activeAgents: 0,
+    trends: {
+      responseTime: "--",
+      resolutionTime: "--",
+      satisfaction: "--",
+      productivity: "--",
+      availability: "--",
+      totalTickets: "--",
+      resolvedTickets: "--",
+      activeAgents: "--",
+    }
+  };
 
   const statCards = [
     {

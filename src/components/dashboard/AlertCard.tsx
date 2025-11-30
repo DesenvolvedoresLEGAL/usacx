@@ -4,29 +4,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, Clock, Users, MessageSquare } from "lucide-react";
 
 export const AlertCard = () => {
-  const alerts = [
-    {
-      type: 'warning',
-      title: 'Tempo de Espera Alto',
-      description: '8 clientes aguardando há mais de 10 minutos',
-      icon: Clock,
-      urgent: true
-    },
-    {
-      type: 'info',
-      title: 'Agente Ausente',
-      description: 'João Silva está ausente há 15 minutos',
-      icon: Users,
-      urgent: false
-    },
-    {
-      type: 'warning',
-      title: 'Pico de Atendimentos',
-      description: '15% acima da média para este horário',
-      icon: MessageSquare,
-      urgent: false
-    }
-  ];
+  const alerts: any[] = [];
 
   return (
     <Card className="border-orange-200 bg-orange-50">
@@ -37,7 +15,11 @@ export const AlertCard = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {alerts.map((alert, index) => (
+        {alerts.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Nenhum alerta no momento.
+          </p>
+        ) : alerts.map((alert, index) => (
           <Alert 
             key={index} 
             className={`${alert.urgent ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'}`}

@@ -2,41 +2,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus, Users, Clock, Star, Target } from "lucide-react";
 
-const MOCK_METRICS = [
-  {
-    title: "Total de Atendimentos",
-    value: "1,247",
-    change: "+12.5%",
-    trend: "up",
-    icon: Users,
-    comparison: "vs período anterior",
-  },
-  {
-    title: "Tempo Médio de Resposta",
-    value: "2m 34s",
-    change: "-8.2%",
-    trend: "down",
-    icon: Clock,
-    comparison: "vs período anterior",
-  },
-  {
-    title: "Satisfação Média",
-    value: "4.7",
-    change: "+0.3",
-    trend: "up",
-    icon: Star,
-    comparison: "vs período anterior",
-  },
-  {
-    title: "Taxa de Conversão",
-    value: "68.9%",
-    change: "0.0%",
-    trend: "neutral",
-    icon: Target,
-    comparison: "vs período anterior",
-  },
-];
-
 const getTrendIcon = (trend: string) => {
   switch (trend) {
     case "up":
@@ -60,9 +25,19 @@ const getTrendColor = (trend: string) => {
 };
 
 export function ReportAnalyticsMetrics({ filters }: { filters: any }) {
+  const metrics: any[] = [];
+  
+  if (metrics.length === 0) {
+    return (
+      <div className="rounded-lg border bg-card p-8 text-center">
+        <p className="text-muted-foreground">Nenhuma métrica disponível no momento.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {MOCK_METRICS.map((metric, index) => {
+      {metrics.map((metric, index) => {
         const IconComponent = metric.icon;
         return (
           <Card key={index}>

@@ -21,34 +21,6 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { PlusCircle, MoreVertical, RefreshCw, Edit, Trash2, CheckCircle2, XCircle, Search, MessageSquare, Mail, Phone, ChevronDown } from "lucide-react";
 
-// Mock dos canais conectados
-const MOCK_CHANNELS = [
-  {
-    id: 1,
-    nome: "WhatsApp Empresarial",
-    tipo: "WhatsApp",
-    status: "Conectado",
-    details: "11988887777",
-    icon: <MessageSquare className="text-green-600" />,
-  },
-  {
-    id: 2,
-    nome: "Suporte E-mail",
-    tipo: "Email",
-    status: "Conectado",
-    details: "suporte@contato.com",
-    icon: <Mail className="text-blue-600" />,
-  },
-  {
-    id: 3,
-    nome: "Telefone Fixo Sales",
-    tipo: "Telefone",
-    status: "Desconectado",
-    details: "1133556677",
-    icon: <Phone className="text-gray-400" />,
-  },
-];
-
 const statusOptions = ["Todos", "Conectado", "Desconectado"];
 const tipoOptions = ["Todos", "WhatsApp", "Email", "Telefone"];
 
@@ -59,7 +31,8 @@ const ChannelsManagementPage = () => {
   // Estado futuro para formulário: exibe modal de novo canal
   // const [showModal, setShowModal] = useState(false);
 
-  const canaisFiltrados = MOCK_CHANNELS.filter((c) =>
+  const channels: any[] = [];
+  const canaisFiltrados = channels.filter((c) =>
     (tipo === "Todos" || c.tipo === tipo) &&
     (status === "Todos" || c.status === status) &&
     (c.nome.toLowerCase().includes(search.toLowerCase()) || c.details.toLowerCase().includes(search.toLowerCase()))

@@ -32,98 +32,7 @@ interface AttendanceTableProps {
 }
 
 export const AttendanceTable = ({ selectedAttendances, onSelectionChange }: AttendanceTableProps) => {
-  const attendances = [
-    {
-      id: "ATD-2024-001",
-      customer: {
-        name: "Ana Maria Silva",
-        avatar: "",
-        phone: "+55 11 99999-1234"
-      },
-      subject: "Problema com entrega do produto",
-      channel: "whatsapp",
-      status: "active",
-      priority: "high",
-      agent: "Maria Santos",
-      queue: "Suporte",
-      createdAt: "2024-01-15 09:30",
-      lastUpdate: "2024-01-15 10:45",
-      duration: "1h 15m",
-      messages: 8
-    },
-    {
-      id: "ATD-2024-002",
-      customer: {
-        name: "João Pedro Costa",
-        avatar: "",
-        phone: "+55 11 88888-5678"
-      },
-      subject: "Dúvida sobre faturamento",
-      channel: "email",
-      status: "pending",
-      priority: "normal",
-      agent: "Carlos Lima",
-      queue: "Financeiro",
-      createdAt: "2024-01-15 08:15",
-      lastUpdate: "2024-01-15 09:20",
-      duration: "2h 30m",
-      messages: 5
-    },
-    {
-      id: "ATD-2024-003",
-      customer: {
-        name: "Empresa Tech Solutions",
-        avatar: "",
-        phone: "+55 11 77777-9012"
-      },
-      subject: "Proposta comercial para sistema",
-      channel: "chat",
-      status: "waiting",
-      priority: "urgent",
-      agent: "Ana Oliveira",
-      queue: "Vendas",
-      createdAt: "2024-01-15 07:45",
-      lastUpdate: "2024-01-15 10:30",
-      duration: "45m",
-      messages: 12
-    },
-    {
-      id: "ATD-2024-004",
-      customer: {
-        name: "Patricia Ferreira",
-        avatar: "",
-        phone: "+55 11 66666-3456"
-      },
-      subject: "Cancelamento de serviço",
-      channel: "phone",
-      status: "resolved",
-      priority: "low",
-      agent: "Pedro Silva",
-      queue: "Geral",
-      createdAt: "2024-01-14 16:20",
-      lastUpdate: "2024-01-15 10:15",
-      duration: "3h 45m",
-      messages: 15
-    },
-    {
-      id: "ATD-2024-005",
-      customer: {
-        name: "Marcos Roberto",
-        avatar: "",
-        phone: "+55 11 55555-7890"
-      },
-      subject: "Informações sobre novo produto",
-      channel: "telegram",
-      status: "closed",
-      priority: "normal",
-      agent: "Julia Mendes",
-      queue: "Vendas",
-      createdAt: "2024-01-14 14:30",
-      lastUpdate: "2024-01-14 18:45",
-      duration: "4h 15m",
-      messages: 9
-    }
-  ];
+  const attendances: any[] = [];
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { variant: any; label: string; color: string }> = {
@@ -217,7 +126,13 @@ export const AttendanceTable = ({ selectedAttendances, onSelectionChange }: Atte
             </TableRow>
           </TableHeader>
           <TableBody>
-            {attendances.map((attendance) => (
+            {attendances.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={13} className="text-center text-muted-foreground py-8">
+                  Nenhum atendimento encontrado.
+                </TableCell>
+              </TableRow>
+            ) : attendances.map((attendance) => (
               <TableRow key={attendance.id} className="hover:bg-muted/50">
                 <TableCell>
                   <Checkbox 

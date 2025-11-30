@@ -3,59 +3,6 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 
-const MOCK_EVALUATIONS = [
-  {
-    id: "1",
-    cliente: "João Silva",
-    agente: "Ana Lima",
-    canal: "WhatsApp",
-    rating: 5,
-    comentario: "Excelente atendimento, muito rápido e eficiente!",
-    data: "2024-06-15 14:30",
-    departamento: "Vendas",
-  },
-  {
-    id: "2",
-    cliente: "Maria Santos",
-    agente: "Carlos Souza",
-    canal: "Chat Web",
-    rating: 4,
-    comentario: "Bom atendimento, resolveu minha dúvida.",
-    data: "2024-06-15 13:45",
-    departamento: "Suporte",
-  },
-  {
-    id: "3",
-    cliente: "Pedro Costa",
-    agente: "João Lima",
-    canal: "Email",
-    rating: 3,
-    comentario: "Atendimento ok, mas demorou um pouco para responder.",
-    data: "2024-06-15 12:20",
-    departamento: "Técnico",
-  },
-  {
-    id: "4",
-    cliente: "Ana Paula",
-    agente: "Maria Santos",
-    canal: "WhatsApp",
-    rating: 5,
-    comentario: "Perfeito! Adorei o atendimento.",
-    data: "2024-06-15 11:15",
-    departamento: "Vendas",
-  },
-  {
-    id: "5",
-    cliente: "Roberto Lima",
-    agente: "Carlos Souza",
-    canal: "Telefone",
-    rating: 2,
-    comentario: "Não conseguiram resolver meu problema.",
-    data: "2024-06-15 10:30",
-    departamento: "Suporte",
-  },
-];
-
 const getRatingBadge = (rating: number) => {
   const colors = {
     5: "bg-green-100 text-green-800",
@@ -89,8 +36,7 @@ const getDepartmentBadge = (department: string) => {
 };
 
 export function ReportEvaluationTable({ filters }: { filters: any }) {
-  // Simulação: normalmente aplicaria filtros aqui
-  const data = MOCK_EVALUATIONS;
+  const data: any[] = [];
 
   return (
     <div className="rounded-lg border bg-card">
@@ -114,7 +60,13 @@ export function ReportEvaluationTable({ filters }: { filters: any }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((evaluation) => (
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                Nenhuma avaliação encontrada no período selecionado.
+              </TableCell>
+            </TableRow>
+          ) : data.map((evaluation) => (
             <TableRow key={evaluation.id}>
               <TableCell className="font-medium">{evaluation.cliente}</TableCell>
               <TableCell>{evaluation.agente}</TableCell>
