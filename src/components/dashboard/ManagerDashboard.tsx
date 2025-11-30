@@ -1,24 +1,31 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentAgent } from '@/hooks/useCurrentAgent';
 import { useTeam } from '@/hooks/useTeam';
+import { useTeamMetrics } from '@/hooks/useTeamMetrics';
 import { MetricCard } from './MetricCard';
-import { Users, Clock, CheckCircle2, TrendingUp, AlertCircle } from 'lucide-react';
+import { Users, Clock, CheckCircle2, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
 import { AttendanceChart } from './AttendanceChart';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const ManagerDashboard = () => {
   const agent = useCurrentAgent();
-  const { team, members, loading } = useTeam();
+  const { team, members, loading: teamLoading } = useTeam();
+  const { 
+    activeConversations,
+    finishedToday,
+    conversationsInQueue,
+    avgResponseTime,
+    agentConversations,
+    topPerformers,
+    nearSlaCount,
+    weeklyPerformance,
+    loading: metricsLoading,
+    error 
+  } = useTeamMetrics(agent?.teamId || null);
 
-  // Mock data - será substituído por dados reais da API
-  const teamMetrics = {
-    totalAgents: members.length,
-    activeNow: members.filter(m => m.status === 'online').length,
-    avgResponseTime: '3m 15s',
-    teamSatisfaction: 4.6,
-    conversationsInQueue: 8,
-  };
+  const loading = teamLoading || metricsLoading;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -46,6 +53,28 @@ export const ManagerDashboard = () => {
     }
   };
 
+  // Mostrar erro se houver
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Visão do Time - {team?.name || 'Carregando...'}
+          </h2>
+          <p className="text-muted-foreground">
+            Gerencie e monitore o desempenho da sua equipe.
+          </p>
+        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Erro ao carregar métricas: {error.message}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -61,39 +90,33 @@ export const ManagerDashboard = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <MetricCard
           title="Total de Agentes"
-          value={teamMetrics.totalAgents.toString()}
+          value={loading ? '--' : members.length.toString()}
           description="Membros do time"
-          icon={Users}
+          icon={loading ? Loader2 : Users}
         />
         <MetricCard
           title="Ativos Agora"
-          value={teamMetrics.activeNow.toString()}
+          value={loading ? '--' : members.filter(m => m.status === 'online').length.toString()}
           description="Agentes online"
-          icon={CheckCircle2}
-          change="+15% vs. ontem"
-          changeType="positive"
+          icon={loading ? Loader2 : CheckCircle2}
         />
         <MetricCard
           title="Tempo Médio"
-          value={teamMetrics.avgResponseTime}
+          value={loading ? '--' : avgResponseTime}
           description="Resposta do time"
-          icon={Clock}
-          change="-5% vs. ontem"
-          changeType="positive"
+          icon={loading ? Loader2 : Clock}
         />
         <MetricCard
-          title="Satisfação"
-          value={`${teamMetrics.teamSatisfaction}/5.0`}
-          description="Avaliação do time"
-          icon={TrendingUp}
-          change="+3% vs. semana passada"
-          changeType="positive"
+          title="Finalizadas Hoje"
+          value={loading ? '--' : finishedToday.toString()}
+          description="Conversas concluídas"
+          icon={loading ? Loader2 : TrendingUp}
         />
         <MetricCard
           title="Fila"
-          value={teamMetrics.conversationsInQueue.toString()}
+          value={loading ? '--' : conversationsInQueue.toString()}
           description="Aguardando atendimento"
-          icon={AlertCircle}
+          icon={loading ? Loader2 : AlertCircle}
         />
       </div>
 
@@ -107,7 +130,13 @@ export const ManagerDashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <AttendanceChart />
+            {loading ? (
+              <div className="flex items-center justify-center h-[300px]">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <AttendanceChart data={weeklyPerformance} />
+            )}
           </CardContent>
         </Card>
 
@@ -119,8 +148,8 @@ export const ManagerDashboard = () => {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center text-sm text-muted-foreground">
-                Carregando...
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             ) : members.length === 0 ? (
               <div className="text-center text-sm text-muted-foreground">
@@ -128,39 +157,45 @@ export const ManagerDashboard = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {members.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between space-x-4"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src={member.avatar_url || ''} />
-                          <AvatarFallback>
-                            {member.display_name?.[0]?.toUpperCase() || '?'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span
-                          className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background ${getStatusColor(
-                            member.status
-                          )}`}
-                        />
+                {members.map((member) => {
+                  const agentConvCount = agentConversations.find(
+                    ac => ac.agentId === member.id
+                  )?.activeCount || 0;
+
+                  return (
+                    <div
+                      key={member.id}
+                      className="flex items-center justify-between space-x-4"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="relative">
+                          <Avatar className="h-9 w-9">
+                            <AvatarImage src={member.avatar_url || ''} />
+                            <AvatarFallback>
+                              {member.display_name?.[0]?.toUpperCase() || '?'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span
+                            className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background ${getStatusColor(
+                              member.status
+                            )}`}
+                          />
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-sm font-medium leading-none">
+                            {member.display_name || 'Agente'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {getStatusLabel(member.status)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-0.5">
-                        <p className="text-sm font-medium leading-none">
-                          {member.display_name || 'Agente'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {getStatusLabel(member.status)}
-                        </p>
-                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        {agentConvCount} {agentConvCount === 1 ? 'conversa' : 'conversas'}
+                      </Badge>
                     </div>
-                    <Badge variant="secondary" className="text-xs">
-                      5 conversas
-                    </Badge>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
@@ -175,24 +210,45 @@ export const ManagerDashboard = () => {
             <CardDescription>Ações que requerem atenção</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-start space-x-3 rounded-lg border p-3">
-              <AlertCircle className="mt-0.5 h-5 w-5 text-yellow-500" />
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">8 conversas na fila</p>
-                <p className="text-xs text-muted-foreground">
-                  Tempo médio de espera: 5 minutos
-                </p>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
-            </div>
-            <div className="flex items-start space-x-3 rounded-lg border p-3">
-              <Clock className="mt-0.5 h-5 w-5 text-orange-500" />
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">3 atendimentos próximos ao SLA</p>
-                <p className="text-xs text-muted-foreground">
-                  Requerem intervenção em breve
-                </p>
-              </div>
-            </div>
+            ) : (
+              <>
+                {conversationsInQueue > 0 && (
+                  <div className="flex items-start space-x-3 rounded-lg border p-3">
+                    <AlertCircle className="mt-0.5 h-5 w-5 text-yellow-500" />
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium">
+                        {conversationsInQueue} {conversationsInQueue === 1 ? 'conversa' : 'conversas'} na fila
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Aguardando distribuição para agentes
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {nearSlaCount > 0 && (
+                  <div className="flex items-start space-x-3 rounded-lg border p-3">
+                    <Clock className="mt-0.5 h-5 w-5 text-orange-500" />
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium">
+                        {nearSlaCount} {nearSlaCount === 1 ? 'atendimento próximo' : 'atendimentos próximos'} ao SLA
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Conversas ativas há mais de 30 minutos
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {conversationsInQueue === 0 && nearSlaCount === 0 && (
+                  <div className="text-center py-8 text-sm text-muted-foreground">
+                    Tudo certo! Nenhum alerta no momento 🎉
+                  </div>
+                )}
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -202,33 +258,42 @@ export const ManagerDashboard = () => {
             <CardDescription>Melhores agentes do dia</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
-                  1
-                </div>
-                <span className="text-sm font-medium">João Silva</span>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
-              <span className="text-sm text-muted-foreground">18 conversas</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600">
-                  2
-                </div>
-                <span className="text-sm font-medium">Maria Santos</span>
+            ) : topPerformers.length === 0 ? (
+              <div className="text-center py-8 text-sm text-muted-foreground">
+                Nenhuma conversa finalizada hoje
               </div>
-              <span className="text-sm text-muted-foreground">15 conversas</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                  3
-                </div>
-                <span className="text-sm font-medium">Pedro Costa</span>
-              </div>
-              <span className="text-sm text-muted-foreground">14 conversas</span>
-            </div>
+            ) : (
+              <>
+                {topPerformers.map((performer, index) => {
+                  const medalColors = [
+                    { bg: 'bg-yellow-100', text: 'text-yellow-600' },
+                    { bg: 'bg-gray-100', text: 'text-gray-600' },
+                    { bg: 'bg-orange-100', text: 'text-orange-600' },
+                  ];
+                  const colors = medalColors[index] || medalColors[2];
+
+                  return (
+                    <div key={performer.id} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-full ${colors.bg} ${colors.text} font-medium`}>
+                          {index + 1}
+                        </div>
+                        <span className="text-sm font-medium">
+                          {performer.displayName || 'Agente'}
+                        </span>
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {performer.conversationsCount} {performer.conversationsCount === 1 ? 'conversa' : 'conversas'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
