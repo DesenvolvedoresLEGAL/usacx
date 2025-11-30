@@ -1,38 +1,41 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, MessageSquare, Clock, AlertTriangle } from "lucide-react";
+import { Users, MessageSquare, Clock, AlertTriangle, Loader2 } from "lucide-react";
+import { useLiveStats } from "@/hooks/useLiveStats";
 
 export const LiveStatsCards = () => {
+  const liveStats = useLiveStats();
+
   const stats = [
     {
       title: "Agentes Online",
-      value: "12",
-      total: "/15",
-      icon: Users,
+      value: liveStats.isLoading ? "..." : liveStats.onlineAgents.toString(),
+      total: liveStats.isLoading ? "" : `/${liveStats.totalAgents}`,
+      icon: liveStats.isLoading ? Loader2 : Users,
       status: "online",
-      change: "+2 desde ontem"
+      change: `${liveStats.onlineAgents} de ${liveStats.totalAgents} disponíveis`
     },
     {
       title: "Atendimentos Ativos",
-      value: "28",
-      icon: MessageSquare,
+      value: liveStats.isLoading ? "..." : liveStats.activeConversations.toString(),
+      icon: liveStats.isLoading ? Loader2 : MessageSquare,
       status: "active",
-      change: "5 novos nas últimas 2h"
+      change: "Em andamento agora"
     },
     {
       title: "Tempo Médio de Espera",
-      value: "2m 15s",
-      icon: Clock,
-      status: "warning",
-      change: "+30s desde ontem"
+      value: liveStats.isLoading ? "..." : liveStats.averageWaitTime,
+      icon: liveStats.isLoading ? Loader2 : Clock,
+      status: liveStats.queueSize > 5 ? "urgent" : "warning",
+      change: liveStats.queueSize > 0 ? `${liveStats.queueSize} na fila` : "Sem espera"
     },
     {
       title: "Atendimentos na Fila",
-      value: "8",
-      icon: AlertTriangle,
-      status: "urgent",
-      change: "3 aguardando >5min"
+      value: liveStats.isLoading ? "..." : liveStats.queueSize.toString(),
+      icon: liveStats.isLoading ? Loader2 : AlertTriangle,
+      status: liveStats.queueSize > 5 ? "urgent" : liveStats.queueSize > 0 ? "warning" : "online",
+      change: liveStats.queueSize === 0 ? "Nenhum aguardando" : `${liveStats.queueSize} aguardando`
     }
   ];
 
@@ -42,9 +45,11 @@ export const LiveStatsCards = () => {
       case "active": return "bg-blue-500";
       case "warning": return "bg-yellow-500";
       case "urgent": return "bg-red-500";
-      default: return "bg-gray-500";
+      default: return "bg-muted";
     }
   };
+
+  const isLoading = (icon: any) => icon.name === 'Loader2';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -54,7 +59,7 @@ export const LiveStatsCards = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {stat.title}
             </CardTitle>
-            <stat.icon className="h-4 w-4 text-ping-primary" />
+            <stat.icon className={`h-4 w-4 text-ping-primary ${isLoading(stat.icon) ? 'animate-spin' : ''}`} />
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
