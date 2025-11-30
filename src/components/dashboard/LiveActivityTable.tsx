@@ -1,60 +1,94 @@
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MessageSquare } from "lucide-react";
+import { Clock } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-const liveActivities = [
-  { client: 'Maria Silva', agent: 'João Santos', channel: 'WhatsApp', duration: '2m 15s', status: 'ativo' },
-  { client: 'Pedro Costa', agent: 'Ana Oliveira', channel: 'Chat Web', duration: '5m 42s', status: 'ativo' },
-  { client: 'Carla Souza', agent: 'Carlos Lima', channel: 'Facebook', duration: '1m 30s', status: 'ativo' },
-  { client: 'Roberto Alves', agent: '-', channel: 'WhatsApp', duration: '8m 20s', status: 'aguardando' },
-  { client: 'Lucia Santos', agent: '-', channel: 'Instagram', duration: '12m 05s', status: 'aguardando' },
-];
+interface LiveActivity {
+  id: string;
+  status: string;
+  startedAt: string;
+  updatedAt: string;
+  clientName: string;
+  agentName: string | null;
+  channelType: string;
+}
 
-export const LiveActivityTable = () => {
+interface LiveActivityTableProps {
+  data?: LiveActivity[];
+}
+
+// Mapear tipos de canal para labels amigáveis
+const channelLabels: Record<string, string> = {
+  whatsapp: 'WhatsApp',
+  webchat: 'Chat Web',
+  messenger: 'Messenger',
+  instagram: 'Instagram',
+  telegram: 'Telegram',
+};
+
+export const LiveActivityTable = ({ data = [] }: LiveActivityTableProps) => {
+  // Se não houver dados, mostrar mensagem
+  if (data.length === 0) {
+    return (
+      <div className="text-center py-8 text-sm text-muted-foreground">
+        Nenhuma conversa ativa no momento
+      </div>
+    );
+  }
+
+  const getStatusBadge = (status: string) => {
+    if (status === 'active') {
+      return (
+        <Badge variant="default" className="bg-green-500">
+          Em Atendimento
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="secondary">
+        {status}
+      </Badge>
+    );
+  };
+
   return (
-    <Card className="col-span-2">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageSquare className="h-5 w-5 text-ping-primary" />
-          Atividade em Tempo Real
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Cliente</TableHead>
-              <TableHead>Agente</TableHead>
-              <TableHead>Canal</TableHead>
-              <TableHead>Duração</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {liveActivities.map((activity, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{activity.client}</TableCell>
-                <TableCell>{activity.agent || 'Não atribuído'}</TableCell>
-                <TableCell>{activity.channel}</TableCell>
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Cliente</TableHead>
+            <TableHead>Agente</TableHead>
+            <TableHead>Canal</TableHead>
+            <TableHead>Tempo Ativo</TableHead>
+            <TableHead>Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((activity) => {
+            const duration = formatDistanceToNow(new Date(activity.startedAt), {
+              locale: ptBR,
+              addSuffix: false,
+            });
+
+            return (
+              <TableRow key={activity.id}>
+                <TableCell className="font-medium">{activity.clientName}</TableCell>
+                <TableCell>{activity.agentName || 'Não atribuído'}</TableCell>
+                <TableCell>{channelLabels[activity.channelType] || activity.channelType}</TableCell>
                 <TableCell className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
-                  {activity.duration}
+                  {duration}
                 </TableCell>
                 <TableCell>
-                  <Badge 
-                    variant={activity.status === 'ativo' ? 'default' : 'destructive'}
-                    className={activity.status === 'ativo' ? 'bg-green-500' : ''}
-                  >
-                    {activity.status === 'ativo' ? 'Em Atendimento' : 'Aguardando'}
-                  </Badge>
+                  {getStatusBadge(activity.status)}
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 };

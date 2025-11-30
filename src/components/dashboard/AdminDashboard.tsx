@@ -1,23 +1,54 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAllTeams } from '@/hooks/useTeam';
+import { useAdminMetrics } from '@/hooks/useAdminMetrics';
 import { MetricCard } from './MetricCard';
-import { Users, Clock, CheckCircle2, TrendingUp, Building2, MessageSquare } from 'lucide-react';
+import { Users, Clock, CheckCircle2, TrendingUp, Building2, MessageSquare, Loader2 } from 'lucide-react';
 import { AttendanceChart } from './AttendanceChart';
 import { ChannelChart } from './ChannelChart';
 import { LiveActivityTable } from './LiveActivityTable';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 export const AdminDashboard = () => {
-  const { teams, loading } = useAllTeams();
+  const { teams, loading: teamsLoading } = useAllTeams();
+  const {
+    totalAgents,
+    agentsOnline,
+    conversationsToday,
+    conversationsMonth,
+    resolutionRate,
+    avgResponseTime,
+    channelDistribution,
+    teamPerformance,
+    liveActivity,
+    weeklyPerformance,
+    loading: metricsLoading,
+    error
+  } = useAdminMetrics();
 
-  // Mock data - será substituído por dados reais da API
-  const globalMetrics = {
-    totalAgents: 45,
-    activeNow: 32,
-    totalConversations: 1248,
-    avgSatisfaction: 4.7,
-    totalTeams: teams.length,
-    conversationsToday: 156,
-  };
+  const loading = teamsLoading || metricsLoading;
+
+  // Mostrar erro se houver
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Visão Global - Administração
+          </h2>
+          <p className="text-muted-foreground">
+            Painel completo de todas as operações da plataforma.
+          </p>
+        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Erro ao carregar métricas: {error.message}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -34,47 +65,39 @@ export const AdminDashboard = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
         <MetricCard
           title="Total de Agentes"
-          value={globalMetrics.totalAgents.toString()}
+          value={loading ? '--' : totalAgents.toString()}
           description="Todos os agentes"
-          icon={Users}
+          icon={loading ? Loader2 : Users}
         />
         <MetricCard
           title="Ativos Agora"
-          value={globalMetrics.activeNow.toString()}
+          value={loading ? '--' : agentsOnline.toString()}
           description="Agentes online"
-          icon={CheckCircle2}
-          change="+12% vs. ontem"
-          changeType="positive"
+          icon={loading ? Loader2 : CheckCircle2}
         />
         <MetricCard
           title="Times Ativos"
-          value={globalMetrics.totalTeams.toString()}
+          value={loading ? '--' : teams.length.toString()}
           description="Total de equipes"
-          icon={Building2}
+          icon={loading ? Loader2 : Building2}
         />
         <MetricCard
           title="Conversas Hoje"
-          value={globalMetrics.conversationsToday.toString()}
+          value={loading ? '--' : conversationsToday.toString()}
           description="Atendimentos do dia"
-          icon={MessageSquare}
-          change="+8% vs. ontem"
-          changeType="positive"
+          icon={loading ? Loader2 : MessageSquare}
         />
         <MetricCard
           title="Total no Mês"
-          value={globalMetrics.totalConversations.toString()}
-          description="Conversas finalizadas"
-          icon={CheckCircle2}
-          change="+15% vs. mês anterior"
-          changeType="positive"
+          value={loading ? '--' : conversationsMonth.toString()}
+          description="Conversas iniciadas"
+          icon={loading ? Loader2 : TrendingUp}
         />
         <MetricCard
-          title="Satisfação Geral"
-          value={`${globalMetrics.avgSatisfaction}/5.0`}
-          description="Avaliação média"
-          icon={TrendingUp}
-          change="+2% vs. mês anterior"
-          changeType="positive"
+          title="Taxa de Resolução"
+          value={loading ? '--' : `${resolutionRate}%`}
+          description="Conversas finalizadas"
+          icon={loading ? Loader2 : CheckCircle2}
         />
       </div>
 
@@ -88,17 +111,29 @@ export const AdminDashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
-            <AttendanceChart />
+            {loading ? (
+              <div className="flex items-center justify-center h-[300px]">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <AttendanceChart data={weeklyPerformance} />
+            )}
           </CardContent>
         </Card>
 
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Canais de Atendimento</CardTitle>
-            <CardDescription>Distribuição por canal</CardDescription>
+            <CardDescription>Distribuição por canal (últimos 30 dias)</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChannelChart />
+            {loading ? (
+              <div className="flex items-center justify-center h-[300px]">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <ChannelChart data={channelDistribution} />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -112,18 +147,18 @@ export const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="text-center text-sm text-muted-foreground">
-                Carregando times...
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
-            ) : teams.length === 0 ? (
-              <div className="text-center text-sm text-muted-foreground">
-                Nenhum time cadastrado
+            ) : teamPerformance.length === 0 ? (
+              <div className="text-center py-8 text-sm text-muted-foreground">
+                Nenhuma conversa finalizada hoje
               </div>
             ) : (
               <div className="space-y-4">
-                {teams.slice(0, 5).map((team, index) => (
+                {teamPerformance.slice(0, 5).map((team, index) => (
                   <div
-                    key={team.id}
+                    key={team.teamId}
                     className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"
                   >
                     <div className="flex items-center space-x-3">
@@ -131,18 +166,18 @@ export const AdminDashboard = () => {
                         {index + 1}
                       </div>
                       <div>
-                        <p className="text-sm font-medium">{team.name}</p>
+                        <p className="text-sm font-medium">{team.teamName}</p>
                         <p className="text-xs text-muted-foreground">
-                          {Math.floor(Math.random() * 10) + 5} agentes
+                          {team.agentCount} {team.agentCount === 1 ? 'agente' : 'agentes'}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-medium">
-                        {Math.floor(Math.random() * 50) + 100} conversas
+                        {team.conversationsCount} {team.conversationsCount === 1 ? 'conversa' : 'conversas'}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {(4 + Math.random()).toFixed(1)}/5.0 ⭐
+                        hoje
                       </p>
                     </div>
                   </div>
@@ -158,39 +193,60 @@ export const AdminDashboard = () => {
             <CardDescription>Saúde geral da plataforma</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Capacidade de Atendimento</span>
-                <span className="font-medium">78%</span>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
-              <div className="h-2 rounded-full bg-secondary">
-                <div className="h-full w-[78%] rounded-full bg-primary" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Taxa de Resolução</span>
-                <span className="font-medium">92%</span>
-              </div>
-              <div className="h-2 rounded-full bg-secondary">
-                <div className="h-full w-[92%] rounded-full bg-green-500" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">SLA Cumprido</span>
-                <span className="font-medium">95%</span>
-              </div>
-              <div className="h-2 rounded-full bg-secondary">
-                <div className="h-full w-[95%] rounded-full bg-green-500" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Tempo Médio Resposta</span>
-                <span className="font-medium text-green-600">2m 45s</span>
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Capacidade de Atendimento</span>
+                    <span className="font-medium">
+                      {agentsOnline > 0 ? Math.round((agentsOnline / totalAgents) * 100) : 0}%
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-secondary">
+                    <div 
+                      className="h-full rounded-full bg-primary transition-all" 
+                      style={{ width: `${agentsOnline > 0 ? Math.round((agentsOnline / totalAgents) * 100) : 0}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Taxa de Resolução</span>
+                    <span className="font-medium">{resolutionRate}%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-secondary">
+                    <div 
+                      className="h-full rounded-full bg-green-500 transition-all" 
+                      style={{ width: `${resolutionRate}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Conversas Ativas</span>
+                    <span className="font-medium">{liveActivity.length}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-secondary">
+                    <div 
+                      className="h-full rounded-full bg-blue-500 transition-all" 
+                      style={{ width: `${Math.min((liveActivity.length / 50) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Tempo Médio Resposta</span>
+                    <span className={`font-medium ${avgResponseTime !== '--' ? 'text-green-600' : ''}`}>
+                      {avgResponseTime}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -204,7 +260,13 @@ export const AdminDashboard = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LiveActivityTable />
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <LiveActivityTable data={liveActivity} />
+          )}
         </CardContent>
       </Card>
     </div>
