@@ -296,5 +296,6 @@ export function useConversations() {
     setQuickFilter,
     attendNext,
     loading,
+    refresh: fetchConversations,
   };
 }

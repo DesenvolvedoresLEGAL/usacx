@@ -15,6 +15,7 @@ export default function ConversationsPage() {
     setQuickFilter,
     attendNext,
     loading,
+    refresh,
   } = useConversations();
 
   if (loading) {
@@ -47,7 +48,11 @@ export default function ConversationsPage() {
 
         <ChatWindow conversation={selectedConversation} />
 
-        <ClientInfoSidebar client={selectedConversation?.client || null} />
+        <ClientInfoSidebar 
+          client={selectedConversation?.client || null} 
+          conversation={selectedConversation}
+          onConversationUpdate={refresh}
+        />
       </div>
     </div>
   );
