@@ -2,10 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useCurrentAgent } from '@/hooks/useCurrentAgent';
 import { useAgentMetrics } from '@/hooks/useAgentMetrics';
 import { MetricCard } from './MetricCard';
-import { MessageSquare, Clock, CheckCircle2, TrendingUp, Loader2 } from 'lucide-react';
+import { MessageSquare, Clock, CheckCircle2, TrendingUp } from 'lucide-react';
 import { AttendanceChart } from './AttendanceChart';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { 
+  DashboardMetricsSkeleton, 
+  ChartSkeleton, 
+  GoalsSkeleton 
+} from '@/components/skeletons';
 
 export const AgentDashboard = () => {
   const agent = useCurrentAgent();
@@ -52,32 +57,36 @@ export const AgentDashboard = () => {
       </div>
 
       {/* Métricas Pessoais */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Conversas Ativas"
-          value={loading ? '--' : activeConversations.toString()}
-          description="Atendimentos em andamento"
-          icon={loading ? Loader2 : MessageSquare}
-        />
-        <MetricCard
-          title="Tempo Médio"
-          value={loading ? '--' : avgResponseTime}
-          description="Tempo médio de resposta"
-          icon={loading ? Loader2 : Clock}
-        />
-        <MetricCard
-          title="Finalizadas Hoje"
-          value={loading ? '--' : finishedToday.toString()}
-          description="Conversas concluídas"
-          icon={loading ? Loader2 : CheckCircle2}
-        />
-        <MetricCard
-          title="Satisfação"
-          value="Em breve"
-          description="Aguardando avaliações"
-          icon={TrendingUp}
-        />
-      </div>
+      {loading ? (
+        <DashboardMetricsSkeleton />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <MetricCard
+            title="Conversas Ativas"
+            value={activeConversations.toString()}
+            description="Atendimentos em andamento"
+            icon={MessageSquare}
+          />
+          <MetricCard
+            title="Tempo Médio"
+            value={avgResponseTime}
+            description="Tempo médio de resposta"
+            icon={Clock}
+          />
+          <MetricCard
+            title="Finalizadas Hoje"
+            value={finishedToday.toString()}
+            description="Conversas concluídas"
+            icon={CheckCircle2}
+          />
+          <MetricCard
+            title="Satisfação"
+            value="Em breve"
+            description="Aguardando avaliações"
+            icon={TrendingUp}
+          />
+        </div>
+      )}
 
       {/* Gráfico de Atividade Pessoal */}
       <div className="grid gap-4 lg:grid-cols-7">
@@ -90,9 +99,7 @@ export const AgentDashboard = () => {
           </CardHeader>
           <CardContent className="pl-2">
             {loading ? (
-              <div className="flex items-center justify-center h-[300px]">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
+              <ChartSkeleton />
             ) : (
               <AttendanceChart data={weeklyPerformance} />
             )}
@@ -106,9 +113,7 @@ export const AgentDashboard = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
+              <GoalsSkeleton />
             ) : (
               <>
                 <div className="space-y-2">

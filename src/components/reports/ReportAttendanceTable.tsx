@@ -1,6 +1,7 @@
 
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { TableSkeleton } from "@/components/skeletons";
 
 const statusColors = {
   "finalizado": "bg-green-100 text-green-800",
@@ -8,8 +9,17 @@ const statusColors = {
   "pendente": "bg-gray-100 text-gray-700",
 };
 
-export function ReportAttendanceTable({ filters }: { filters: any }) {
+interface ReportAttendanceTableProps {
+  filters: any;
+  isLoading?: boolean;
+}
+
+export function ReportAttendanceTable({ filters, isLoading = false }: ReportAttendanceTableProps) {
   const data: any[] = [];
+
+  if (isLoading) {
+    return <TableSkeleton columns={8} rows={6} />;
+  }
 
   if (data.length === 0) {
     return (
