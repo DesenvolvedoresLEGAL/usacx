@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
-import type { AppRole, AgentProfile } from '@/types/auth';
+import type { AppRole, AgentProfile, Organization, OrganizationMember, OrgRole, OrgPlan } from '@/types/auth';
 import { toast } from 'sonner';
 
 interface AuthContextType {
@@ -10,6 +10,8 @@ interface AuthContextType {
   session: Session | null;
   role: AppRole | null;
   profile: AgentProfile | null;
+  organization: Organization | null;
+  orgMembership: OrganizationMember | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: Error | null }>;
@@ -32,6 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [profile, setProfile] = useState<AgentProfile | null>(null);
+  const [organization, setOrganization] = useState<Organization | null>(null);
+  const [orgMembership, setOrgMembership] = useState<OrganizationMember | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -65,16 +69,70 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return data as AgentProfile | null;
   };
 
+  const loadUserOrganization = async (userId: string) => {
+    // First get the membership
+    const { data: memberData, error: memberError } = await supabase
+      .from('organization_members')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (memberError || !memberData) {
+      console.error('Error loading organization membership:', memberError);
+      return { organization: null, membership: null };
+    }
+
+    const membership: OrganizationMember = {
+      id: memberData.id,
+      organization_id: memberData.organization_id,
+      user_id: memberData.user_id,
+      org_role: memberData.org_role as OrgRole,
+      is_owner: memberData.is_owner,
+      created_at: memberData.created_at,
+    };
+
+    // Then get the organization
+    const { data: orgData, error: orgError } = await supabase
+      .from('organizations')
+      .select('*')
+      .eq('id', memberData.organization_id)
+      .maybeSingle();
+
+    if (orgError || !orgData) {
+      console.error('Error loading organization:', orgError);
+      return { organization: null, membership };
+    }
+
+    const org: Organization = {
+      id: orgData.id,
+      slug: orgData.slug,
+      name: orgData.name,
+      logo_url: orgData.logo_url,
+      settings: (typeof orgData.settings === 'object' && orgData.settings !== null && !Array.isArray(orgData.settings)) 
+        ? orgData.settings as Record<string, any> 
+        : {},
+      plan: orgData.plan as OrgPlan,
+      is_active: orgData.is_active,
+      created_at: orgData.created_at,
+      updated_at: orgData.updated_at,
+    };
+
+    return { organization: org, membership };
+  };
+
   const refreshProfile = async () => {
     if (!user) return;
     
-    const [userRole, userProfile] = await Promise.all([
+    const [userRole, userProfile, orgData] = await Promise.all([
       loadUserRole(user.id),
       loadUserProfile(user.id),
+      loadUserOrganization(user.id),
     ]);
 
     setRole(userRole);
     setProfile(userProfile);
+    setOrganization(orgData.organization);
+    setOrgMembership(orgData.membership);
   };
 
   useEffect(() => {
@@ -86,17 +144,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (currentSession?.user) {
           setTimeout(async () => {
-            const [userRole, userProfile] = await Promise.all([
+            const [userRole, userProfile, orgData] = await Promise.all([
               loadUserRole(currentSession.user.id),
               loadUserProfile(currentSession.user.id),
+              loadUserOrganization(currentSession.user.id),
             ]);
             setRole(userRole);
             setProfile(userProfile);
+            setOrganization(orgData.organization);
+            setOrgMembership(orgData.membership);
             setLoading(false);
           }, 0);
         } else {
           setRole(null);
           setProfile(null);
+          setOrganization(null);
+          setOrgMembership(null);
           setLoading(false);
         }
       }
@@ -109,12 +172,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (currentSession?.user) {
         setTimeout(async () => {
-          const [userRole, userProfile] = await Promise.all([
+          const [userRole, userProfile, orgData] = await Promise.all([
             loadUserRole(currentSession.user.id),
             loadUserProfile(currentSession.user.id),
+            loadUserOrganization(currentSession.user.id),
           ]);
           setRole(userRole);
           setProfile(userProfile);
+          setOrganization(orgData.organization);
+          setOrgMembership(orgData.membership);
           setLoading(false);
         }, 0);
       } else {
@@ -174,6 +240,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(null);
       setRole(null);
       setProfile(null);
+      setOrganization(null);
+      setOrgMembership(null);
       
       navigate('/login');
       toast.success('Logout realizado com sucesso');
@@ -188,6 +256,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     session,
     role,
     profile,
+    organization,
+    orgMembership,
     loading,
     signIn,
     signUp,
