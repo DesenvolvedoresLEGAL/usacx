@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganization } from './useOrganization';
 
 interface WeeklyData {
   day: string;
@@ -32,9 +33,11 @@ interface TeamMetrics {
 
 /**
  * Hook para buscar métricas do time/gestor
+ * FILTRADO POR ORGANIZAÇÃO para isolamento multi-tenant
  * Atualiza automaticamente a cada 30 segundos
  */
 export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
+  const { organizationId } = useOrganization();
   const [metrics, setMetrics] = useState<TeamMetrics>({
     activeConversations: 0,
     finishedToday: 0,
@@ -49,7 +52,7 @@ export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
   });
 
   const fetchMetrics = useCallback(async () => {
-    if (!teamId) {
+    if (!teamId || !organizationId) {
       setMetrics(prev => ({ ...prev, loading: false }));
       return;
     }
@@ -74,30 +77,33 @@ export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
         return;
       }
 
-      // Query 1: Conversas ativas do time
+      // Query 1: Conversas ativas do time (filtrado por org)
       const { count: activeCount, error: activeError } = await supabase
         .from('conversations')
         .select('*', { count: 'exact', head: true })
         .in('assigned_agent_id', agentIds)
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .eq('organization_id', organizationId);
 
       if (activeError) throw activeError;
 
-      // Query 2: Conversas finalizadas hoje
+      // Query 2: Conversas finalizadas hoje (filtrado por org)
       const { count: finishedCount, error: finishedError } = await supabase
         .from('conversations')
         .select('*', { count: 'exact', head: true })
         .in('assigned_agent_id', agentIds)
         .eq('status', 'finished')
+        .eq('organization_id', organizationId)
         .gte('finished_at', today);
 
       if (finishedError) throw finishedError;
 
-      // Query 3: Conversas na fila (queues do time)
+      // Query 3: Conversas na fila (queues do time, filtrado por org)
       const { data: teamQueues } = await supabase
         .from('queues')
         .select('id')
-        .eq('team_id', teamId);
+        .eq('team_id', teamId)
+        .eq('organization_id', organizationId);
 
       const queueIds = (teamQueues || []).map(q => q.id);
 
@@ -107,18 +113,20 @@ export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
           .from('conversations')
           .select('*', { count: 'exact', head: true })
           .in('queue_id', queueIds)
-          .eq('status', 'waiting');
+          .eq('status', 'waiting')
+          .eq('organization_id', organizationId);
 
         if (queueError) throw queueError;
         queueCount = count || 0;
       }
 
-      // Query 4: Conversas ativas por agente
+      // Query 4: Conversas ativas por agente (filtrado por org)
       const { data: agentConvsData, error: agentConvsError } = await supabase
         .from('conversations')
         .select('assigned_agent_id')
         .in('assigned_agent_id', agentIds)
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .eq('organization_id', organizationId);
 
       if (agentConvsError) throw agentConvsError;
 
@@ -127,15 +135,16 @@ export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
         activeCount: (agentConvsData || []).filter(c => c.assigned_agent_id === agentId).length,
       }));
 
-      // Query 5: Top 3 performers do time (conversas finalizadas hoje)
+      // Query 5: Top 3 performers do time (conversas finalizadas hoje, filtrado por org)
       const { data: topPerformersData, error: topError } = await supabase
         .from('conversations')
         .select(`
           assigned_agent_id,
-          agent_profiles!inner(id, display_name)
+          agent_profiles!fk_conversations_agent(id, display_name)
         `)
         .in('assigned_agent_id', agentIds)
         .eq('status', 'finished')
+        .eq('organization_id', organizationId)
         .gte('finished_at', today);
 
       if (topError) throw topError;
@@ -158,22 +167,24 @@ export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
         .sort((a: any, b: any) => b.conversationsCount - a.conversationsCount)
         .slice(0, 3) as TopPerformer[];
 
-      // Query 6: Conversas próximas ao SLA (mais de 30 min ativas)
+      // Query 6: Conversas próximas ao SLA (mais de 30 min ativas, filtrado por org)
       const { count: nearSlaCount, error: slaError } = await supabase
         .from('conversations')
         .select('*', { count: 'exact', head: true })
         .in('assigned_agent_id', agentIds)
         .eq('status', 'active')
+        .eq('organization_id', organizationId)
         .lt('started_at', thirtyMinutesAgo);
 
       if (slaError) throw slaError;
 
-      // Query 7: Desempenho semanal do time
+      // Query 7: Desempenho semanal do time (filtrado por org)
       const { data: weeklyData, error: weeklyError } = await supabase
         .from('conversations')
         .select('finished_at')
         .in('assigned_agent_id', agentIds)
         .eq('status', 'finished')
+        .eq('organization_id', organizationId)
         .gte('finished_at', sevenDaysAgo)
         .order('finished_at', { ascending: true });
 
@@ -190,7 +201,7 @@ export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
         count,
       }));
 
-      // Query 8: Tempo médio de resposta do time (simplificado)
+      // Query 8: Tempo médio de resposta do time (simplificado, filtrado por org)
       const { data: conversationsWithMessages, error: convError } = await supabase
         .from('conversations')
         .select(`
@@ -200,6 +211,7 @@ export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
         `)
         .in('assigned_agent_id', agentIds)
         .eq('status', 'finished')
+        .eq('organization_id', organizationId)
         .gte('finished_at', today)
         .limit(30); // Limitar para performance
 
@@ -247,15 +259,21 @@ export const useTeamMetrics = (teamId: string | null): TeamMetrics => {
         error: error as Error,
       }));
     }
-  }, [teamId]);
+  }, [teamId, organizationId]);
 
   useEffect(() => {
-    fetchMetrics();
+    if (teamId && organizationId) {
+      fetchMetrics();
+    }
+  }, [teamId, organizationId, fetchMetrics]);
+
+  useEffect(() => {
+    if (!teamId || !organizationId) return;
 
     // Atualizar a cada 30 segundos
     const interval = setInterval(fetchMetrics, 30000);
     return () => clearInterval(interval);
-  }, [fetchMetrics]);
+  }, [teamId, organizationId, fetchMetrics]);
 
   return metrics;
 };

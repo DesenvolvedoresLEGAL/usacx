@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganization } from './useOrganization';
 
 export interface LiveStats {
   onlineAgents: number;
@@ -19,30 +20,52 @@ export const useLiveStats = () => {
     averageWaitTime: '0m 0s',
     isLoading: true,
   });
+  const { organizationId } = useOrganization();
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
+    if (!organizationId) {
+      setStats(prev => ({ ...prev, isLoading: false }));
+      return;
+    }
+
     try {
-      // Fetch agent stats
-      const { data: allAgents } = await supabase
+      // FILTRO MULTI-TENANT: buscar times da organização primeiro
+      const { data: teamsData } = await supabase
+        .from('teams')
+        .select('id')
+        .eq('organization_id', organizationId);
+
+      const teamIds = (teamsData || []).map(t => t.id);
+
+      // Fetch agent stats (filtrado por times da org)
+      let agentsQuery = supabase
         .from('agent_profiles')
         .select('id, status');
+
+      if (teamIds.length > 0) {
+        agentsQuery = agentsQuery.in('team_id', teamIds);
+      }
+
+      const { data: allAgents } = await agentsQuery;
 
       const totalAgents = allAgents?.length || 0;
       const onlineAgents = allAgents?.filter(
         (agent) => agent.status === 'online' || agent.status === 'away'
       ).length || 0;
 
-      // Fetch active conversations
+      // Fetch active conversations (filtrado por org)
       const { count: activeCount } = await supabase
         .from('conversations')
         .select('id', { count: 'exact', head: true })
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .eq('organization_id', organizationId);
 
-      // Fetch queue (waiting conversations)
+      // Fetch queue (waiting conversations, filtrado por org)
       const { data: queueData } = await supabase
         .from('conversations')
         .select('started_at')
-        .eq('status', 'waiting');
+        .eq('status', 'waiting')
+        .eq('organization_id', organizationId);
 
       const queueSize = queueData?.length || 0;
 
@@ -72,10 +95,16 @@ export const useLiveStats = () => {
       console.error('Error fetching live stats:', error);
       setStats((prev) => ({ ...prev, isLoading: false }));
     }
-  };
+  }, [organizationId]);
 
   useEffect(() => {
-    fetchStats();
+    if (organizationId) {
+      fetchStats();
+    }
+  }, [organizationId, fetchStats]);
+
+  useEffect(() => {
+    if (!organizationId) return;
 
     // Subscribe to agent_profiles changes
     const agentChannel = supabase
@@ -93,7 +122,7 @@ export const useLiveStats = () => {
       )
       .subscribe();
 
-    // Subscribe to conversations changes
+    // Subscribe to conversations changes (filtrado por org)
     const conversationChannel = supabase
       .channel('conversation-status-changes')
       .on(
@@ -102,6 +131,7 @@ export const useLiveStats = () => {
           event: '*',
           schema: 'public',
           table: 'conversations',
+          filter: `organization_id=eq.${organizationId}`,
         },
         () => {
           fetchStats();
@@ -117,7 +147,7 @@ export const useLiveStats = () => {
       supabase.removeChannel(conversationChannel);
       clearInterval(interval);
     };
-  }, []);
+  }, [organizationId, fetchStats]);
 
   return stats;
 };

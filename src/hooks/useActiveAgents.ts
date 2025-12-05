@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganization } from './useOrganization';
 import { useToast } from '@/hooks/use-toast';
 
 export interface ActiveAgent {
@@ -18,20 +19,42 @@ export interface ActiveAgent {
 export const useActiveAgents = () => {
   const [agents, setAgents] = useState<ActiveAgent[]>([]);
   const [loading, setLoading] = useState(true);
+  const { organizationId } = useOrganization();
   const { toast } = useToast();
 
   const fetchActiveAgents = useCallback(async () => {
+    if (!organizationId) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Fetch agents that are not offline
-      const { data: agentsData, error: agentsError } = await supabase
+      // FILTRO MULTI-TENANT: buscar agentes apenas da organização atual
+      // Agentes são filtrados pelo team, que pertence à organização
+      const { data: teamsData } = await supabase
+        .from('teams')
+        .select('id')
+        .eq('organization_id', organizationId);
+
+      const teamIds = (teamsData || []).map(t => t.id);
+
+      // Fetch agents that are not offline and belong to teams of this org
+      let agentsQuery = supabase
         .from('agent_profiles')
         .select('*')
         .neq('status', 'offline')
         .order('display_name');
 
+      // Se existem times da org, filtrar por eles
+      if (teamIds.length > 0) {
+        agentsQuery = agentsQuery.in('team_id', teamIds);
+      }
+
+      const { data: agentsData, error: agentsError } = await agentsQuery;
+
       if (agentsError) throw agentsError;
 
-      // For each agent, get conversation counts
+      // For each agent, get conversation counts (filtrados por org)
       const agentsWithStats = await Promise.all(
         (agentsData || []).map(async (agent) => {
           // Count active conversations
@@ -39,7 +62,8 @@ export const useActiveAgents = () => {
             .from('conversations')
             .select('*', { count: 'exact', head: true })
             .eq('assigned_agent_id', agent.id)
-            .eq('status', 'active');
+            .eq('status', 'active')
+            .eq('organization_id', organizationId);
 
           if (activeError) console.error('Error fetching active count:', activeError);
 
@@ -51,6 +75,7 @@ export const useActiveAgents = () => {
             .from('conversations')
             .select('*', { count: 'exact', head: true })
             .eq('assigned_agent_id', agent.id)
+            .eq('organization_id', organizationId)
             .gte('started_at', today.toISOString());
 
           if (totalError) console.error('Error fetching total count:', totalError);
@@ -61,6 +86,7 @@ export const useActiveAgents = () => {
             .select('started_at, finished_at')
             .eq('assigned_agent_id', agent.id)
             .eq('status', 'finished')
+            .eq('organization_id', organizationId)
             .gte('started_at', today.toISOString())
             .not('finished_at', 'is', null);
 
@@ -78,12 +104,12 @@ export const useActiveAgents = () => {
           // Get last message timestamp for this agent
           const { data: lastMessage, error: lastMessageError } = await supabase
             .from('messages')
-            .select('created_at, conversations!inner(assigned_agent_id)')
-            .eq('conversations.assigned_agent_id', agent.id)
+            .select('created_at')
+            .eq('sender_id', agent.id)
             .eq('sender_type', 'agent')
             .order('created_at', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
           let lastActivityDate = new Date(agent.updated_at);
           if (!lastMessageError && lastMessage) {
@@ -116,7 +142,7 @@ export const useActiveAgents = () => {
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [organizationId, toast]);
 
   const pauseAgent = async (agentId: string, pauseReasonId?: string) => {
     try {
@@ -175,7 +201,13 @@ export const useActiveAgents = () => {
   };
 
   useEffect(() => {
-    fetchActiveAgents();
+    if (organizationId) {
+      fetchActiveAgents();
+    }
+  }, [organizationId, fetchActiveAgents]);
+
+  useEffect(() => {
+    if (!organizationId) return;
 
     // Setup realtime subscription for agent status changes
     const channel = supabase
@@ -198,6 +230,7 @@ export const useActiveAgents = () => {
           event: '*',
           schema: 'public',
           table: 'conversations',
+          filter: `organization_id=eq.${organizationId}`,
         },
         () => {
           console.log('Conversation changed, refreshing...');
@@ -215,7 +248,7 @@ export const useActiveAgents = () => {
       supabase.removeChannel(channel);
       clearInterval(interval);
     };
-  }, [fetchActiveAgents]);
+  }, [organizationId, fetchActiveAgents]);
 
   return {
     agents,

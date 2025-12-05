@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganization } from './useOrganization';
 
 interface WeeklyData {
   day: string;
@@ -47,9 +48,11 @@ interface AdminMetrics {
 
 /**
  * Hook para buscar métricas globais do admin
+ * FILTRADO POR ORGANIZAÇÃO para isolamento multi-tenant
  * Atualiza automaticamente a cada 30 segundos
  */
 export const useAdminMetrics = (): AdminMetrics => {
+  const { organizationId } = useOrganization();
   const [metrics, setMetrics] = useState<AdminMetrics>({
     totalAgents: 0,
     agentsOnline: 0,
@@ -67,46 +70,55 @@ export const useAdminMetrics = (): AdminMetrics => {
   });
 
   const fetchMetrics = useCallback(async () => {
+    if (!organizationId) {
+      setMetrics(prev => ({ ...prev, loading: false }));
+      return;
+    }
+
     try {
       const today = new Date().toISOString().split('T')[0];
       const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-      // Query 1: Total de agentes
-      const { count: totalAgents, error: agentsError } = await supabase
-        .from('agent_profiles')
-        .select('*', { count: 'exact', head: true });
-
-      if (agentsError) throw agentsError;
-
-      // Query 2: Agentes online
-      const { count: agentsOnline, error: onlineError } = await supabase
-        .from('agent_profiles')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'online');
-
-      if (onlineError) throw onlineError;
-
-      // Query 3: Total de times
-      const { count: totalTeams, error: teamsError } = await supabase
+      // FILTRO MULTI-TENANT: buscar times da organização
+      const { data: teamsData, error: teamsDataError } = await supabase
         .from('teams')
-        .select('*', { count: 'exact', head: true });
+        .select(`
+          id,
+          name,
+          agent_profiles(id, status)
+        `)
+        .eq('organization_id', organizationId);
 
-      if (teamsError) throw teamsError;
+      if (teamsDataError) throw teamsDataError;
 
-      // Query 4: Conversas iniciadas hoje
+      const teamIds = (teamsData || []).map(t => t.id);
+      const allAgentProfiles = (teamsData || []).flatMap((t: any) => t.agent_profiles || []);
+
+      // Query 1: Total de agentes da organização
+      const totalAgents = allAgentProfiles.length;
+
+      // Query 2: Agentes online da organização
+      const agentsOnline = allAgentProfiles.filter((a: any) => a.status === 'online').length;
+
+      // Query 3: Total de times da organização
+      const totalTeams = teamsData?.length || 0;
+
+      // Query 4: Conversas iniciadas hoje (filtrado por org)
       const { count: conversationsToday, error: todayError } = await supabase
         .from('conversations')
         .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
         .gte('started_at', today);
 
       if (todayError) throw todayError;
 
-      // Query 5: Conversas no mês
+      // Query 5: Conversas no mês (filtrado por org)
       const { count: conversationsMonth, error: monthError } = await supabase
         .from('conversations')
         .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
         .gte('started_at', firstDayOfMonth);
 
       if (monthError) throw monthError;
@@ -115,6 +127,7 @@ export const useAdminMetrics = (): AdminMetrics => {
       const { count: finishedToday } = await supabase
         .from('conversations')
         .select('*', { count: 'exact', head: true })
+        .eq('organization_id', organizationId)
         .eq('status', 'finished')
         .gte('finished_at', today);
 
@@ -122,13 +135,14 @@ export const useAdminMetrics = (): AdminMetrics => {
         ? Math.round(((finishedToday || 0) / conversationsToday) * 100) 
         : 0;
 
-      // Query 7: Distribuição por canal (últimos 30 dias)
+      // Query 7: Distribuição por canal (últimos 30 dias, filtrado por org)
       const { data: channelData, error: channelError } = await supabase
         .from('conversations')
         .select(`
           channel_id,
-          channels(id, name, type)
+          channels!fk_conversations_channel(id, name, type)
         `)
+        .eq('organization_id', organizationId)
         .gte('started_at', thirtyDaysAgo);
 
       if (channelError) throw channelError;
@@ -151,19 +165,8 @@ export const useAdminMetrics = (): AdminMetrics => {
 
       const channelDistribution: ChannelDistribution[] = Object.values(channelCounts);
 
-      // Query 8: Performance por time (top 5)
-      const { data: teamsData, error: teamsDataError } = await supabase
-        .from('teams')
-        .select(`
-          id,
-          name,
-          agent_profiles(id)
-        `)
-        .limit(5);
-
-      if (teamsDataError) throw teamsDataError;
-
-      const teamPerformancePromises = (teamsData || []).map(async (team: any) => {
+      // Query 8: Performance por time (top 5 da org)
+      const teamPerformancePromises = (teamsData || []).slice(0, 5).map(async (team: any) => {
         const agentIds = (team.agent_profiles || []).map((a: any) => a.id);
         
         let conversationsCount = 0;
@@ -171,6 +174,7 @@ export const useAdminMetrics = (): AdminMetrics => {
           const { count } = await supabase
             .from('conversations')
             .select('*', { count: 'exact', head: true })
+            .eq('organization_id', organizationId)
             .in('assigned_agent_id', agentIds)
             .eq('status', 'finished')
             .gte('finished_at', today);
@@ -189,7 +193,7 @@ export const useAdminMetrics = (): AdminMetrics => {
       const teamPerformance = await Promise.all(teamPerformancePromises);
       teamPerformance.sort((a, b) => b.conversationsCount - a.conversationsCount);
 
-      // Query 9: Atividade em tempo real (conversas ativas)
+      // Query 9: Atividade em tempo real (conversas ativas da org)
       const { data: liveData, error: liveError } = await supabase
         .from('conversations')
         .select(`
@@ -197,10 +201,11 @@ export const useAdminMetrics = (): AdminMetrics => {
           status,
           started_at,
           updated_at,
-          clients(name),
-          agent_profiles(display_name),
-          channels(type)
+          clients!fk_conversations_client(name),
+          agent_profiles!fk_conversations_agent(display_name),
+          channels!fk_conversations_channel(type)
         `)
+        .eq('organization_id', organizationId)
         .eq('status', 'active')
         .order('updated_at', { ascending: false })
         .limit(10);
@@ -217,10 +222,11 @@ export const useAdminMetrics = (): AdminMetrics => {
         channelType: conv.channels?.type || 'webchat',
       }));
 
-      // Query 10: Desempenho semanal global
+      // Query 10: Desempenho semanal global da org
       const { data: weeklyData, error: weeklyError } = await supabase
         .from('conversations')
         .select('finished_at')
+        .eq('organization_id', organizationId)
         .eq('status', 'finished')
         .gte('finished_at', sevenDaysAgo)
         .order('finished_at', { ascending: true });
@@ -238,7 +244,7 @@ export const useAdminMetrics = (): AdminMetrics => {
         count,
       }));
 
-      // Query 11: Tempo médio de resposta global
+      // Query 11: Tempo médio de resposta global da org
       const { data: conversationsWithMessages, error: convError } = await supabase
         .from('conversations')
         .select(`
@@ -246,6 +252,7 @@ export const useAdminMetrics = (): AdminMetrics => {
           started_at,
           messages(created_at, sender_type)
         `)
+        .eq('organization_id', organizationId)
         .eq('status', 'finished')
         .gte('finished_at', today)
         .limit(50); // Limitar para performance
@@ -275,9 +282,9 @@ export const useAdminMetrics = (): AdminMetrics => {
       const avgSeconds = validResponses > 0 ? totalResponseTime / validResponses : 0;
 
       setMetrics({
-        totalAgents: totalAgents || 0,
-        agentsOnline: agentsOnline || 0,
-        totalTeams: totalTeams || 0,
+        totalAgents,
+        agentsOnline,
+        totalTeams,
         conversationsToday: conversationsToday || 0,
         conversationsMonth: conversationsMonth || 0,
         resolutionRate,
@@ -297,15 +304,21 @@ export const useAdminMetrics = (): AdminMetrics => {
         error: error as Error,
       }));
     }
-  }, []);
+  }, [organizationId]);
 
   useEffect(() => {
-    fetchMetrics();
+    if (organizationId) {
+      fetchMetrics();
+    }
+  }, [organizationId, fetchMetrics]);
+
+  useEffect(() => {
+    if (!organizationId) return;
 
     // Atualizar a cada 30 segundos
     const interval = setInterval(fetchMetrics, 30000);
     return () => clearInterval(interval);
-  }, [fetchMetrics]);
+  }, [organizationId, fetchMetrics]);
 
   return metrics;
 };

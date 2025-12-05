@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useOrganization } from './useOrganization';
 import { useToast } from '@/hooks/use-toast';
 
 export interface QueueItem {
@@ -16,10 +17,17 @@ export interface QueueItem {
 export const useQueueMonitor = () => {
   const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { organizationId } = useOrganization();
   const { toast } = useToast();
 
-  const fetchQueueItems = async () => {
+  const fetchQueueItems = useCallback(async () => {
+    if (!organizationId) {
+      setLoading(false);
+      return;
+    }
+
     try {
+      // FILTRO MULTI-TENANT: sempre filtrar por organization_id
       const { data, error } = await supabase
         .from('conversations')
         .select(`
@@ -27,14 +35,15 @@ export const useQueueMonitor = () => {
           started_at,
           priority,
           metadata,
-          clients:client_id (
+          clients!fk_conversations_client (
             name
           ),
-          channels:channel_id (
+          channels!fk_conversations_channel (
             type
           )
         `)
         .eq('status', 'waiting')
+        .eq('organization_id', organizationId)
         .order('priority', { ascending: false })
         .order('started_at', { ascending: true });
 
@@ -67,7 +76,7 @@ export const useQueueMonitor = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [organizationId, toast]);
 
   const assignConversation = async (conversationId: string, agentProfileId: string) => {
     try {
@@ -96,9 +105,15 @@ export const useQueueMonitor = () => {
   };
 
   useEffect(() => {
-    fetchQueueItems();
+    if (organizationId) {
+      fetchQueueItems();
+    }
+  }, [organizationId, fetchQueueItems]);
 
-    // Setup realtime subscription
+  useEffect(() => {
+    if (!organizationId) return;
+
+    // Setup realtime subscription (filtrado por organização)
     const channel = supabase
       .channel('queue-monitor')
       .on(
@@ -107,7 +122,7 @@ export const useQueueMonitor = () => {
           event: '*',
           schema: 'public',
           table: 'conversations',
-          filter: 'status=eq.waiting',
+          filter: `organization_id=eq.${organizationId}`,
         },
         (payload) => {
           console.log('Queue change detected:', payload);
@@ -125,7 +140,7 @@ export const useQueueMonitor = () => {
       supabase.removeChannel(channel);
       clearInterval(interval);
     };
-  }, []);
+  }, [organizationId, fetchQueueItems]);
 
   return {
     queueItems,
