@@ -21,11 +21,12 @@ export function SidebarUserFooter({ className }: SidebarUserFooterProps) {
   const { user, role, signOut, profile } = useAuth();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const agentStatus = profile?.status || "offline";
+  const agentStatus = profile?.status || "online";
 
-  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Usuário";
+  // Priorizar dados do profile (agent_profiles) sobre user_metadata
+  const displayName = profile?.display_name || user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Usuário";
   const email = user?.email || "";
-  const avatarUrl = user?.user_metadata?.avatar_url;
+  const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url;
   const initials = displayName.slice(0, 2).toUpperCase();
 
   const statusColors: Record<string, string> = {
