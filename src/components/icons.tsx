@@ -44,6 +44,7 @@ import {
   Plus, // For adding new items
   UserCheck, // For active users
   Building, // For departments/companies
+  Building2, // For organizations
   Target, // For goals/targets
   Sparkles, // For IA Copiloto
   BookOpen, // For Base de Conhecimento
@@ -105,6 +106,7 @@ export const Icons = {
   plus: Plus, // For adding new items
   userCheck: UserCheck, // For active users
   building: Building, // For departments/companies
+  building2: Building2, // For organizations
   target: Target, // For goals/targets
   
   // IA
