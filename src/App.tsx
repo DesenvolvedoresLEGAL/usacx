@@ -94,18 +94,62 @@ const App = () => (
                     </RouteGuard>
                   } />
               {/* Relatórios */}
-              <Route path="/relatorios/atendimentos" element={<ReportAttendancesPage />} />
-              <Route path="/relatorios/clientes" element={<ReportClientsPage />} />
-              <Route path="/relatorios/avaliacoes" element={<ReportEvaluationsPage />} />
-              <Route path="/relatorios/pausas" element={<ReportBreaksPage />} />
-              <Route path="/relatorios/performance" element={<ReportPerformancePage />} />
-              <Route path="/relatorios/analitico" element={<ReportAnalyticsPage />} />
-              <Route path="/relatorios/exportar" element={<ReportExportPage />} />
+              <Route path="/relatorios/atendimentos" element={
+                <RouteGuard permission="reports:view_own">
+                  <ReportAttendancesPage />
+                </RouteGuard>
+              } />
+              <Route path="/relatorios/clientes" element={
+                <RouteGuard permission="reports:view_team">
+                  <ReportClientsPage />
+                </RouteGuard>
+              } />
+              <Route path="/relatorios/avaliacoes" element={
+                <RouteGuard permission="reports:view_team">
+                  <ReportEvaluationsPage />
+                </RouteGuard>
+              } />
+              <Route path="/relatorios/pausas" element={
+                <RouteGuard permission="reports:view_team">
+                  <ReportBreaksPage />
+                </RouteGuard>
+              } />
+              <Route path="/relatorios/performance" element={
+                <RouteGuard permission="reports:view_team">
+                  <ReportPerformancePage />
+                </RouteGuard>
+              } />
+              <Route path="/relatorios/analitico" element={
+                <RouteGuard permission="reports:view_all">
+                  <ReportAnalyticsPage />
+                </RouteGuard>
+              } />
+              <Route path="/relatorios/exportar" element={
+                <RouteGuard permission="reports:export">
+                  <ReportExportPage />
+                </RouteGuard>
+              } />
               {/* Inteligência Artificial */}
-              <Route path="/ia/agentes" element={<AIAgentsPage />} />
-              <Route path="/ia/copiloto" element={<AICopilotPage />} />
-              <Route path="/ia/analytics" element={<AIAnalyticsPage />} />
-              <Route path="/ia/conhecimento" element={<AIKnowledgePage />} />
+              <Route path="/ia/agentes" element={
+                <RouteGuard permission="ai:chatbot">
+                  <AIAgentsPage />
+                </RouteGuard>
+              } />
+              <Route path="/ia/copiloto" element={
+                <RouteGuard permission="ai:ml">
+                  <AICopilotPage />
+                </RouteGuard>
+              } />
+              <Route path="/ia/analytics" element={
+                <RouteGuard permission="ai:ml">
+                  <AIAnalyticsPage />
+                </RouteGuard>
+              } />
+              <Route path="/ia/conhecimento" element={
+                <RouteGuard permission="ai:ml">
+                  <AIKnowledgePage />
+                </RouteGuard>
+              } />
               {/* Redirects de compatibilidade IA */}
               <Route path="/ia/chatbot" element={<Navigate to="/ia/agentes" replace />} />
               <Route path="/ia/machine-learning" element={<Navigate to="/ia/conhecimento" replace />} />
