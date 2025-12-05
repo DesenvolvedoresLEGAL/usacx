@@ -34,12 +34,13 @@ export function useConversations() {
       setLoading(true);
 
       // Query base - busca conversas baseado na role do usuário
+      // Usando hints para especificar qual FK usar (necessário após adicionar constraints)
       let query = supabase
         .from('conversations')
         .select(`
           *,
-          client:clients(*),
-          channel:channels(*)
+          client:clients!fk_conversations_client(*),
+          channel:channels!fk_conversations_channel(*)
         `);
 
       // ADMIN: vê todas as conversas
