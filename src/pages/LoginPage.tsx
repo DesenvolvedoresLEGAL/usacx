@@ -8,6 +8,7 @@ import { Icons } from '@/components/icons';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { loginSchema, signupSchema, formatZodError } from '@/lib/validations';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ const LoginPage = () => {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupDisplayName, setSignupDisplayName] = useState('');
+
+  // Form errors
+  const [loginErrors, setLoginErrors] = useState<{ email?: string; password?: string }>({});
+  const [signupErrors, setSignupErrors] = useState<{ email?: string; password?: string; displayName?: string }>({});
 
   // Redirect authenticated users
   useEffect(() => {
@@ -39,10 +44,24 @@ const LoginPage = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoginErrors({});
+    
+    // Validate with Zod
+    const result = loginSchema.safeParse({ email: loginEmail, password: loginPassword });
+    if (!result.success) {
+      const fieldErrors: { email?: string; password?: string } = {};
+      result.error.errors.forEach(err => {
+        if (err.path[0] === 'email') fieldErrors.email = err.message;
+        if (err.path[0] === 'password') fieldErrors.password = err.message;
+      });
+      setLoginErrors(fieldErrors);
+      toast.error(formatZodError(result.error));
+      return;
+    }
 
+    setIsLoading(true);
     try {
-      const { error } = await signIn(loginEmail, loginPassword);
+      const { error } = await signIn(result.data.email, result.data.password);
       
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
@@ -55,7 +74,7 @@ const LoginPage = () => {
       } else {
         toast.success('Login realizado com sucesso!');
       }
-    } catch (error) {
+    } catch {
       toast.error('Erro inesperado ao fazer login');
     } finally {
       setIsLoading(false);
@@ -64,16 +83,29 @@ const LoginPage = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSignupErrors({});
+
+    // Validate with Zod
+    const result = signupSchema.safeParse({ 
+      email: signupEmail, 
+      password: signupPassword, 
+      displayName: signupDisplayName 
+    });
+    if (!result.success) {
+      const fieldErrors: { email?: string; password?: string; displayName?: string } = {};
+      result.error.errors.forEach(err => {
+        if (err.path[0] === 'email') fieldErrors.email = err.message;
+        if (err.path[0] === 'password') fieldErrors.password = err.message;
+        if (err.path[0] === 'displayName') fieldErrors.displayName = err.message;
+      });
+      setSignupErrors(fieldErrors);
+      toast.error(formatZodError(result.error));
+      return;
+    }
+
     setIsLoading(true);
-
     try {
-      if (signupPassword.length < 6) {
-        toast.error('A senha deve ter pelo menos 6 caracteres');
-        setIsLoading(false);
-        return;
-      }
-
-      const { error } = await signUp(signupEmail, signupPassword, signupDisplayName);
+      const { error } = await signUp(result.data.email, result.data.password, result.data.displayName);
       
       if (error) {
         if (error.message.includes('already registered')) {
@@ -86,7 +118,7 @@ const LoginPage = () => {
       } else {
         toast.success('Conta criada com sucesso! Você já pode fazer login.');
       }
-    } catch (error) {
+    } catch {
       toast.error('Erro inesperado ao criar conta');
     } finally {
       setIsLoading(false);
@@ -131,7 +163,13 @@ const LoginPage = () => {
                     onChange={(e) => setLoginEmail(e.target.value)}
                     required
                     disabled={isLoading}
+                    className={loginErrors.email ? 'border-destructive' : ''}
+                    aria-invalid={!!loginErrors.email}
+                    aria-describedby={loginErrors.email ? 'login-email-error' : undefined}
                   />
+                  {loginErrors.email && (
+                    <p id="login-email-error" className="text-xs text-destructive">{loginErrors.email}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="login-password">Senha</Label>
@@ -143,7 +181,13 @@ const LoginPage = () => {
                     onChange={(e) => setLoginPassword(e.target.value)}
                     required
                     disabled={isLoading}
+                    className={loginErrors.password ? 'border-destructive' : ''}
+                    aria-invalid={!!loginErrors.password}
+                    aria-describedby={loginErrors.password ? 'login-password-error' : undefined}
                   />
+                  {loginErrors.password && (
+                    <p id="login-password-error" className="text-xs text-destructive">{loginErrors.password}</p>
+                  )}
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-2">
@@ -169,7 +213,12 @@ const LoginPage = () => {
                     value={signupDisplayName}
                     onChange={(e) => setSignupDisplayName(e.target.value)}
                     disabled={isLoading}
+                    className={signupErrors.displayName ? 'border-destructive' : ''}
+                    aria-invalid={!!signupErrors.displayName}
                   />
+                  {signupErrors.displayName && (
+                    <p className="text-xs text-destructive">{signupErrors.displayName}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
@@ -181,7 +230,12 @@ const LoginPage = () => {
                     onChange={(e) => setSignupEmail(e.target.value)}
                     required
                     disabled={isLoading}
+                    className={signupErrors.email ? 'border-destructive' : ''}
+                    aria-invalid={!!signupErrors.email}
                   />
+                  {signupErrors.email && (
+                    <p className="text-xs text-destructive">{signupErrors.email}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Senha</Label>
@@ -194,7 +248,12 @@ const LoginPage = () => {
                     required
                     disabled={isLoading}
                     minLength={6}
+                    className={signupErrors.password ? 'border-destructive' : ''}
+                    aria-invalid={!!signupErrors.password}
                   />
+                  {signupErrors.password && (
+                    <p className="text-xs text-destructive">{signupErrors.password}</p>
+                  )}
                   <p className="text-xs text-muted-foreground">Mínimo de 6 caracteres</p>
                 </div>
               </CardContent>
