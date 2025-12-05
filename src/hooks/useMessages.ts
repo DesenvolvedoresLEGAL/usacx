@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { mapMessageFromDB } from '@/types/database';
 import { useCurrentAgent } from './useCurrentAgent';
+import { logger } from '@/lib/logger';
 
 type SendMessageType = Exclude<MessageType, 'sticker'>;
 
@@ -40,7 +41,7 @@ export function useMessages(conversationId: string | null, initialMessages: Mess
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
-          console.log('New message received:', payload);
+          logger.debug('New message received', { payload });
           const newMessage = mapMessageFromDB(payload.new as any);
           setMessages((prev) => [...prev, newMessage]);
         }
@@ -105,7 +106,7 @@ export function useMessages(conversationId: string | null, initialMessages: Mess
           description: 'Sua mensagem foi enviada com sucesso.',
         });
       } catch (error) {
-        console.error('Error sending message:', error);
+        logger.error('Error sending message', { error });
 
         // Marcar mensagem como falha
         setMessages((prev) =>
@@ -175,7 +176,7 @@ export function useMessages(conversationId: string | null, initialMessages: Mess
           description: `${file.name} foi enviado com sucesso.`,
         });
       } catch (error) {
-        console.error('Error uploading file:', error);
+        logger.error('Error uploading file', { error });
         toast({
           title: 'Erro ao enviar arquivo',
           description: 'Não foi possível enviar o arquivo. Tente novamente.',

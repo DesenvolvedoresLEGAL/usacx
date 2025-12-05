@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import type { AppRole, AgentProfile, Organization, OrganizationMember, OrgRole, OrgPlan } from '@/types/auth';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 interface AuthContextType {
   user: User | null;
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .maybeSingle();
 
     if (error) {
-      console.error('Error loading user role:', error);
+      logger.error('Error loading user role', { error });
       return null;
     }
 
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .maybeSingle();
 
     if (error) {
-      console.error('Error loading user profile:', error);
+      logger.error('Error loading user profile', { error });
       return null;
     }
 
@@ -78,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .maybeSingle();
 
     if (memberError || !memberData) {
-      console.error('Error loading organization membership:', memberError);
+      logger.error('Error loading organization membership', { error: memberError });
       return { organization: null, membership: null };
     }
 
@@ -99,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .maybeSingle();
 
     if (orgError || !orgData) {
-      console.error('Error loading organization:', orgError);
+      logger.error('Error loading organization', { error: orgError });
       return { organization: null, membership };
     }
 
@@ -202,7 +203,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { error: null };
     } catch (error) {
-      console.error('Sign in error:', error);
+      logger.error('Sign in error', { error });
       return { error: error as Error };
     }
   };
@@ -226,7 +227,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { error: null };
     } catch (error) {
-      console.error('Sign up error:', error);
+      logger.error('Sign up error', { error });
       return { error: error as Error };
     }
   };
@@ -246,7 +247,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       navigate('/login');
       toast.success('Logout realizado com sucesso');
     } catch (error) {
-      console.error('Sign out error:', error);
+      logger.error('Sign out error', { error });
       toast.error('Erro ao fazer logout');
     }
   };

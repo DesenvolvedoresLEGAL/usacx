@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { Conversation, Message, ConversationStatus } from '@/types/conversations';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 
 interface RealtimeSimulationProps {
   conversations: Conversation[];
@@ -121,7 +122,7 @@ export function useRealtimeSimulation({
   }, [conversations, onStatusUpdate, selectedConversationId, toast]);
 
   useEffect(() => {
-    console.log('🔌 WebSocket simulado conectado');
+    logger.debug('🔌 WebSocket simulado conectado');
 
     // Simular mensagens de clientes a cada 15-30 segundos
     const messageInterval = setInterval(() => {
@@ -145,7 +146,7 @@ export function useRealtimeSimulation({
     }, 40000 + Math.random() * 40000);
 
     return () => {
-      console.log('🔌 WebSocket simulado desconectado');
+      logger.debug('🔌 WebSocket simulado desconectado');
       clearInterval(messageInterval);
       clearInterval(conversationInterval);
       clearInterval(statusInterval);
