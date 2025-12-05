@@ -247,12 +247,13 @@ export const useAdminMetrics = (): AdminMetrics => {
       }));
 
       // Query 11: Tempo médio de resposta global da org
+      // Usar hint explícito para FK devido a múltiplas relações entre conversations e messages
       const { data: conversationsWithMessages, error: convError } = await supabase
         .from('conversations')
         .select(`
           id,
           started_at,
-          messages(created_at, sender_type)
+          messages!fk_messages_conversation(created_at, sender_type)
         `)
         .eq('organization_id', organizationId)
         .eq('status', 'finished')
