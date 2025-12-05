@@ -3,6 +3,7 @@ import { Conversation, ConversationStatus } from '@/types/conversations';
 import { supabase } from '@/integrations/supabase/client';
 import { mapConversationFromDB, ConversationWithRelations } from '@/types/database';
 import { useCurrentAgent } from './useCurrentAgent';
+import { useOrganization } from './useOrganization';
 import { useToast } from './use-toast';
 
 export function useConversations() {
@@ -14,6 +15,7 @@ export function useConversations() {
   const [initialized, setInitialized] = useState(false);
   
   const currentAgent = useCurrentAgent();
+  const { organizationId } = useOrganization();
   const { toast } = useToast();
   
   // Extrair valores primitivos estáveis para evitar loop infinito
@@ -25,7 +27,7 @@ export function useConversations() {
 
   // Buscar conversas do banco
   const fetchConversations = useCallback(async () => {
-    if (!agentProfileId) {
+    if (!agentProfileId || !organizationId) {
       setLoading(false);
       return;
     }
@@ -35,17 +37,19 @@ export function useConversations() {
 
       // Query base - busca conversas baseado na role do usuário
       // Usando hints para especificar qual FK usar (necessário após adicionar constraints)
+      // FILTRO MULTI-TENANT: sempre filtrar por organization_id
       let query = supabase
         .from('conversations')
         .select(`
           *,
           client:clients!fk_conversations_client(*),
           channel:channels!fk_conversations_channel(*)
-        `);
+        `)
+        .eq('organization_id', organizationId);
 
-      // ADMIN: vê todas as conversas
+      // ADMIN: vê todas as conversas da organização
       if (agentRole === 'admin') {
-        // Não adiciona filtro, vê tudo
+        // Não adiciona filtro adicional, vê tudo da org
       }
       // MANAGER: vê conversas do time + em espera
       else if (agentRole === 'manager') {
@@ -112,7 +116,7 @@ export function useConversations() {
     } finally {
       setLoading(false);
     }
-  }, [agentProfileId, agentRole, toast]);
+  }, [agentProfileId, agentRole, organizationId, toast]);
 
   // Manter ref atualizado para subscriptions
   useEffect(() => {
@@ -121,17 +125,17 @@ export function useConversations() {
 
   // Carregar conversas ao montar (apenas uma vez)
   useEffect(() => {
-    if (!initialized && agentProfileId) {
+    if (!initialized && agentProfileId && organizationId) {
       setInitialized(true);
       fetchConversations();
     }
-  }, [initialized, agentProfileId, fetchConversations]);
+  }, [initialized, agentProfileId, organizationId, fetchConversations]);
 
   // Setup realtime subscriptions
   useEffect(() => {
-    if (!agentProfileId) return;
+    if (!agentProfileId || !organizationId) return;
 
-    // Subscribe to conversations changes
+    // Subscribe to conversations changes (filtrado por organização)
     const conversationsChannel = supabase
       .channel('conversations-changes')
       .on(
@@ -140,10 +144,10 @@ export function useConversations() {
           event: '*',
           schema: 'public',
           table: 'conversations',
+          filter: `organization_id=eq.${organizationId}`,
         },
         (payload) => {
           console.log('Conversation changed:', payload);
-          // Usar ref para evitar stale closure
           fetchConversationsRef.current?.();
         }
       )
@@ -161,7 +165,6 @@ export function useConversations() {
         },
         (payload) => {
           console.log('New message:', payload);
-          // Usar ref para evitar stale closure
           fetchConversationsRef.current?.();
         }
       )
@@ -171,7 +174,7 @@ export function useConversations() {
       supabase.removeChannel(conversationsChannel);
       supabase.removeChannel(messagesChannel);
     };
-  }, [agentProfileId]);
+  }, [agentProfileId, organizationId]);
 
   // Filtrar conversas
   const filteredConversations = useMemo(() => {
@@ -230,16 +233,17 @@ export function useConversations() {
     []
   );
 
-  // Pegar próxima conversa da fila
+  // Pegar próxima conversa da fila (filtrada por organização)
   const attendNext = useCallback(async () => {
-    if (!agentProfileId) return;
+    if (!agentProfileId || !organizationId) return;
 
     try {
-      // Buscar primeira conversa em espera
+      // Buscar primeira conversa em espera da organização
       const { data: nextConversation, error: fetchError } = await supabase
         .from('conversations')
         .select('id')
         .eq('status', 'waiting')
+        .eq('organization_id', organizationId)
         .order('priority', { ascending: false })
         .order('started_at', { ascending: true })
         .limit(1)
@@ -285,7 +289,7 @@ export function useConversations() {
         variant: 'destructive',
       });
     }
-  }, [agentProfileId, fetchConversations, toast]);
+  }, [agentProfileId, organizationId, fetchConversations, toast]);
 
   return {
     conversations: filteredConversations,

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCurrentAgent } from './useCurrentAgent';
+import { useOrganization } from './useOrganization';
 
 interface WeeklyData {
   day: string;
@@ -18,10 +19,12 @@ interface AgentMetrics {
 
 /**
  * Hook para buscar métricas do agente individual
+ * FILTRADO POR ORGANIZAÇÃO para isolamento multi-tenant
  * Atualiza automaticamente a cada 30 segundos
  */
 export const useAgentMetrics = (): AgentMetrics => {
   const currentAgent = useCurrentAgent();
+  const { organizationId } = useOrganization();
   const [metrics, setMetrics] = useState<AgentMetrics>({
     activeConversations: 0,
     finishedToday: 0,
@@ -32,7 +35,7 @@ export const useAgentMetrics = (): AgentMetrics => {
   });
 
   const fetchMetrics = useCallback(async () => {
-    if (!currentAgent?.profile?.id) {
+    if (!currentAgent?.profile?.id || !organizationId) {
       setMetrics(prev => ({ ...prev, loading: false }));
       return;
     }
@@ -42,31 +45,34 @@ export const useAgentMetrics = (): AgentMetrics => {
       const today = new Date().toISOString().split('T')[0];
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-      // Query 1: Conversas ativas
+      // Query 1: Conversas ativas (filtrado por org)
       const { count: activeCount, error: activeError } = await supabase
         .from('conversations')
         .select('*', { count: 'exact', head: true })
         .eq('assigned_agent_id', agentId)
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .eq('organization_id', organizationId);
 
       if (activeError) throw activeError;
 
-      // Query 2: Conversas finalizadas hoje
+      // Query 2: Conversas finalizadas hoje (filtrado por org)
       const { count: finishedCount, error: finishedError } = await supabase
         .from('conversations')
         .select('*', { count: 'exact', head: true })
         .eq('assigned_agent_id', agentId)
         .eq('status', 'finished')
+        .eq('organization_id', organizationId)
         .gte('finished_at', today);
 
       if (finishedError) throw finishedError;
 
-      // Query 3: Desempenho semanal (últimos 7 dias)
+      // Query 3: Desempenho semanal (últimos 7 dias, filtrado por org)
       const { data: weeklyData, error: weeklyError } = await supabase
         .from('conversations')
         .select('finished_at')
         .eq('assigned_agent_id', agentId)
         .eq('status', 'finished')
+        .eq('organization_id', organizationId)
         .gte('finished_at', sevenDaysAgo)
         .order('finished_at', { ascending: true });
 
@@ -84,7 +90,7 @@ export const useAgentMetrics = (): AgentMetrics => {
         count,
       }));
 
-      // Query 4: Tempo médio de resposta (simplificado)
+      // Query 4: Tempo médio de resposta (simplificado, filtrado por org)
       // Busca conversas finalizadas hoje com mensagens
       const { data: conversationsWithMessages, error: convError } = await supabase
         .from('conversations')
@@ -95,6 +101,7 @@ export const useAgentMetrics = (): AgentMetrics => {
         `)
         .eq('assigned_agent_id', agentId)
         .eq('status', 'finished')
+        .eq('organization_id', organizationId)
         .gte('finished_at', today)
         .limit(20); // Limitar para performance
 
@@ -139,15 +146,21 @@ export const useAgentMetrics = (): AgentMetrics => {
         error: error as Error,
       }));
     }
-  }, [currentAgent?.profile?.id]);
+  }, [currentAgent?.profile?.id, organizationId]);
 
   useEffect(() => {
-    fetchMetrics();
+    if (currentAgent?.profile?.id && organizationId) {
+      fetchMetrics();
+    }
+  }, [currentAgent?.profile?.id, organizationId, fetchMetrics]);
+
+  useEffect(() => {
+    if (!currentAgent?.profile?.id || !organizationId) return;
 
     // Atualizar a cada 30 segundos
     const interval = setInterval(fetchMetrics, 30000);
     return () => clearInterval(interval);
-  }, [fetchMetrics]);
+  }, [currentAgent?.profile?.id, organizationId, fetchMetrics]);
 
   return metrics;
 };
