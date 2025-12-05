@@ -80,10 +80,10 @@ export function useConversations() {
             .eq('conversation_id', conv.id)
             .order('created_at', { ascending: true });
 
-          // Buscar tags
+          // Buscar tags (usando hint explícito para FK)
           const { data: tagsData } = await supabase
             .from('conversation_tags')
-            .select('tag:tags(*)')
+            .select('tag:tags!fk_conversation_tags_tag(*)')
             .eq('conversation_id', conv.id);
 
           const tags = tagsData?.map((t: any) => t.tag).filter(Boolean) || [];
