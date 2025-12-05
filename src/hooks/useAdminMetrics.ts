@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useOrganization } from './useOrganization';
+import { logger } from '@/lib/logger';
 
 interface WeeklyData {
   day: string;
@@ -82,12 +83,13 @@ export const useAdminMetrics = (): AdminMetrics => {
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
       // FILTRO MULTI-TENANT: buscar times da organização
+      // Usar hint explícito para FK devido a múltiplas relações
       const { data: teamsData, error: teamsDataError } = await supabase
         .from('teams')
         .select(`
           id,
           name,
-          agent_profiles(id, status)
+          agent_profiles!fk_agent_profiles_team(id, status)
         `)
         .eq('organization_id', organizationId);
 
@@ -297,7 +299,7 @@ export const useAdminMetrics = (): AdminMetrics => {
         error: null,
       });
     } catch (error) {
-      console.error('Error fetching admin metrics:', error);
+      logger.error('Error fetching admin metrics', { error });
       setMetrics(prev => ({
         ...prev,
         loading: false,
