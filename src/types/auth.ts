@@ -61,11 +61,3 @@ export interface AuthUser {
   orgMembership: OrganizationMember | null;
   loading: boolean;
 }
-
-export interface AuthUser {
-  user: User | null;
-  session: Session | null;
-  role: AppRole | null;
-  profile: AgentProfile | null;
-  loading: boolean;
-}
