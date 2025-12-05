@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
 export interface AvailableAgent {
   id: string;
@@ -14,13 +15,14 @@ export const useAvailableAgents = () => {
 
   const fetchAgents = async () => {
     try {
+      // Usar hint explícito para FK devido a múltiplas relações entre conversations e agent_profiles
       const { data, error } = await supabase
         .from('agent_profiles')
         .select(`
           id,
           display_name,
           status,
-          conversations:conversations!assigned_agent_id(count)
+          conversations:conversations!fk_conversations_agent(count)
         `)
         .in('status', ['online', 'away'])
         .order('display_name');
@@ -36,7 +38,7 @@ export const useAvailableAgents = () => {
 
       setAgents(formattedAgents);
     } catch (error) {
-      console.error('Erro ao buscar agentes:', error);
+      logger.error('Erro ao buscar agentes', { error });
     } finally {
       setLoading(false);
     }
