@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PermissionsProvider } from "@/contexts/PermissionsContext";
 import { RouteGuard } from "@/components/auth/RouteGuard";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
@@ -53,16 +54,17 @@ const queryClient = new QueryClient();
 const ReportEvaluationsPage = React.lazy(() => import("./pages/ReportEvaluationsPage"));
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <PermissionsProvider>
-            <React.Suspense fallback={<div className="p-10 text-center">Carregando...</div>}>
-              <Routes>
-                <Route path="/" element={<Index />} />
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <PermissionsProvider>
+              <React.Suspense fallback={<div className="p-10 text-center">Carregando...</div>}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/conversations" element={
                   <RouteGuard permission="conversations:view_own">
@@ -261,6 +263,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
