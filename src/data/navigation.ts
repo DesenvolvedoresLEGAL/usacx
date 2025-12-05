@@ -72,6 +72,7 @@ export const navigationGroups: NavigationGroup[] = [
     groupTitle: "Acesso",
     items: [
       { title: "Gestão de Usuários", href: "/acesso/usuarios", icon: Icons.userCog, permission: "access:users" },
+      { title: "Organização", href: "/organizacao/configuracoes", icon: Icons.building2, permission: "dashboard:view_own" },
       { title: "Auditoria", href: "/acesso/auditoria", icon: Icons.shieldCheck, permission: "access:logs" },
     ],
   },

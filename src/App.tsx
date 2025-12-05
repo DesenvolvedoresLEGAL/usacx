@@ -42,7 +42,7 @@ import SettingsPrioritiesPage from "./pages/SettingsPrioritiesPage";
 import HelpCenterPage from "./pages/HelpCenterPage";
 import ConversationsPage from "./pages/ConversationsPage";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage";
-
+import OrganizationSettingsPage from "./pages/OrganizationSettingsPage";
 
 // Lazy load the breaks report page
 const ReportBreaksPage = React.lazy(() => import("./pages/ReportBreaksPage"));
@@ -195,6 +195,13 @@ const App = () => (
               <Route path="/perfil/configuracoes" element={
                 <RouteGuard permission="dashboard:view_own">
                   <ProfileSettingsPage />
+                </RouteGuard>
+              } />
+
+              {/* Organização */}
+              <Route path="/organizacao/configuracoes" element={
+                <RouteGuard permission="dashboard:view_own">
+                  <OrganizationSettingsPage />
                 </RouteGuard>
               } />
 
