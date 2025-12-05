@@ -1,8 +1,7 @@
-
 import { Fragment, useMemo } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Bell, HelpCircleIcon, LogOut, Menu as MenuIcon, MessageSquare, Settings, UserCircle } from "lucide-react";
-import { AppSidebar } from "./AppSidebar";
+import { Bell, HelpCircleIcon, LogOut, Menu as MenuIcon, MessageSquare, Settings } from "lucide-react";
+import { AppSidebarNew } from "./sidebar/AppSidebarNew";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +23,7 @@ import {
 import { matchNavigationItem, navigationGroups } from "@/data/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -99,9 +99,10 @@ const MainLayout = () => {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full">
-        <AppSidebar />
-        <main className="flex flex-1 flex-col overflow-hidden">
+      <TooltipProvider delayDuration={0}>
+        <div className="flex h-screen w-full">
+          <AppSidebarNew />
+          <main className="flex flex-1 flex-col overflow-hidden">
           <header className="flex h-16 shrink-0 items-center justify-between border-b bg-background px-4 md:px-6">
             <div className="flex items-center gap-3">
               <SidebarTrigger className="lg:hidden">
@@ -195,7 +196,8 @@ const MainLayout = () => {
             <Outlet />
           </div>
         </main>
-      </div>
+        </div>
+      </TooltipProvider>
     </SidebarProvider>
   );
 };
