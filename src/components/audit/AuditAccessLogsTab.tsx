@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { Icons } from "@/components/icons";
 import { DateRange } from "react-day-picker";
+import { logger } from "@/lib/logger";
 
 interface AccessLog {
   id: string;
@@ -124,11 +125,11 @@ export const AuditAccessLogsTab = () => {
   };
 
   const exportLogs = () => {
-    console.log("Exportando logs de acesso...");
+    logger.info("Exportando logs de acesso...");
   };
 
   const clearLogs = () => {
-    console.log("Limpando logs antigos...");
+    logger.info("Limpando logs antigos...");
   };
 
   return (

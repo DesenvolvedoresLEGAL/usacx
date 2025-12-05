@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarDateRangePicker } from "@/components/ui/date-range-picker";
 import { Icons } from "@/components/icons";
 import { DateRange } from "react-day-picker";
+import { logger } from "@/lib/logger";
 
 interface UserActivity {
   id: string;
@@ -92,7 +93,7 @@ export const AuditUserActivitiesTab = () => {
   };
 
   const exportActivities = () => {
-    console.log("Exportando atividades de usuários...");
+    logger.info("Exportando atividades de usuários...");
   };
 
   return (

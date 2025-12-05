@@ -5,6 +5,7 @@ import { mapConversationFromDB, ConversationWithRelations } from '@/types/databa
 import { useCurrentAgent } from './useCurrentAgent';
 import { useOrganization } from './useOrganization';
 import { useToast } from './use-toast';
+import { logger } from '@/lib/logger';
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -107,7 +108,7 @@ export function useConversations() {
 
       setConversations(conversationsWithData);
     } catch (error) {
-      console.error('Error fetching conversations:', error);
+      logger.error('Error fetching conversations', { error });
       toast({
         title: 'Erro ao carregar conversas',
         description: 'Não foi possível carregar as conversas.',
@@ -147,7 +148,7 @@ export function useConversations() {
           filter: `organization_id=eq.${organizationId}`,
         },
         (payload) => {
-          console.log('Conversation changed:', payload);
+          logger.debug('Conversation changed', { payload });
           fetchConversationsRef.current?.();
         }
       )
@@ -164,7 +165,7 @@ export function useConversations() {
           table: 'messages',
         },
         (payload) => {
-          console.log('New message:', payload);
+          logger.debug('New message', { payload });
           fetchConversationsRef.current?.();
         }
       )
@@ -227,7 +228,7 @@ export function useConversations() {
           prev.map((conv) => (conv.id === id ? { ...conv, unreadCount: 0 } : conv))
         );
       } catch (error) {
-        console.error('Error marking messages as read:', error);
+        logger.error('Error marking messages as read', { error });
       }
     },
     []
@@ -282,7 +283,7 @@ export function useConversations() {
         });
       }
     } catch (error) {
-      console.error('Error assigning conversation:', error);
+      logger.error('Error assigning conversation', { error });
       toast({
         title: 'Erro ao atribuir conversa',
         description: 'Não foi possível iniciar o atendimento.',

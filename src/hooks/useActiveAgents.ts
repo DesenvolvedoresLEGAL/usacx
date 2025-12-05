@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useOrganization } from './useOrganization';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 
 export interface ActiveAgent {
   id: string;
@@ -65,7 +66,7 @@ export const useActiveAgents = () => {
             .eq('status', 'active')
             .eq('organization_id', organizationId);
 
-          if (activeError) console.error('Error fetching active count:', activeError);
+          if (activeError) logger.error('Error fetching active count', { error: activeError });
 
           // Count total conversations today
           const today = new Date();
@@ -78,7 +79,7 @@ export const useActiveAgents = () => {
             .eq('organization_id', organizationId)
             .gte('started_at', today.toISOString());
 
-          if (totalError) console.error('Error fetching total count:', totalError);
+          if (totalError) logger.error('Error fetching total count', { error: totalError });
 
           // Get average response time (approximate from finished conversations today)
           const { data: finishedData, error: finishedError } = await supabase
@@ -133,7 +134,7 @@ export const useActiveAgents = () => {
 
       setAgents(agentsWithStats);
     } catch (error) {
-      console.error('Erro ao buscar agentes ativos:', error);
+      logger.error('Erro ao buscar agentes ativos', { error });
       toast({
         variant: 'destructive',
         title: 'Erro ao carregar agentes',
@@ -163,7 +164,7 @@ export const useActiveAgents = () => {
 
       await fetchActiveAgents();
     } catch (error) {
-      console.error('Erro ao pausar agente:', error);
+      logger.error('Erro ao pausar agente', { error });
       toast({
         variant: 'destructive',
         title: 'Erro ao pausar',
@@ -191,7 +192,7 @@ export const useActiveAgents = () => {
 
       await fetchActiveAgents();
     } catch (error) {
-      console.error('Erro ao retomar agente:', error);
+      logger.error('Erro ao retomar agente', { error });
       toast({
         variant: 'destructive',
         title: 'Erro ao retomar',
@@ -220,7 +221,7 @@ export const useActiveAgents = () => {
           table: 'agent_profiles',
         },
         () => {
-          console.log('Agent status changed, refreshing...');
+          logger.debug('Agent status changed, refreshing...');
           fetchActiveAgents();
         }
       )
@@ -233,7 +234,7 @@ export const useActiveAgents = () => {
           filter: `organization_id=eq.${organizationId}`,
         },
         () => {
-          console.log('Conversation changed, refreshing...');
+          logger.debug('Conversation changed, refreshing...');
           fetchActiveAgents();
         }
       )

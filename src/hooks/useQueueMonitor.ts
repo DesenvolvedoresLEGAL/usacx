@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useOrganization } from './useOrganization';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 
 export interface QueueItem {
   id: string;
@@ -67,7 +68,7 @@ export const useQueueMonitor = () => {
 
       setQueueItems(formattedItems);
     } catch (error) {
-      console.error('Erro ao buscar fila:', error);
+      logger.error('Erro ao buscar fila', { error });
       toast({
         variant: 'destructive',
         title: 'Erro ao carregar fila',
@@ -95,7 +96,7 @@ export const useQueueMonitor = () => {
       // Refresh queue
       await fetchQueueItems();
     } catch (error) {
-      console.error('Erro ao atribuir conversa:', error);
+      logger.error('Erro ao atribuir conversa', { error });
       toast({
         variant: 'destructive',
         title: 'Erro ao atribuir',
@@ -125,7 +126,7 @@ export const useQueueMonitor = () => {
           filter: `organization_id=eq.${organizationId}`,
         },
         (payload) => {
-          console.log('Queue change detected:', payload);
+          logger.debug('Queue change detected', { payload });
           fetchQueueItems();
         }
       )
