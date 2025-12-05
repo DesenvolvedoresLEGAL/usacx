@@ -1,7 +1,7 @@
 import { Conversation, ConversationStatus } from '@/types/conversations';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Plus, MoreVertical, Coffee, Archive, Star, Settings } from 'lucide-react';
+import { Search, Plus, MoreVertical, Coffee } from 'lucide-react';
 import { ConversationListItem } from './ConversationListItem';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -9,13 +9,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+import { ConversationItemSkeleton } from '@/components/skeletons';
 
 interface ConversationsListProps {
   conversations: Conversation[];
@@ -25,6 +24,7 @@ interface ConversationsListProps {
   onSearchChange: (query: string) => void;
   quickFilter: 'all' | 'unread' | 'favorites' | 'archived';
   onQuickFilterChange: (filter: 'all' | 'unread' | 'favorites' | 'archived') => void;
+  isLoading?: boolean;
 }
 
 interface PauseReason {
@@ -41,6 +41,7 @@ export function ConversationsList({
   onSearchChange,
   quickFilter,
   onQuickFilterChange,
+  isLoading = false,
 }: ConversationsListProps) {
   const [pauseReasons, setPauseReasons] = useState<PauseReason[]>([]);
 
@@ -145,7 +146,13 @@ export function ConversationsList({
 
       {/* CONVERSATION LIST */}
       <ScrollArea className="flex-1">
-        {conversations.length === 0 ? (
+        {isLoading ? (
+          <>
+            {[...Array(6)].map((_, i) => (
+              <ConversationItemSkeleton key={i} />
+            ))}
+          </>
+        ) : conversations.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground">
             <p className="text-sm">Nenhuma conversa encontrada</p>
           </div>

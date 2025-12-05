@@ -3,11 +3,17 @@ import { useCurrentAgent } from '@/hooks/useCurrentAgent';
 import { useTeam } from '@/hooks/useTeam';
 import { useTeamMetrics } from '@/hooks/useTeamMetrics';
 import { MetricCard } from './MetricCard';
-import { Users, Clock, CheckCircle2, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
+import { Users, Clock, CheckCircle2, TrendingUp, AlertCircle } from 'lucide-react';
 import { AttendanceChart } from './AttendanceChart';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { 
+  ManagerMetricsSkeleton, 
+  ChartSkeleton, 
+  AgentListSkeleton,
+  AlertSkeleton 
+} from '@/components/skeletons';
 
 export const ManagerDashboard = () => {
   const agent = useCurrentAgent();
@@ -87,38 +93,42 @@ export const ManagerDashboard = () => {
       </div>
 
       {/* Métricas do Time */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        <MetricCard
-          title="Total de Agentes"
-          value={loading ? '--' : members.length.toString()}
-          description="Membros do time"
-          icon={loading ? Loader2 : Users}
-        />
-        <MetricCard
-          title="Ativos Agora"
-          value={loading ? '--' : members.filter(m => m.status === 'online').length.toString()}
-          description="Agentes online"
-          icon={loading ? Loader2 : CheckCircle2}
-        />
-        <MetricCard
-          title="Tempo Médio"
-          value={loading ? '--' : avgResponseTime}
-          description="Resposta do time"
-          icon={loading ? Loader2 : Clock}
-        />
-        <MetricCard
-          title="Finalizadas Hoje"
-          value={loading ? '--' : finishedToday.toString()}
-          description="Conversas concluídas"
-          icon={loading ? Loader2 : TrendingUp}
-        />
-        <MetricCard
-          title="Fila"
-          value={loading ? '--' : conversationsInQueue.toString()}
-          description="Aguardando atendimento"
-          icon={loading ? Loader2 : AlertCircle}
-        />
-      </div>
+      {loading ? (
+        <ManagerMetricsSkeleton />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <MetricCard
+            title="Total de Agentes"
+            value={members.length.toString()}
+            description="Membros do time"
+            icon={Users}
+          />
+          <MetricCard
+            title="Ativos Agora"
+            value={members.filter(m => m.status === 'online').length.toString()}
+            description="Agentes online"
+            icon={CheckCircle2}
+          />
+          <MetricCard
+            title="Tempo Médio"
+            value={avgResponseTime}
+            description="Resposta do time"
+            icon={Clock}
+          />
+          <MetricCard
+            title="Finalizadas Hoje"
+            value={finishedToday.toString()}
+            description="Conversas concluídas"
+            icon={TrendingUp}
+          />
+          <MetricCard
+            title="Fila"
+            value={conversationsInQueue.toString()}
+            description="Aguardando atendimento"
+            icon={AlertCircle}
+          />
+        </div>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-7">
         {/* Gráfico de Performance do Time */}
@@ -131,9 +141,7 @@ export const ManagerDashboard = () => {
           </CardHeader>
           <CardContent className="pl-2">
             {loading ? (
-              <div className="flex items-center justify-center h-[300px]">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
+              <ChartSkeleton />
             ) : (
               <AttendanceChart data={weeklyPerformance} />
             )}
@@ -148,9 +156,7 @@ export const ManagerDashboard = () => {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
+              <AgentListSkeleton />
             ) : members.length === 0 ? (
               <div className="text-center text-sm text-muted-foreground">
                 Nenhum agente no time
@@ -211,9 +217,7 @@ export const ManagerDashboard = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
+              <AlertSkeleton />
             ) : (
               <>
                 {conversationsInQueue > 0 && (
@@ -259,9 +263,7 @@ export const ManagerDashboard = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
+              <AgentListSkeleton />
             ) : topPerformers.length === 0 ? (
               <div className="text-center py-8 text-sm text-muted-foreground">
                 Nenhuma conversa finalizada hoje
