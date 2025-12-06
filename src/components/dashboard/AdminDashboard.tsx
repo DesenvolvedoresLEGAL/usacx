@@ -2,12 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAllTeams } from '@/hooks/useTeam';
 import { useAdminMetrics } from '@/hooks/useAdminMetrics';
 import { MetricCard } from './MetricCard';
+import { GoalsDashboard } from './GoalsDashboard';
 import { Users, Clock, CheckCircle2, TrendingUp, Building2, MessageSquare, Loader2 } from 'lucide-react';
 import { AttendanceChart } from './AttendanceChart';
 import { ChannelChart } from './ChannelChart';
 import { LiveActivityTable } from './LiveActivityTable';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const AdminDashboard = () => {
   const { teams, loading: teamsLoading } = useAllTeams();
@@ -52,14 +54,24 @@ export const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">
-          Visão Global - Administração
-        </h2>
-        <p className="text-muted-foreground">
-          Painel completo de todas as operações da plataforma.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Visão Global - Administração
+          </h2>
+          <p className="text-muted-foreground">
+            Painel completo de todas as operações da plataforma.
+          </p>
+        </div>
       </div>
+
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="goals">Metas</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
 
       {/* Métricas Globais */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
@@ -269,6 +281,12 @@ export const AdminDashboard = () => {
           )}
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="goals">
+          <GoalsDashboard />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
