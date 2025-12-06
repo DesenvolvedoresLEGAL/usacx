@@ -254,14 +254,6 @@ export const sidebarNavigation: SidebarNavigationConfig = {
           icon: Smile,
           permission: "settings:edit",
         },
-        // Integrations
-        {
-          title: "API",
-          href: "/configuracoes/api",
-          icon: Settings,
-          permission: "settings:edit",
-          badge: "Beta",
-        },
       ],
     },
   ],

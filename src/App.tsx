@@ -26,7 +26,7 @@ import AIAnalyticsPage from "./pages/AIAnalyticsPage";
 import AIKnowledgePage from "./pages/AIKnowledgePage";
 import ReportAnalyticsPage from "./pages/ReportAnalyticsPage";
 import ReportPerformancePage from "./pages/ReportPerformancePage";
-import SettingsApiPage from "./pages/SettingsApiPage";
+// SettingsApiPage removida - consolidada em OrganizationSettingsPage > Avançado
 import ReportExportPage from "./pages/ReportExportPage";
 // UserManagementPage removida - consolidada em OrganizationSettingsPage
 import AuditCenterPage from "./pages/AuditCenterPage";
@@ -219,11 +219,8 @@ const App = () => (
                       <SettingsPrioritiesPage />
                     </RouteGuard>
                   } />
-                  <Route path="/configuracoes/api" element={
-                    <RouteGuard permission="settings:edit">
-                      <SettingsApiPage />
-                    </RouteGuard>
-                  } />
+                  {/* API consolidada em Organização > Avançado */}
+                  <Route path="/configuracoes/api" element={<Navigate to="/organizacao/configuracoes?tab=avancado" replace />} />
               {/* Ajuda */}
               <Route path="/ajuda" element={<HelpCenterPage />} />
               {/* Redirects de compatibilidade */}
