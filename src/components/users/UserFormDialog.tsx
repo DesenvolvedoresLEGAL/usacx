@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { AppRole } from "@/types/auth";
 
@@ -16,6 +17,7 @@ interface UserFormDialogProps {
 }
 
 export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserFormDialogProps) => {
+  const { organization } = useAuth();
   const [loading, setLoading] = useState(false);
   const [teams, setTeams] = useState<{ id: string; name: string }[]>([]);
   const [formData, setFormData] = useState({
@@ -26,8 +28,10 @@ export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserForm
   });
 
   useEffect(() => {
-    loadTeams();
-  }, []);
+    if (organization?.id) {
+      loadTeams();
+    }
+  }, [organization?.id]);
 
   useEffect(() => {
     if (user) {
@@ -48,8 +52,14 @@ export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserForm
   }, [user]);
 
   const loadTeams = async () => {
+    if (!organization?.id) return;
+    
     try {
-      const { data, error } = await supabase.from("teams").select("id, name");
+      const { data, error } = await supabase
+        .from("teams")
+        .select("id, name")
+        .eq("organization_id", organization.id);
+      
       if (error) throw error;
       setTeams(data || []);
     } catch (error: any) {
@@ -58,6 +68,11 @@ export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserForm
   };
 
   const handleSave = async () => {
+    if (!organization?.id) {
+      toast.error("Organização não encontrada");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -67,7 +82,7 @@ export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserForm
       }
 
       if (user) {
-        // Editar usuário existente
+        // Edit existing user
         const { error: profileError } = await supabase
           .from("agent_profiles")
           .update({
@@ -87,30 +102,25 @@ export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserForm
 
         toast.success("Usuário atualizado com sucesso");
       } else {
-        // Criar novo usuário
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-          email: formData.email,
-          email_confirm: true,
+        // Create new user via edge function
+        const { data, error } = await supabase.functions.invoke("create-user", {
+          body: {
+            email: formData.email,
+            display_name: formData.display_name,
+            role: formData.role,
+            team_id: formData.team_id || null,
+            organization_id: organization.id,
+          },
         });
 
-        if (authError) throw authError;
+        if (error) {
+          console.error("Edge function error:", error);
+          throw new Error(error.message || "Erro ao criar usuário");
+        }
 
-        const userId = authData.user.id;
-
-        const { error: profileError } = await supabase.from("agent_profiles").insert({
-          user_id: userId,
-          display_name: formData.display_name,
-          team_id: formData.team_id || null,
-        });
-
-        if (profileError) throw profileError;
-
-        const { error: roleError } = await supabase.from("user_roles").insert({
-          user_id: userId,
-          role: formData.role,
-        });
-
-        if (roleError) throw roleError;
+        if (data?.error) {
+          throw new Error(data.error);
+        }
 
         toast.success("Usuário criado com sucesso");
       }
@@ -130,7 +140,11 @@ export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserForm
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{user ? "Editar Usuário" : "Novo Usuário"}</DialogTitle>
-          <DialogDescription>Preencha os dados do usuário</DialogDescription>
+          <DialogDescription>
+            {user 
+              ? "Atualize os dados do usuário" 
+              : "Preencha os dados para criar um novo usuário. Um email será enviado para definição de senha."}
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -168,7 +182,10 @@ export const UserFormDialog = ({ open, onOpenChange, user, onSuccess }: UserForm
           </div>
           <div>
             <Label htmlFor="team">Time (opcional)</Label>
-            <Select value={formData.team_id || "none"} onValueChange={(value) => setFormData({ ...formData, team_id: value === "none" ? "" : value })}>
+            <Select 
+              value={formData.team_id || "none"} 
+              onValueChange={(value) => setFormData({ ...formData, team_id: value === "none" ? "" : value })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um time" />
               </SelectTrigger>
