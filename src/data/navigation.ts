@@ -98,12 +98,6 @@ export const navigationGroups: NavigationGroup[] = [
           { title: "Pesquisas", href: "/configuracoes/pesquisas", icon: Icons.smile, permission: "settings:edit" },
         ],
       },
-      {
-        subgroupTitle: "Integrações",
-        items: [
-          { title: "API", href: "/configuracoes/api", icon: Icons.settings, highlight: "blue", permission: "settings:edit" },
-        ],
-      },
     ],
   },
   {
