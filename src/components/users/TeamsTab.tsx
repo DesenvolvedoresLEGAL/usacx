@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, Plus, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 interface Team {
@@ -24,6 +25,7 @@ interface Manager {
 }
 
 export const TeamsTab = () => {
+  const { organization } = useAuth();
   const [teams, setTeams] = useState<Team[]>([]);
   const [managers, setManagers] = useState<Manager[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,30 +34,47 @@ export const TeamsTab = () => {
   const [formData, setFormData] = useState({ name: "", manager_id: "" });
 
   const loadTeams = async () => {
+    if (!organization?.id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const { data: teamsData, error: teamsError } = await supabase
         .from("teams")
-        .select("*");
+        .select("*")
+        .eq("organization_id", organization.id);
 
       if (teamsError) throw teamsError;
 
+      // Get org members first
+      const { data: members, error: membersError } = await supabase
+        .from("organization_members")
+        .select("user_id")
+        .eq("organization_id", organization.id);
+
+      if (membersError) throw membersError;
+
+      const userIds = members?.map(m => m.user_id) || [];
+
       const { data: profiles, error: profilesError } = await supabase
         .from("agent_profiles")
-        .select("user_id, display_name, team_id");
+        .select("user_id, display_name, team_id")
+        .in("user_id", userIds);
 
       if (profilesError) throw profilesError;
 
-      const teamsWithMembers: Team[] = teamsData.map((team) => {
-        const members = profiles.filter((p) => p.team_id === team.id);
-        const manager = profiles.find((p) => p.user_id === team.manager_id);
+      const teamsWithMembers: Team[] = (teamsData || []).map((team) => {
+        const teamMembers = profiles?.filter((p) => p.team_id === team.id) || [];
+        const manager = profiles?.find((p) => p.user_id === team.manager_id);
 
         return {
           id: team.id,
           name: team.name,
           manager_id: team.manager_id,
           manager_name: manager?.display_name || null,
-          member_count: members.length,
+          member_count: teamMembers.length,
         };
       });
 
@@ -69,15 +88,33 @@ export const TeamsTab = () => {
   };
 
   const loadManagers = async () => {
+    if (!organization?.id) return;
+
     try {
+      // Get org members
+      const { data: members, error: membersError } = await supabase
+        .from("organization_members")
+        .select("user_id")
+        .eq("organization_id", organization.id);
+
+      if (membersError) throw membersError;
+
+      const userIds = members?.map(m => m.user_id) || [];
+
       const { data: roles, error: rolesError } = await supabase
         .from("user_roles")
         .select("user_id")
-        .in("role", ["manager", "admin"]);
+        .in("role", ["manager", "admin"])
+        .in("user_id", userIds);
 
       if (rolesError) throw rolesError;
 
-      const managerIds = roles.map((r) => r.user_id);
+      const managerIds = roles?.map((r) => r.user_id) || [];
+
+      if (managerIds.length === 0) {
+        setManagers([]);
+        return;
+      }
 
       const { data: profiles, error: profilesError } = await supabase
         .from("agent_profiles")
@@ -86,7 +123,7 @@ export const TeamsTab = () => {
 
       if (profilesError) throw profilesError;
 
-      setManagers(profiles.map((p) => ({ id: p.user_id, name: p.display_name || "N/A" })));
+      setManagers(profiles?.map((p) => ({ id: p.user_id, name: p.display_name || "N/A" })) || []);
     } catch (error: any) {
       console.error("Erro ao carregar gestores:", error);
     }
@@ -95,7 +132,7 @@ export const TeamsTab = () => {
   useEffect(() => {
     loadTeams();
     loadManagers();
-  }, []);
+  }, [organization?.id]);
 
   const handleCreate = () => {
     setEditingTeam(null);
@@ -110,6 +147,11 @@ export const TeamsTab = () => {
   };
 
   const handleSave = async () => {
+    if (!organization?.id) {
+      toast.error("Organização não encontrada");
+      return;
+    }
+
     try {
       if (!formData.name.trim()) {
         toast.error("Nome do time é obrigatório");
@@ -119,7 +161,10 @@ export const TeamsTab = () => {
       if (editingTeam) {
         const { error } = await supabase
           .from("teams")
-          .update({ name: formData.name, manager_id: formData.manager_id || null })
+          .update({ 
+            name: formData.name, 
+            manager_id: formData.manager_id || null 
+          })
           .eq("id", editingTeam.id);
 
         if (error) throw error;
@@ -127,7 +172,11 @@ export const TeamsTab = () => {
       } else {
         const { error } = await supabase
           .from("teams")
-          .insert({ name: formData.name, manager_id: formData.manager_id || null });
+          .insert({ 
+            name: formData.name, 
+            manager_id: formData.manager_id || null,
+            organization_id: organization.id,
+          });
 
         if (error) throw error;
         toast.success("Time criado com sucesso");
@@ -155,6 +204,14 @@ export const TeamsTab = () => {
       toast.error("Erro ao excluir time");
     }
   };
+
+  if (!organization) {
+    return (
+      <div className="flex items-center justify-center h-64 text-muted-foreground">
+        Nenhuma organização encontrada
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -241,7 +298,10 @@ export const TeamsTab = () => {
             </div>
             <div>
               <Label htmlFor="manager">Gestor (opcional)</Label>
-              <Select value={formData.manager_id || "none"} onValueChange={(value) => setFormData({ ...formData, manager_id: value === "none" ? "" : value })}>
+              <Select 
+                value={formData.manager_id || "none"} 
+                onValueChange={(value) => setFormData({ ...formData, manager_id: value === "none" ? "" : value })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um gestor" />
                 </SelectTrigger>

@@ -1,1 +1,16 @@
 project_id = "ssbjknpxmlcmkwsybntk"
+
+[functions.generate-report]
+verify_jwt = true
+
+[functions.ai-suggest-response]
+verify_jwt = false
+
+[functions.ai-summarize-conversation]
+verify_jwt = true
+
+[functions.create-user]
+verify_jwt = true
+
+[functions.list-users]
+verify_jwt = true
