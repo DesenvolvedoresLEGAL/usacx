@@ -3,11 +3,13 @@ import { useCurrentAgent } from '@/hooks/useCurrentAgent';
 import { useTeam } from '@/hooks/useTeam';
 import { useTeamMetrics } from '@/hooks/useTeamMetrics';
 import { MetricCard } from './MetricCard';
+import { GoalsDashboard } from './GoalsDashboard';
 import { Users, Clock, CheckCircle2, TrendingUp, AlertCircle } from 'lucide-react';
 import { AttendanceChart } from './AttendanceChart';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   ManagerMetricsSkeleton, 
   ChartSkeleton, 
@@ -83,14 +85,24 @@ export const ManagerDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">
-          Visão do Time - {team?.name || 'Carregando...'}
-        </h2>
-        <p className="text-muted-foreground">
-          Gerencie e monitore o desempenho da sua equipe.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Visão do Time - {team?.name || 'Carregando...'}
+          </h2>
+          <p className="text-muted-foreground">
+            Gerencie e monitore o desempenho da sua equipe.
+          </p>
+        </div>
       </div>
+
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="goals">Metas</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
 
       {/* Métricas do Time */}
       {loading ? (
@@ -299,6 +311,12 @@ export const ManagerDashboard = () => {
           </CardContent>
         </Card>
       </div>
+        </TabsContent>
+
+        <TabsContent value="goals">
+          <GoalsDashboard teamId={agent?.teamId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
