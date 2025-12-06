@@ -13,7 +13,6 @@ import {
   Bot,
   Sparkles,
   BookOpen,
-  UserCog,
   Building2,
   ShieldCheck,
   ListOrdered,
@@ -180,13 +179,7 @@ export const sidebarNavigation: SidebarNavigationConfig = {
       title: "Administração",
       icon: Settings,
       items: [
-        // Access
-        {
-          title: "Gestão de Usuários",
-          href: "/acesso/usuarios",
-          icon: UserCog,
-          permission: "access:users",
-        },
+        // Organização (consolidada)
         {
           title: "Organização",
           href: "/organizacao/configuracoes",

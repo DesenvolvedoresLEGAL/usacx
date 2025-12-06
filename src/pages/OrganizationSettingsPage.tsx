@@ -1,14 +1,23 @@
-import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, Users, Settings } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Building2, Users, Building, Shield, Lock, Settings } from 'lucide-react';
 import OrganizationGeneralTab from '@/components/organization/OrganizationGeneralTab';
-import OrganizationMembersTab from '@/components/organization/OrganizationMembersTab';
+import PeopleTab from '@/components/organization/PeopleTab';
+import { TeamsTab } from '@/components/users/TeamsTab';
+import { RolesPermissionsTab } from '@/components/users/RolesPermissionsTab';
+import { SecurityTab } from '@/components/users/SecurityTab';
+import AdvancedTab from '@/components/organization/AdvancedTab';
 
 const OrganizationSettingsPage = () => {
   const { organization, orgMembership } = useAuth();
-  const [activeTab, setActiveTab] = useState('general');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'geral';
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value });
+  };
 
   if (!organization) {
     return (
@@ -28,62 +37,75 @@ const OrganizationSettingsPage = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Configurações da Organização</h1>
-        <p className="text-muted-foreground">
-          Gerencie as configurações e membros de {organization.name}
-        </p>
+      {/* Header */}
+      <div className="border-b pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Building2 className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">{organization.name}</h1>
+            <p className="text-muted-foreground">
+              Gerencie pessoas, times, funções e configurações da organização
+            </p>
+          </div>
+        </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="general" className="gap-2">
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+          <TabsTrigger value="geral" className="gap-2">
             <Building2 className="h-4 w-4" />
-            Geral
+            <span className="hidden sm:inline">Visão Geral</span>
           </TabsTrigger>
-          <TabsTrigger value="members" className="gap-2">
+          <TabsTrigger value="pessoas" className="gap-2">
             <Users className="h-4 w-4" />
-            Membros
+            <span className="hidden sm:inline">Pessoas</span>
+          </TabsTrigger>
+          <TabsTrigger value="times" className="gap-2">
+            <Building className="h-4 w-4" />
+            <span className="hidden sm:inline">Times</span>
+          </TabsTrigger>
+          <TabsTrigger value="funcoes" className="gap-2">
+            <Shield className="h-4 w-4" />
+            <span className="hidden sm:inline">Funções</span>
+          </TabsTrigger>
+          <TabsTrigger value="seguranca" className="gap-2">
+            <Lock className="h-4 w-4" />
+            <span className="hidden sm:inline">Segurança</span>
           </TabsTrigger>
           {isOwnerOrAdmin && (
-            <TabsTrigger value="settings" className="gap-2">
+            <TabsTrigger value="avancado" className="gap-2">
               <Settings className="h-4 w-4" />
-              Avançado
+              <span className="hidden sm:inline">Avançado</span>
             </TabsTrigger>
           )}
         </TabsList>
 
-        <TabsContent value="general" className="space-y-4">
+        <TabsContent value="geral" className="space-y-4">
           <OrganizationGeneralTab />
         </TabsContent>
 
-        <TabsContent value="members" className="space-y-4">
-          <OrganizationMembersTab />
+        <TabsContent value="pessoas" className="space-y-4">
+          <PeopleTab />
+        </TabsContent>
+
+        <TabsContent value="times" className="space-y-4">
+          <TeamsTab />
+        </TabsContent>
+
+        <TabsContent value="funcoes" className="space-y-4">
+          <RolesPermissionsTab />
+        </TabsContent>
+
+        <TabsContent value="seguranca" className="space-y-4">
+          <SecurityTab />
         </TabsContent>
 
         {isOwnerOrAdmin && (
-          <TabsContent value="settings" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Configurações Avançadas</CardTitle>
-                <CardDescription>
-                  Configurações avançadas da organização
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 border rounded-lg bg-muted/50">
-                  <p className="text-sm text-muted-foreground">
-                    <strong>Slug:</strong> {organization.slug}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    <strong>Plano:</strong> {organization.plan.toUpperCase()}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    <strong>ID:</strong> {organization.id}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="avancado" className="space-y-4">
+            <AdvancedTab />
           </TabsContent>
         )}
       </Tabs>
