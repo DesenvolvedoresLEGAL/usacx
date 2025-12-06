@@ -106,18 +106,18 @@ serve(async (req: Request) => {
     const newUserId = newUserData.user.id;
     console.log("User created in auth:", newUserId);
 
-    // Create agent_profile
+    // Update or create agent_profile (trigger may have already created one)
     const { error: profileError } = await supabaseAdmin
       .from("agent_profiles")
-      .insert({
+      .upsert({
         user_id: newUserId,
         display_name,
         team_id: team_id || null,
         status: "offline",
-      });
+      }, { onConflict: "user_id" });
 
     if (profileError) {
-      console.error("Error creating profile:", profileError);
+      console.error("Error updating profile:", profileError);
       // Rollback: delete the auth user
       await supabaseAdmin.auth.admin.deleteUser(newUserId);
       return new Response(
