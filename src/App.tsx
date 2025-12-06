@@ -28,7 +28,7 @@ import ReportAnalyticsPage from "./pages/ReportAnalyticsPage";
 import ReportPerformancePage from "./pages/ReportPerformancePage";
 import SettingsApiPage from "./pages/SettingsApiPage";
 import ReportExportPage from "./pages/ReportExportPage";
-import UserManagementPage from "./pages/UserManagementPage";
+// UserManagementPage removida - consolidada em OrganizationSettingsPage
 import AuditCenterPage from "./pages/AuditCenterPage";
 import SettingsClientsPage from "./pages/SettingsClientsPage";
 import SettingsTagsPage from "./pages/SettingsTagsPage";
@@ -156,16 +156,11 @@ const App = () => (
               <Route path="/ia/chatbot" element={<Navigate to="/ia/agentes" replace />} />
               <Route path="/ia/machine-learning" element={<Navigate to="/ia/conhecimento" replace />} />
               <Route path="/configuracoes/bots" element={<Navigate to="/ia/agentes" replace />} />
-                  {/* Acesso */}
-                  <Route path="/acesso/usuarios" element={
-                    <RouteGuard permission="access:users">
-                      <UserManagementPage />
-                    </RouteGuard>
-                  } />
-                  {/* Redirects de compatibilidade */}
-                  <Route path="/acesso/agentes" element={<Navigate to="/acesso/usuarios" replace />} />
-                  <Route path="/configuracoes/agentes" element={<Navigate to="/acesso/usuarios?tab=config" replace />} />
-                  <Route path="/gestao/agentes" element={<Navigate to="/acesso/usuarios" replace />} />
+                  {/* Redirects - Gestão de Usuários consolidada em Organização */}
+                  <Route path="/acesso/usuarios" element={<Navigate to="/organizacao/configuracoes?tab=pessoas" replace />} />
+                  <Route path="/acesso/agentes" element={<Navigate to="/organizacao/configuracoes?tab=pessoas" replace />} />
+                  <Route path="/configuracoes/agentes" element={<Navigate to="/organizacao/configuracoes?tab=pessoas" replace />} />
+                  <Route path="/gestao/agentes" element={<Navigate to="/organizacao/configuracoes?tab=pessoas" replace />} />
                   <Route path="/acesso/logs" element={<Navigate to="/acesso/auditoria?tab=access" replace />} />
                   <Route path="/relatorios/auditoria" element={<Navigate to="/acesso/auditoria?tab=attendance" replace />} />
                   <Route path="/acesso/auditoria" element={
