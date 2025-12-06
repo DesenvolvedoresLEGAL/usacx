@@ -2,12 +2,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { Building2, Users, Building, Shield, Lock, Settings } from 'lucide-react';
+import { Building2, Users, Building, Shield, Settings as SettingsIcon, Sliders } from 'lucide-react';
 import OrganizationGeneralTab from '@/components/organization/OrganizationGeneralTab';
 import PeopleTab from '@/components/organization/PeopleTab';
 import { TeamsTab } from '@/components/users/TeamsTab';
 import { RolesPermissionsTab } from '@/components/users/RolesPermissionsTab';
-import { SecurityTab } from '@/components/users/SecurityTab';
+import OperationalConfigTab from '@/components/organization/OperationalConfigTab';
 import AdvancedTab from '@/components/organization/AdvancedTab';
 
 const OrganizationSettingsPage = () => {
@@ -71,13 +71,13 @@ const OrganizationSettingsPage = () => {
             <Shield className="h-4 w-4" />
             <span className="hidden sm:inline">Funções</span>
           </TabsTrigger>
-          <TabsTrigger value="seguranca" className="gap-2">
-            <Lock className="h-4 w-4" />
-            <span className="hidden sm:inline">Segurança</span>
+          <TabsTrigger value="operacional" className="gap-2">
+            <Sliders className="h-4 w-4" />
+            <span className="hidden sm:inline">Operacional</span>
           </TabsTrigger>
           {isOwnerOrAdmin && (
             <TabsTrigger value="avancado" className="gap-2">
-              <Settings className="h-4 w-4" />
+              <SettingsIcon className="h-4 w-4" />
               <span className="hidden sm:inline">Avançado</span>
             </TabsTrigger>
           )}
@@ -99,8 +99,8 @@ const OrganizationSettingsPage = () => {
           <RolesPermissionsTab />
         </TabsContent>
 
-        <TabsContent value="seguranca" className="space-y-4">
-          <SecurityTab />
+        <TabsContent value="operacional" className="space-y-4">
+          <OperationalConfigTab />
         </TabsContent>
 
         {isOwnerOrAdmin && (
