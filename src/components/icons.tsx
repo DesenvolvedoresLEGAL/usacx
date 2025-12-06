@@ -10,7 +10,7 @@ import {
   LogOut,
   Bell,
   ChevronDown,
-  Briefcase, // Using Briefcase for "LEGAL" company
+  Headphones, // Premium support icon for omnichannel platform
   LucideIcon,
   RadioTower,
   ClipboardList,
@@ -53,7 +53,7 @@ import {
 export type Icon = LucideIcon;
 
 export const Icons = {
-  logo: Briefcase,
+  logo: Headphones,
   home: Home,
   users: Users, // Agentes, Acesso > Agentes, Configurações > Agentes
   settings: Settings, // Configurações
